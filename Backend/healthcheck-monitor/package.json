@@ -1,0 +1,15 @@
+{
+  "name": "healthcheck-monitor",
+  "version": "1.0.0",
+  "description": "Script standalone giám sát API health server, gửi cảnh báo Telegram khi lỗi. Không phụ thuộc thư viện ngoài.",
+  "main": "healthCheckMonitor.js",
+  "scripts": {
+    "start": "node healthCheckMonitor.js"
+  },
+  "engines": {
+    "node": ">=12"
+  },
+  "dependencies": {},
+  "license": "MIT",
+  "private": true
+}
