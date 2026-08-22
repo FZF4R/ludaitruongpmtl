@@ -1,0 +1,356 @@
+/**
+ * Dữ liệu mẫu cho giai đoạn backend nội dung chưa dựng xong.
+ *
+ * Cùng hình dạng với hợp đồng API trong lib/api.ts, nên khi đổi
+ * CONTENT_SOURCE=api thì không component nào phải sửa. Xoá file này
+ * sau khi backend đã có đủ endpoint.
+ */
+import type {
+  Category,
+  Content,
+  ContentSummary,
+  LunarEvent,
+  Paginated,
+  SlugEntry,
+} from "@/lib/schema";
+import type { ListParams, SiteSettings } from "@/lib/api";
+
+const categories: Category[] = [
+  {
+    id: "c1",
+    slug: "kinh-dien",
+    name: "Kinh điển",
+    description: "Kinh, luật, luận và các bản dịch lưu hành.",
+    kind: "sutra",
+    count: 3,
+    children: [],
+  },
+  {
+    id: "c2",
+    slug: "thien-tap",
+    name: "Thiền tập",
+    description: "Hướng dẫn toạ thiền, thiền hành, quán niệm hơi thở.",
+    kind: "all",
+    count: 2,
+    children: [],
+  },
+  {
+    id: "c3",
+    slug: "nghi-le",
+    name: "Nghi lễ",
+    description: "Nghi thức tụng niệm, sám hối, cúng dường.",
+    kind: "all",
+    count: 1,
+    children: [],
+  },
+  {
+    id: "c4",
+    slug: "phat-phap-ung-dung",
+    name: "Phật pháp ứng dụng",
+    description: "Đưa lời Phật dạy vào đời sống thường ngày.",
+    kind: "article",
+    count: 2,
+    children: [],
+  },
+];
+
+const phapCuBody = `
+<p class="ke">Ý dẫn đầu các pháp,
+Ý làm chủ, ý tạo;
+Nếu với ý ô nhiễm,
+Nói lên hay hành động,
+Khổ não bước theo sau,
+Như xe, chân vật kéo.</p>
+
+<p class="ke">Ý dẫn đầu các pháp,
+Ý làm chủ, ý tạo;
+Nếu với ý thanh tịnh,
+Nói lên hay hành động,
+An lạc bước theo sau,
+Như bóng, không rời hình.</p>
+
+<h2>Đôi lời về phẩm Song Yếu</h2>
+<p>Phẩm mở đầu Kinh Pháp Cú đặt ngay tâm ý làm gốc của mọi hành vi. Hai câu kệ đầu dựng thành một cặp đối xứng: cùng một cấu trúc, chỉ đổi một chữ &mdash; ô nhiễm và thanh tịnh &mdash; mà quả báo đi theo hai hướng ngược nhau.</p>
+<p>Hình ảnh so sánh cũng được chọn rất khéo. Khổ não theo sau như bánh xe theo chân con vật kéo: nặng nề, có tiếng động, và luôn trễ hơn một nhịp. An lạc theo sau như bóng theo hình: nhẹ, im lặng, không rời.</p>
+<blockquote><p>Không phải hoàn cảnh quyết định khổ vui, mà là tâm ý khởi lên trước mỗi lời nói và việc làm.</p></blockquote>
+`;
+
+const tamKinhBody = `
+<p class="ke">Quán Tự Tại Bồ Tát hành thâm Bát nhã Ba la mật đa thời,
+chiếu kiến ngũ uẩn giai không, độ nhất thiết khổ ách.</p>
+<p>Xá Lợi Tử! Sắc bất dị không, không bất dị sắc; sắc tức thị không, không tức thị sắc. Thọ, tưởng, hành, thức diệc phục như thị.</p>
+<h2>Ghi chú bản dịch</h2>
+<p>Bản Hán văn của ngài Huyền Trang là bản được tụng phổ biến nhất tại Việt Nam. Trang này giữ nguyên âm Hán Việt vì đó là bản Phật tử thuộc lòng khi tụng, đồng thời kèm phần giải nghĩa từng đoạn ở dưới.</p>
+`;
+
+const contents: Content[] = [
+  {
+    id: "1",
+    type: "sutra",
+    slug: "kinh-phap-cu",
+    title: "Kinh Pháp Cú",
+    summary:
+      "423 câu kệ ngắn gọn, cô đọng lời Phật dạy về tâm ý, hành vi và quả báo. Trình bày theo 26 phẩm.",
+    coverUrl: undefined,
+    bodyHtml: phapCuBody,
+    chapters: [
+      { order: 1, title: "Phẩm Song Yếu", slug: "pham-song-yeu", bodyHtml: phapCuBody },
+      { order: 2, title: "Phẩm Không Phóng Dật", slug: "pham-khong-phong-dat", bodyHtml: "<p>Nội dung phẩm hai.</p>" },
+      { order: 3, title: "Phẩm Tâm", slug: "pham-tam", bodyHtml: "<p>Nội dung phẩm ba.</p>" },
+    ],
+    author: { name: "Thích Minh Châu", title: "Hoà thượng" },
+    source: { name: "Bản dịch Việt ngữ lưu hành phổ biến" },
+    categories: [{ slug: "kinh-dien", name: "Kinh điển" }],
+    tags: ["pháp cú", "kệ", "nam tông"],
+    publishedAt: "2026-01-12T00:00:00.000Z",
+    updatedAt: "2026-07-02T00:00:00.000Z",
+    readingMinutes: 18,
+    viewCount: 4821,
+    seo: {},
+  },
+  {
+    id: "2",
+    type: "sutra",
+    slug: "bat-nha-tam-kinh",
+    title: "Bát Nhã Tâm Kinh",
+    summary:
+      "Bản kinh ngắn nhất và được tụng nhiều nhất trong hệ Bát Nhã, gói toàn bộ giáo nghĩa tánh không trong hơn hai trăm chữ.",
+    bodyHtml: tamKinhBody,
+    chapters: [],
+    author: { name: "Ban Biên Tập" },
+    source: { name: "Hán văn: ngài Huyền Trang" },
+    categories: [{ slug: "kinh-dien", name: "Kinh điển" }],
+    tags: ["bát nhã", "tánh không"],
+    publishedAt: "2026-02-08T00:00:00.000Z",
+    readingMinutes: 6,
+    viewCount: 9130,
+    seo: {},
+  },
+  {
+    id: "3",
+    type: "article",
+    slug: "quan-niem-hoi-tho-cho-nguoi-moi-bat-dau",
+    title: "Quán niệm hơi thở cho người mới bắt đầu",
+    summary:
+      "Mười sáu bước quán niệm hơi thở trình bày lại bằng ngôn ngữ đời thường, kèm gợi ý thời lượng cho tuần đầu tiên.",
+    bodyHtml: `<p>Thiền không bắt đầu bằng việc ngồi cho đúng tư thế mà bắt đầu bằng việc nhận ra mình đang thở. Hơi thở luôn có mặt, không cần chuẩn bị, không cần dụng cụ, và quan trọng nhất: nó chỉ xảy ra ở hiện tại.</p>
+<h2>Tuần đầu: chỉ nhận biết</h2>
+<p>Năm phút mỗi sáng. Không đếm, không điều khiển hơi thở dài ngắn. Chỉ biết đây là hơi vào, đây là hơi ra. Khi phát hiện tâm đã đi nơi khác, nhẹ nhàng quay về &mdash; chính khoảnh khắc nhận ra đó mới là phần tập luyện, không phải khoảng thời gian ngồi yên.</p>
+<h2>Tuần thứ hai: thêm chiều dài</h2>
+<p>Bắt đầu ghi nhận hơi thở dài hay ngắn. Vẫn không can thiệp. Hơi thở sẽ tự lắng xuống khi tâm lắng xuống, không cần ép.</p>`,
+    chapters: [],
+    author: { name: "Ban Biên Tập" },
+    categories: [{ slug: "thien-tap", name: "Thiền tập" }],
+    tags: ["thiền", "hơi thở", "người mới"],
+    publishedAt: "2026-06-20T00:00:00.000Z",
+    readingMinutes: 8,
+    viewCount: 2310,
+    seo: {},
+  },
+  {
+    id: "4",
+    type: "audio",
+    slug: "bai-giang-tu-dieu-de",
+    title: "Bài giảng: Tứ Diệu Đế",
+    summary:
+      "Bốn sự thật cao quý trình bày trong một buổi giảng 48 phút, có kèm toàn văn để tiện đối chiếu.",
+    media: {
+      provider: "self",
+      url: "/media/tu-dieu-de.mp3",
+      durationSec: 2880,
+      transcript: `Hôm nay chúng ta cùng đọc lại bài pháp đầu tiên đức Phật giảng tại vườn Lộc Uyển. Bài pháp ấy không mở đầu bằng một lời hứa hẹn nào về cõi trời hay phép mầu, mà mở đầu bằng một quan sát: có khổ.
+
+Khổ đế không phải một lời than. Nó là một mô tả. Sinh là khổ, già là khổ, bệnh là khổ, chết là khổ; cầu không được là khổ, thương phải xa là khổ, ghét phải gần là khổ.
+
+Tập đế chỉ ra nguyên nhân: ái. Không phải mọi mong muốn đều là ái, mà là thứ mong muốn dính mắc, muốn nắm giữ cái vốn đang trôi.
+
+Diệt đế là câu khẳng định quan trọng nhất của toàn bài: khổ có thể chấm dứt. Nếu khổ do nhân duyên mà sinh thì khi nhân duyên ấy dứt, khổ cũng dứt.
+
+Đạo đế là con đường tám nhánh dẫn tới sự chấm dứt đó.`,
+    },
+    chapters: [],
+    author: { name: "Ban Biên Tập" },
+    categories: [{ slug: "phat-phap-ung-dung", name: "Phật pháp ứng dụng" }],
+    tags: ["tứ diệu đế", "căn bản"],
+    publishedAt: "2026-05-15T00:00:00.000Z",
+    readingMinutes: 48,
+    viewCount: 6740,
+    seo: {},
+  },
+  {
+    id: "5",
+    type: "video",
+    slug: "nghi-thuc-tung-kinh-tai-gia",
+    title: "Nghi thức tụng kinh tại gia",
+    summary:
+      "Hướng dẫn bày trí bàn thờ, thứ tự nghi thức và cách tụng cho Phật tử tu tập ở nhà.",
+    media: {
+      provider: "youtube",
+      url: "dQw4w9WgXcQ",
+      durationSec: 1560,
+      transcript:
+        "Bàn thờ tại gia không cần lớn. Điều quan trọng là nơi ấy sạch, yên, và ở vị trí trang trọng nhất trong nhà mà điều kiện cho phép...",
+    },
+    chapters: [],
+    author: { name: "Ban Biên Tập" },
+    categories: [{ slug: "nghi-le", name: "Nghi lễ" }],
+    tags: ["nghi lễ", "tại gia"],
+    publishedAt: "2026-04-02T00:00:00.000Z",
+    readingMinutes: 26,
+    viewCount: 11204,
+    seo: {},
+  },
+  {
+    id: "6",
+    type: "blog",
+    slug: "mot-ngay-o-khoa-tu-mua-he",
+    title: "Một ngày ở khoá tu mùa hè",
+    summary:
+      "Ghi chép về nhịp sinh hoạt từ ba giờ rưỡi sáng đến chín giờ tối của một khoá tu bảy ngày.",
+    bodyHtml: `<p>Chuông thức chúng lúc ba giờ rưỡi. Trời còn tối hẳn, và điều đầu tiên đập vào tai không phải tiếng chuông mà là tiếng dép của hơn hai trăm người cùng đi về phía chánh điện.</p>
+<p>Buổi công phu khuya kéo dài một tiếng. Sau đó là thiền hành quanh hồ, khi sương còn chưa tan.</p>
+<h2>Điều khó nhất không phải dậy sớm</h2>
+<p>Ai cũng nghĩ khó nhất là ba giờ rưỡi sáng. Thật ra sau ngày thứ hai thì cơ thể quen. Khó nhất là im lặng &mdash; khoá tu giữ tịnh khẩu từ sau bữa tối tới hết buổi công phu sáng hôm sau.</p>`,
+    chapters: [],
+    author: { name: "Ban Biên Tập" },
+    categories: [{ slug: "phat-phap-ung-dung", name: "Phật pháp ứng dụng" }],
+    tags: ["khoá tu", "ghi chép"],
+    publishedAt: "2026-07-28T00:00:00.000Z",
+    readingMinutes: 7,
+    viewCount: 1876,
+    seo: {},
+  },
+  {
+    id: "7",
+    type: "article",
+    slug: "y-nghia-ngay-ram-va-mung-mot",
+    title: "Ý nghĩa ngày rằm và mùng một",
+    summary:
+      "Vì sao hai ngày này được chọn làm ngày thọ bát quan trai và tụng giới trong truyền thống Phật giáo.",
+    bodyHtml: `<p>Ngày rằm và mùng một là hai điểm mốc của chu kỳ mặt trăng: trăng tròn nhất và trăng khuất hẳn. Trong truyền thống Ấn Độ cổ, đây là ngày cộng đồng tụ họp.</p>
+<p>Đức Phật giữ lại tập tục sẵn có ấy nhưng đổi nội dung: thay vì lễ tế, tăng đoàn tụng giới bổn để mỗi vị tự soát lại mình trong nửa tháng vừa qua.</p>`,
+    chapters: [],
+    author: { name: "Ban Biên Tập" },
+    categories: [{ slug: "nghi-le", name: "Nghi lễ" }],
+    tags: ["rằm", "bát quan trai"],
+    publishedAt: "2026-03-10T00:00:00.000Z",
+    readingMinutes: 5,
+    viewCount: 3420,
+    seo: {},
+  },
+  {
+    id: "8",
+    type: "audio",
+    slug: "tung-kinh-a-di-da",
+    title: "Tụng Kinh A Di Đà",
+    summary: "Bản tụng đầy đủ, tốc độ vừa để Phật tử tụng theo tại nhà.",
+    media: {
+      provider: "self",
+      url: "/media/kinh-a-di-da.mp3",
+      durationSec: 1980,
+      transcript:
+        "Như thị ngã văn. Nhất thời Phật tại Xá Vệ quốc, Kỳ Thọ Cấp Cô Độc viên, dữ đại Tỳ kheo tăng thiên nhị bách ngũ thập nhân câu...",
+    },
+    chapters: [],
+    author: { name: "Ban Biên Tập" },
+    categories: [{ slug: "kinh-dien", name: "Kinh điển" }],
+    tags: ["tịnh độ", "tụng kinh"],
+    publishedAt: "2026-06-01T00:00:00.000Z",
+    readingMinutes: 33,
+    viewCount: 8055,
+    seo: {},
+  },
+];
+
+const lunarEvents: LunarEvent[] = [
+  { id: "e1", lunarDay: 1, lunarMonth: 1, isLeapMonth: false, solarYear: null, kind: "via", title: "Vía đức Di Lặc", description: "Ngày đầu năm âm lịch.", contentSlug: undefined },
+  { id: "e2", lunarDay: 15, lunarMonth: 1, isLeapMonth: false, solarYear: null, kind: "le", title: "Rằm tháng Giêng", description: "Lễ Thượng nguyên." },
+  { id: "e3", lunarDay: 8, lunarMonth: 2, isLeapMonth: false, solarYear: null, kind: "via", description: "", title: "Phật xuất gia" },
+  { id: "e4", lunarDay: 15, lunarMonth: 2, isLeapMonth: false, solarYear: null, kind: "via", description: "", title: "Phật nhập Niết bàn" },
+  { id: "e5", lunarDay: 19, lunarMonth: 2, isLeapMonth: false, solarYear: null, kind: "via", description: "", title: "Vía Quán Thế Âm đản sinh" },
+  { id: "e6", lunarDay: 15, lunarMonth: 4, isLeapMonth: false, solarYear: null, kind: "le", title: "Đại lễ Phật Đản", description: "Kỷ niệm đức Phật đản sinh." },
+  { id: "e7", lunarDay: 19, lunarMonth: 6, isLeapMonth: false, solarYear: null, kind: "via", description: "", title: "Vía Quán Thế Âm thành đạo" },
+  { id: "e8", lunarDay: 15, lunarMonth: 7, isLeapMonth: false, solarYear: null, kind: "le", title: "Lễ Vu Lan", description: "Mùa báo hiếu." },
+  { id: "e9", lunarDay: 30, lunarMonth: 7, isLeapMonth: false, solarYear: null, kind: "via", description: "", title: "Vía Địa Tạng Bồ Tát" },
+  { id: "e10", lunarDay: 19, lunarMonth: 9, isLeapMonth: false, solarYear: null, kind: "via", description: "", title: "Vía Quán Thế Âm xuất gia" },
+  { id: "e11", lunarDay: 30, lunarMonth: 9, isLeapMonth: false, solarYear: null, kind: "via", description: "", title: "Vía Phật Dược Sư" },
+  { id: "e12", lunarDay: 17, lunarMonth: 11, isLeapMonth: false, solarYear: null, kind: "via", description: "", title: "Vía Phật A Di Đà" },
+  { id: "e13", lunarDay: 8, lunarMonth: 12, isLeapMonth: false, solarYear: null, kind: "via", description: "", title: "Phật Thành đạo" },
+];
+
+/* ------------------------------------------------------------------ */
+
+function toSummary(c: Content): ContentSummary {
+  const { bodyHtml: _b, chapters: _c, ...rest } = c;
+  return rest;
+}
+
+function normalize(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/đ/g, "d")
+    .toLowerCase();
+}
+
+export async function listContent(params: ListParams = {}): Promise<Paginated<ContentSummary>> {
+  const page = params.page ?? 1;
+  const limit = params.limit ?? 12;
+  const wanted = params.type
+    ? new Set(Array.isArray(params.type) ? params.type : [params.type])
+    : null;
+
+  let rows = contents.filter((c) => {
+    if (wanted && !wanted.has(c.type)) return false;
+    if (params.category && !c.categories.some((k) => k.slug === params.category)) return false;
+    if (params.q) {
+      const q = normalize(params.q);
+      const haystack = normalize(`${c.title} ${c.summary} ${c.tags.join(" ")}`);
+      if (!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+
+  rows = rows.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+
+  return {
+    data: rows.slice((page - 1) * limit, page * limit).map(toSummary),
+    total: rows.length,
+    page,
+    limit,
+  };
+}
+
+export async function getContent(slug: string): Promise<Content | null> {
+  return contents.find((c) => c.slug === slug) ?? null;
+}
+
+export async function listCategories(): Promise<Category[]> {
+  return categories;
+}
+
+export async function getCategory(slug: string): Promise<Category | null> {
+  return categories.find((c) => c.slug === slug) ?? null;
+}
+
+export async function listLunarEvents(month?: number): Promise<LunarEvent[]> {
+  return month ? lunarEvents.filter((e) => e.lunarMonth === month) : lunarEvents;
+}
+
+export async function listSlugs(): Promise<SlugEntry[]> {
+  return contents.map((c) => ({
+    type: c.type,
+    slug: c.slug,
+    updatedAt: c.updatedAt ?? c.publishedAt,
+    chapters: c.chapters.map((ch) => ch.slug),
+  }));
+}
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+  return {
+    title: "Sen Việt",
+    notify: "Trang đang chạy trên dữ liệu mẫu — đặt CONTENT_SOURCE=api để nối backend thật.",
+    supportfacebook: "",
+    isMaintaning: false,
+  };
+}
