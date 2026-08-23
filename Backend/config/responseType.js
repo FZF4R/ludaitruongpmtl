@@ -19,6 +19,11 @@ module.exports.responseType = {
         description: 'Not authorize to access',
         responseType: 'responseToClient',
     },
+    notFound: {
+        statusCode: 404,
+        description: 'Resource not found',
+        responseType: 'responseToClient',
+    },
     notUnique: {
         statusCode: 409,
         description: 'Not unique',

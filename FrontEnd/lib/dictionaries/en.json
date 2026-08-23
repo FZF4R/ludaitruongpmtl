@@ -1,0 +1,132 @@
+{
+  "site": {
+    "tagline": "Sharing the Buddha's teachings",
+    "description": "Articles, sutras, and audio and video dharma talks for Vietnamese Buddhists, with the lunar calendar and the observance days of the year."
+  },
+  "nav": {
+    "mainLabel": "Main",
+    "home": "Home",
+    "homeAria": "home",
+    "search": "Search",
+    "account": "Account",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "articles": "Articles",
+    "articlesHint": "Dharma talks, essays, questions and answers",
+    "sutras": "Sutras",
+    "sutrasHint": "Sutras, vinaya and treatises, chapter by chapter",
+    "talks": "Dharma talks",
+    "talksHint": "Audio and video",
+    "calendar": "Lunar calendar",
+    "calendarHint": "Lunar dates, observance days, full moons",
+    "skipToContent": "Skip to content"
+  },
+  "footer": {
+    "content": "Content",
+    "categories": "Categories",
+    "about": "About",
+    "rss": "RSS",
+    "rights": "Shared freely for the spread of the dharma."
+  },
+  "contentType": {
+    "article": "Article",
+    "blog": "Essay",
+    "sutra": "Sutra",
+    "audio": "Audio talk",
+    "video": "Video talk"
+  },
+  "language": {
+    "label": "Language",
+    "choose": "Choose a language"
+  },
+  "common": {
+    "readMore": "Read on",
+    "backHome": "Back to home",
+    "page": "Page",
+    "previous": "Previous",
+    "next": "Next",
+    "breadcrumb": "Breadcrumb",
+    "noResults": "Nothing here yet",
+    "minutesRead": "min read",
+    "views": "views",
+    "chapters": "chapters",
+    "publishedOn": "Published",
+    "updatedOn": "Updated",
+    "tableOfContents": "Contents",
+    "previousChapter": "Previous chapter",
+    "nextChapter": "Next chapter",
+    "pagination": "Pagination"
+  },
+  "home": {
+    "eyebrow": "Sen Việt",
+    "latest": "Recently added",
+    "latestDesc": "The newest articles, sutras and dharma talks.",
+    "sutras": "Sutras",
+    "sutrasDesc": "Sutras, vinaya and treatises laid out chapter by chapter for reading and reference.",
+    "talks": "Dharma talks",
+    "talksDesc": "Audio and video teachings.",
+    "calendar": "Lunar calendar",
+    "calendarDesc": "Full moons, new moons and the observance days of each month.",
+    "viewAll": "View all",
+    "sutrasEyebrow": "Sutra, vinaya, treatise",
+    "sutrasDesc2": "Read chapter by chapter, in the original translation, with the source named.",
+    "talksEyebrow": "Listen and watch",
+    "talksDesc2": "Every talk comes with a full transcript for reference.",
+    "browseBy": "Browse by",
+    "categories": "Categories"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Type a keyword…",
+    "submit": "Search",
+    "resultsFor": "Results for",
+    "found": "results",
+    "empty": "Nothing matches that keyword.",
+    "prompt": "Type a keyword to search articles, sutras and dharma talks."
+  },
+  "account": {
+    "eyebrow": "Your space",
+    "title": "Account",
+    "description": "Sign in to save readings, keep your listening progress, and sync across devices.",
+    "signIn": "Sign in"
+  },
+  "calendar": {
+    "title": "Lunar calendar",
+    "today": "Today",
+    "fullMoon": "Full moon",
+    "newMoon": "New moon",
+    "leapMonth": "leap",
+    "eventKind": {
+      "via": "Observance day",
+      "le": "Festival",
+      "gio-to": "Founder's memorial",
+      "bat-quan-trai": "Eight precepts day"
+    }
+  },
+  "media": {
+    "play": "Play",
+    "pause": "Pause",
+    "transcript": "Transcript",
+    "duration": "Duration"
+  },
+  "theme": {
+    "toggle": "Switch light or dark theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "This page could not load. Try again in a few minutes.",
+    "retry": "Try again",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The page you are looking for does not exist or has moved."
+  },
+  "list": {
+    "articlesDesc": "Dharma talks, essays and questions and answers, updated regularly.",
+    "sutrasDesc": "Sutras, vinaya and treatises laid out chapter by chapter for reading and reference.",
+    "talksDesc": "Audio and video teachings, each with a full transcript.",
+    "emptyArticles": "No articles yet",
+    "emptySutras": "No sutras yet",
+    "emptyTalks": "No talks yet"
+  }
+}

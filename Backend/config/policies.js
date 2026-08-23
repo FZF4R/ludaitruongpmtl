@@ -17,10 +17,18 @@ module.exports.policies = {
         register: true,
         verify2FA: true,
     },
+    // Nội dung công khai: ai cũng đọc được, không cần token.
+    // Khai rõ ra đây thay vì dựa vào mặc định của Sails, để đọc tệp này là
+    // thấy ngay controller nào cố ý mở.
+    'System/Public/ContentController': {
+        '*': true
+    },
+    // requirePermission tra quyền trong config/permissions.js theo METHOD /đường-dẫn.
+    // Phải đứng SAU userPolices - nó đọc vai trò từ req.body.User mà userPolices gán vào.
     'System/Admin/UsersController': {
-        '*': ['userPolices', 'adminPolices']
+        '*': ['userPolices', 'requirePermission']
     },
     'System/Admin/SystemController': {
-        '*': ['userPolices', 'adminPolices']
+        '*': ['userPolices', 'requirePermission']
     },
 };

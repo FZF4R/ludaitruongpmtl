@@ -1,8 +1,8 @@
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/ui/locale-link";
 import { Headphones, PlayCircle, BookOpen, FileText } from "lucide-react";
 import type { ContentSummary } from "@/lib/schema";
-import { contentTypeLabel } from "@/lib/site";
 import { contentHref } from "@/lib/seo";
+import { getDictionary } from "@/lib/dictionary";
 import { formatDate, formatDuration, readingTime } from "@/lib/format";
 import { Badge, Card } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
@@ -15,13 +15,14 @@ const typeIcon = {
   video: PlayCircle,
 } as const;
 
-export function ContentCard({
+export async function ContentCard({
   item,
   featured = false,
 }: {
   item: ContentSummary;
   featured?: boolean;
 }) {
+  const dict = await getDictionary();
   const Icon = typeIcon[item.type];
   const href = contentHref(item);
   const duration =
@@ -39,7 +40,7 @@ export function ContentCard({
       <div className="flex items-center gap-2 text-muted">
         <Icon className="size-4 shrink-0" aria-hidden />
         <span className="text-[11px] font-medium uppercase tracking-[0.1em]">
-          {contentTypeLabel[item.type]}
+          {dict.contentType[item.type]}
         </span>
       </div>
 

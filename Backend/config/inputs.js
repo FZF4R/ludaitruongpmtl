@@ -219,6 +219,12 @@ module.exports.inputs = {
                 "viewMode": {
                     "type": "string"
                 },
+                "theme": {
+                    "type": "json"
+                },
+                "themeDark": {
+                    "type": "json"
+                },
                 "langLib": {
                     "type": "json"
                 }
@@ -326,6 +332,67 @@ module.exports.inputs = {
                 "type": "string"
             }
         },
-        "getSettings": {}
+        "getSettings": {},
+        "Content": {
+            "listContent": {
+                "type": {
+                    "type": "string",
+                    "defaultsTo": "",
+                    "description": "Mot hoac nhieu loai, ngan cach bang dau phay: article,blog"
+                },
+                "category": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "q": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "page": {
+                    "type": "number",
+                    "defaultsTo": 1,
+                    "min": 1
+                },
+                "limit": {
+                    "type": "number",
+                    "defaultsTo": 12,
+                    "min": 1,
+                    "max": 50
+                }
+            },
+            "search": {
+                "q": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "page": {
+                    "type": "number",
+                    "defaultsTo": 1,
+                    "min": 1
+                },
+                "limit": {
+                    "type": "number",
+                    "defaultsTo": 12,
+                    "min": 1,
+                    "max": 50
+                }
+            },
+            "getContentBySlug": {
+                "slug": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "categoryTree": {},
+            "calendar": {
+                "month": {
+                    "type": "number",
+                    "defaultsTo": 0,
+                    "min": 0,
+                    "max": 12
+                }
+            },
+            "slugs": {}
+        }
     }
 };

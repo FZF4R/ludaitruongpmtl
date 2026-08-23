@@ -1,0 +1,132 @@
+{
+  "site": {
+    "tagline": "불법을 나누는 곳",
+    "description": "베트남 불자를 위한 글과 경전, 오디오·영상 법문 모음. 음력 불교 달력과 한 해의 재일을 함께 실었습니다."
+  },
+  "nav": {
+    "mainLabel": "주메뉴",
+    "home": "홈",
+    "homeAria": "홈",
+    "search": "검색",
+    "account": "계정",
+    "openMenu": "메뉴 열기",
+    "closeMenu": "메뉴 닫기",
+    "articles": "글",
+    "articlesHint": "법문, 수필, 문답",
+    "sutras": "경전",
+    "sutrasHint": "경·율·론을 품별로",
+    "talks": "법문",
+    "talksHint": "오디오와 영상",
+    "calendar": "불교 달력",
+    "calendarHint": "음력, 재일, 보름",
+    "skipToContent": "본문으로 건너뛰기"
+  },
+  "footer": {
+    "content": "콘텐츠",
+    "categories": "분류",
+    "about": "사이트 소개",
+    "rss": "RSS",
+    "rights": "포교를 위해 나누는 자료입니다."
+  },
+  "contentType": {
+    "article": "글",
+    "blog": "수필",
+    "sutra": "경전",
+    "audio": "오디오 법문",
+    "video": "영상 법문"
+  },
+  "language": {
+    "label": "언어",
+    "choose": "언어 선택"
+  },
+  "common": {
+    "readMore": "이어 읽기",
+    "backHome": "홈으로",
+    "page": "쪽",
+    "previous": "이전",
+    "next": "다음",
+    "breadcrumb": "경로",
+    "noResults": "아직 콘텐츠가 없습니다",
+    "minutesRead": "분 분량",
+    "views": "회 조회",
+    "chapters": "품",
+    "publishedOn": "게시일",
+    "updatedOn": "수정일",
+    "tableOfContents": "목차",
+    "previousChapter": "이전 품",
+    "nextChapter": "다음 품",
+    "pagination": "쪽 넘기기"
+  },
+  "home": {
+    "eyebrow": "Sen Việt",
+    "latest": "최근 등록",
+    "latestDesc": "새로 올라온 글과 경전, 법문입니다.",
+    "sutras": "경전",
+    "sutrasDesc": "경·율·론을 품별로 정리해 읽고 찾기 쉽게 했습니다.",
+    "talks": "법문",
+    "talksDesc": "오디오와 영상 법문.",
+    "calendar": "불교 달력",
+    "calendarDesc": "보름과 초하루, 그리고 그달의 재일.",
+    "viewAll": "전체 보기",
+    "sutrasEyebrow": "경·율·론",
+    "sutrasDesc2": "품별로 읽으며 원 번역을 그대로 두고 출처를 밝힙니다.",
+    "talksEyebrow": "듣고 보기",
+    "talksDesc2": "모든 법문에 전문을 함께 실어 대조하기 쉽습니다.",
+    "browseBy": "분류로 보기",
+    "categories": "분류"
+  },
+  "search": {
+    "title": "검색",
+    "placeholder": "검색어를 입력하세요…",
+    "submit": "검색",
+    "resultsFor": "검색 결과",
+    "found": "건",
+    "empty": "해당 검색어와 맞는 콘텐츠가 없습니다.",
+    "prompt": "검색어를 입력하면 글과 경전, 법문에서 찾습니다."
+  },
+  "account": {
+    "eyebrow": "개인 공간",
+    "title": "계정",
+    "description": "로그인하면 글을 저장하고 청취 진도를 기록하며 여러 기기에서 이어볼 수 있습니다.",
+    "signIn": "로그인"
+  },
+  "calendar": {
+    "title": "불교 달력",
+    "today": "오늘",
+    "fullMoon": "보름",
+    "newMoon": "초하루",
+    "leapMonth": "윤",
+    "eventKind": {
+      "via": "재일",
+      "le": "법회일",
+      "gio-to": "조사 기일",
+      "bat-quan-trai": "팔관재일"
+    }
+  },
+  "media": {
+    "play": "재생",
+    "pause": "일시정지",
+    "transcript": "본문",
+    "duration": "길이"
+  },
+  "theme": {
+    "toggle": "밝은/어두운 테마 전환",
+    "light": "밝게",
+    "dark": "어둡게"
+  },
+  "error": {
+    "title": "오류가 발생했습니다",
+    "description": "이 페이지를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "retry": "다시 시도",
+    "notFoundTitle": "페이지를 찾을 수 없습니다",
+    "notFoundDescription": "찾으시는 페이지가 없거나 옮겨졌습니다."
+  },
+  "list": {
+    "articlesDesc": "법문과 수필, 불법 문답을 꾸준히 올립니다.",
+    "sutrasDesc": "경·율·론을 품별로 정리해 읽고 찾기 쉽게 했습니다.",
+    "talksDesc": "오디오와 영상 법문, 전문을 함께 실었습니다.",
+    "emptyArticles": "아직 글이 없습니다",
+    "emptySutras": "아직 경전이 없습니다",
+    "emptyTalks": "아직 법문이 없습니다"
+  }
+}

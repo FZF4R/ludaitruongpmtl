@@ -17,6 +17,12 @@ module.exports = {
                 condition: {
 
                 },
+                // Không có projection thì Mongo trả về ĐỦ MỌI TRƯỜNG, gồm cả hash
+                // mật khẩu - mà hash đó chính là thứ được nhúng vào JWT
+                // (jwtProcess.signAndEncryptJwt) và là thứ verifyPasswordFromDB
+                // đối chiếu ở mọi request. Bắt buộc phải loại trước khi mở
+                // endpoint này cho vai trò thấp hơn Admin.
+                selectCols: { projection: { password: 0 } },
                 sort: { createdAt: -1 },
                 limit: limit,
                 page: page

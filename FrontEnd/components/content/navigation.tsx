@@ -1,14 +1,17 @@
-import Link from "next/link";
 import { ChevronLeft, ChevronRight, ChevronsRight } from "lucide-react";
 import type { Chapter } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/primitives";
+import { LocaleLink as Link } from "@/components/ui/locale-link";
+import { getDictionary } from "@/lib/dictionary";
 
 export type Crumb = { name: string; href: string };
 
-export function Breadcrumbs({ trail }: { trail: Crumb[] }) {
+export async function Breadcrumbs({ trail }: { trail: Crumb[] }) {
+  const dict = await getDictionary();
+
   return (
-    <nav aria-label="Đường dẫn" className="text-xs text-muted">
+    <nav aria-label={dict.common.breadcrumb} className="text-xs text-muted">
       <ol className="flex flex-wrap items-center gap-1.5">
         {trail.map((crumb, i) => {
           const last = i === trail.length - 1;
@@ -35,7 +38,7 @@ export function Breadcrumbs({ trail }: { trail: Crumb[] }) {
 }
 
 /** Mục lục kinh sách. Ở màn hình rộng nó dính bên trái khi cuộn. */
-export function ChapterNav({
+export async function ChapterNav({
   chapters,
   bookSlug,
   currentSlug,
@@ -45,11 +48,12 @@ export function ChapterNav({
   currentSlug?: string;
 }) {
   if (chapters.length === 0) return null;
+  const dict = await getDictionary();
 
   return (
-    <nav aria-label="Mục lục" className="flex flex-col gap-3">
+    <nav aria-label={dict.common.tableOfContents} className="flex flex-col gap-3">
       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
-        Mục lục
+        {dict.common.tableOfContents}
       </p>
       <ol className="flex flex-col">
         {chapters.map((ch) => {
@@ -80,7 +84,7 @@ export function ChapterNav({
 }
 
 /** Điều hướng chương trước / chương sau ở cuối trang đọc. */
-export function ChapterPager({
+export async function ChapterPager({
   bookSlug,
   prev,
   next,
@@ -90,6 +94,7 @@ export function ChapterPager({
   next?: Chapter;
 }) {
   if (!prev && !next) return null;
+  const dict = await getDictionary();
 
   return (
     <div className="grid gap-3 sm:grid-cols-2">
@@ -97,7 +102,7 @@ export function ChapterPager({
         <Card className="p-4 hover:border-line-strong">
           <Link href={`/kinh-sach/${bookSlug}/${prev.slug}`} className="flex flex-col gap-1">
             <span className="flex items-center gap-1 text-xs text-muted">
-              <ChevronLeft className="size-3" aria-hidden /> Chương trước
+              <ChevronLeft className="size-3" aria-hidden /> {dict.common.previousChapter}
             </span>
             <span className="font-serif font-semibold text-ink">{prev.title}</span>
           </Link>
@@ -109,7 +114,7 @@ export function ChapterPager({
         <Card className="p-4 text-right hover:border-line-strong">
           <Link href={`/kinh-sach/${bookSlug}/${next.slug}`} className="flex flex-col gap-1">
             <span className="flex items-center justify-end gap-1 text-xs text-muted">
-              Chương sau <ChevronRight className="size-3" aria-hidden />
+              {dict.common.nextChapter} <ChevronRight className="size-3" aria-hidden />
             </span>
             <span className="font-serif font-semibold text-ink">{next.title}</span>
           </Link>
@@ -129,7 +134,7 @@ export function ChapterPager({
  * trang 1 sinh tĩnh được. Truyền `query` khi cần phân trang bằng
  * querystring — trang tìm kiếm dùng cách đó vì nó vốn đã là trang động.
  */
-export function Pagination({
+export async function Pagination({
   basePath,
   page,
   total,
@@ -144,6 +149,7 @@ export function Pagination({
 }) {
   const pages = Math.ceil(total / limit);
   if (pages <= 1) return null;
+  const dict = await getDictionary();
 
   const href = (p: number) => {
     if (query) {
@@ -163,14 +169,14 @@ export function Pagination({
   );
 
   return (
-    <nav aria-label="Phân trang" className="flex items-center justify-center gap-1.5">
+    <nav aria-label={dict.common.pagination} className="flex items-center justify-center gap-1.5">
       {page > 1 ? (
         <Link
           href={href(page - 1)}
           rel="prev"
           className="rounded-md border border-line px-3 py-2 text-sm text-body hover:bg-surface-2"
         >
-          Trước
+          {dict.common.previous}
         </Link>
       ) : null}
 
@@ -201,7 +207,7 @@ export function Pagination({
           rel="next"
           className="rounded-md border border-line px-3 py-2 text-sm text-body hover:bg-surface-2"
         >
-          Sau
+          {dict.common.next}
         </Link>
       ) : null}
     </nav>

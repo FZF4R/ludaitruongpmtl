@@ -1,0 +1,132 @@
+{
+  "site": {
+    "tagline": "分享佛法内容",
+    "description": "为越南佛弟子整理的文章、经书、音频与视频开示，并附农历佛历与全年诸佛菩萨圣诞纪念日。"
+  },
+  "nav": {
+    "mainLabel": "主导航",
+    "home": "首页",
+    "homeAria": "首页",
+    "search": "搜索",
+    "account": "账户",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "articles": "文章",
+    "articlesHint": "开示、随笔、问答",
+    "sutras": "经书",
+    "sutrasHint": "经、律、论，分章阅读",
+    "talks": "开示",
+    "talksHint": "音频与视频",
+    "calendar": "佛历",
+    "calendarHint": "农历、圣诞日、十五",
+    "skipToContent": "跳到主要内容"
+  },
+  "footer": {
+    "content": "内容",
+    "categories": "分类",
+    "about": "关于本站",
+    "rss": "RSS",
+    "rights": "内容为弘法之用，欢迎流通。"
+  },
+  "contentType": {
+    "article": "文章",
+    "blog": "随笔",
+    "sutra": "经书",
+    "audio": "音频开示",
+    "video": "视频开示"
+  },
+  "language": {
+    "label": "语言",
+    "choose": "选择语言"
+  },
+  "common": {
+    "readMore": "继续阅读",
+    "backHome": "返回首页",
+    "page": "第",
+    "previous": "上一页",
+    "next": "下一页",
+    "breadcrumb": "面包屑导航",
+    "noResults": "暂无内容",
+    "minutesRead": "分钟阅读",
+    "views": "次浏览",
+    "chapters": "章",
+    "publishedOn": "发布于",
+    "updatedOn": "更新于",
+    "tableOfContents": "目录",
+    "previousChapter": "上一章",
+    "nextChapter": "下一章",
+    "pagination": "分页"
+  },
+  "home": {
+    "eyebrow": "Sen Việt",
+    "latest": "最新发布",
+    "latestDesc": "新近添加的文章、经书与开示。",
+    "sutras": "经书",
+    "sutrasDesc": "经、律、论分章编排，便于阅读与查检。",
+    "talks": "开示",
+    "talksDesc": "音频与视频法音。",
+    "calendar": "佛历",
+    "calendarDesc": "每月十五、初一及诸圣诞纪念日。",
+    "viewAll": "查看全部",
+    "sutrasEyebrow": "经、律、论",
+    "sutrasDesc2": "分章阅读，保留原译文并注明出处。",
+    "talksEyebrow": "听与看",
+    "talksDesc2": "每篇皆附全文，便于对照查检。",
+    "browseBy": "浏览方式",
+    "categories": "分类"
+  },
+  "search": {
+    "title": "搜索",
+    "placeholder": "输入关键词…",
+    "submit": "搜索",
+    "resultsFor": "搜索结果",
+    "found": "条结果",
+    "empty": "没有找到与该关键词相符的内容。",
+    "prompt": "输入关键词，可搜索文章、经书与开示。"
+  },
+  "account": {
+    "eyebrow": "个人专区",
+    "title": "账户",
+    "description": "登录后可收藏文章、记录收听进度，并在多台设备间同步。",
+    "signIn": "登录"
+  },
+  "calendar": {
+    "title": "佛历",
+    "today": "今天",
+    "fullMoon": "十五",
+    "newMoon": "初一",
+    "leapMonth": "闰",
+    "eventKind": {
+      "via": "圣诞纪念日",
+      "le": "法会节日",
+      "gio-to": "祖师忌辰",
+      "bat-quan-trai": "八关斋戒日"
+    }
+  },
+  "media": {
+    "play": "播放",
+    "pause": "暂停",
+    "transcript": "文字稿",
+    "duration": "时长"
+  },
+  "theme": {
+    "toggle": "切换明暗主题",
+    "light": "浅色",
+    "dark": "深色"
+  },
+  "error": {
+    "title": "出现错误",
+    "description": "此页面无法加载，请稍后再试。",
+    "retry": "重试",
+    "notFoundTitle": "找不到页面",
+    "notFoundDescription": "您要找的页面不存在或已迁移。"
+  },
+  "list": {
+    "articlesDesc": "开示、随笔与佛法问答，持续更新。",
+    "sutrasDesc": "经、律、论分章编排，便于阅读与查检。",
+    "talksDesc": "音频与视频法音，皆附全文。",
+    "emptyArticles": "暂无文章",
+    "emptySutras": "暂无经书",
+    "emptyTalks": "暂无开示"
+  }
+}

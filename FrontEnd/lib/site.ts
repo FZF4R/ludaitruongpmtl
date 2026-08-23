@@ -14,25 +14,38 @@ export const site = {
 
 export type NavItem = {
   href: string;
-  label: string;
-  /** Mô tả ngắn hiện trong menu mobile. */
-  hint?: string;
+  /** Khoá tra trong dict.nav — nhãn hiển thị lấy từ từ điển, không viết cứng ở đây. */
+  key: NavKey;
 };
 
+export type NavKey = "articles" | "sutras" | "talks" | "calendar";
+
 export const mainNav: NavItem[] = [
-  { href: "/bai-viet", label: "Bài viết", hint: "Pháp thoại, tuỳ bút, hỏi đáp" },
-  { href: "/kinh-sach", label: "Kinh sách", hint: "Kinh, luật, luận theo chương" },
-  { href: "/bai-giang", label: "Bài giảng", hint: "Audio và video" },
-  { href: "/phat-lich", label: "Phật lịch", hint: "Lịch âm, ngày vía, ngày rằm" },
+  { href: "/bai-viet", key: "articles" },
+  { href: "/kinh-sach", key: "sutras" },
+  { href: "/bai-giang", key: "talks" },
+  { href: "/phat-lich", key: "calendar" },
 ];
 
-export const footerNav: { title: string; items: NavItem[] }[] = [
+/**
+ * Cột chân trang. `key` tra trong dict.nav, còn `label` là chuỗi giữ nguyên
+ * không dịch — tên chuyên mục là nội dung do ban biên tập đặt, không phải
+ * chữ giao diện.
+ */
+export type FooterKey = NavKey | "search" | "account";
+
+export type FooterItem = { href: string; key?: FooterKey; label?: string };
+
+export const footerNav: {
+  titleKey: "content" | "categories" | "about";
+  items: FooterItem[];
+}[] = [
   {
-    title: "Nội dung",
-    items: mainNav,
+    titleKey: "content",
+    items: mainNav.map((item) => ({ href: item.href, key: item.key })),
   },
   {
-    title: "Chuyên mục",
+    titleKey: "categories",
     items: [
       { href: "/danh-muc/kinh-dien", label: "Kinh điển" },
       { href: "/danh-muc/thien-tap", label: "Thiền tập" },
@@ -41,23 +54,14 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
     ],
   },
   {
-    title: "Về trang",
+    titleKey: "about",
     items: [
-      { href: "/tim-kiem", label: "Tìm kiếm" },
-      { href: "/tai-khoan", label: "Tài khoản" },
+      { href: "/tim-kiem", key: "search" },
+      { href: "/tai-khoan", key: "account" },
       { href: "/rss.xml", label: "RSS" },
     ],
   },
 ];
-
-/** Nhãn tiếng Việt cho từng loại nội dung. */
-export const contentTypeLabel = {
-  article: "Bài viết",
-  blog: "Tuỳ bút",
-  sutra: "Kinh sách",
-  audio: "Bài giảng audio",
-  video: "Bài giảng video",
-} as const;
 
 /** Route gốc của mỗi loại nội dung. Dùng để dựng href và sitemap. */
 export const contentTypeBase = {

@@ -41,6 +41,16 @@ module.exports = {
             type: 'json',
             defaultsTo: [],
             description: 'Danh sach noi dung theo ngon ngu: [{ lang, title, notify, note, mainWarning, mainPolicy }]'
+        },
+        theme: {
+            type: 'json',
+            defaultsTo: {},
+            description: 'Mau giao dien sang, ghi de bang mac dinh cua FrontEnd. Dang { accent: "#8a6414", paper: "#ffffff", ... }. Chi nhan ma hex; FrontEnd bo qua khoa la va gia tri sai dinh dang.'
+        },
+        themeDark: {
+            type: 'json',
+            defaultsTo: {},
+            description: 'Nhu tren nhung cho che do toi. De trong thi dung bang toi mac dinh.'
         }
     }
 };

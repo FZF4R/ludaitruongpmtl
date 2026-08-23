@@ -1,0 +1,132 @@
+{
+  "site": {
+    "tagline": "Chia sẻ nội dung Phật pháp",
+    "description": "Kho bài viết, kinh sách, bài giảng audio và video Phật pháp dành cho Phật tử Việt Nam, kèm Phật lịch và các ngày vía trong năm."
+  },
+  "nav": {
+    "mainLabel": "Chính",
+    "home": "Trang chủ",
+    "homeAria": "trang chủ",
+    "search": "Tìm kiếm",
+    "account": "Tài khoản",
+    "openMenu": "Mở menu",
+    "closeMenu": "Đóng menu",
+    "articles": "Bài viết",
+    "articlesHint": "Pháp thoại, tuỳ bút, hỏi đáp",
+    "sutras": "Kinh sách",
+    "sutrasHint": "Kinh, luật, luận theo chương",
+    "talks": "Bài giảng",
+    "talksHint": "Audio và video",
+    "calendar": "Phật lịch",
+    "calendarHint": "Lịch âm, ngày vía, ngày rằm",
+    "skipToContent": "Bỏ qua phần đầu trang"
+  },
+  "footer": {
+    "content": "Nội dung",
+    "categories": "Chuyên mục",
+    "about": "Về trang",
+    "rss": "RSS",
+    "rights": "Nội dung được chia sẻ vì mục đích hoằng pháp."
+  },
+  "contentType": {
+    "article": "Bài viết",
+    "blog": "Tuỳ bút",
+    "sutra": "Kinh sách",
+    "audio": "Bài giảng audio",
+    "video": "Bài giảng video"
+  },
+  "language": {
+    "label": "Ngôn ngữ",
+    "choose": "Chọn ngôn ngữ"
+  },
+  "common": {
+    "readMore": "Đọc tiếp",
+    "backHome": "Về trang chủ",
+    "page": "Trang",
+    "previous": "Trang trước",
+    "next": "Trang sau",
+    "breadcrumb": "Đường dẫn",
+    "noResults": "Chưa có nội dung nào",
+    "minutesRead": "phút đọc",
+    "views": "lượt xem",
+    "chapters": "chương",
+    "publishedOn": "Đăng ngày",
+    "updatedOn": "Cập nhật",
+    "tableOfContents": "Mục lục",
+    "previousChapter": "Chương trước",
+    "nextChapter": "Chương sau",
+    "pagination": "Phân trang"
+  },
+  "home": {
+    "eyebrow": "Sen Việt",
+    "latest": "Mới đăng",
+    "latestDesc": "Bài viết, kinh sách và bài giảng vừa được thêm vào.",
+    "sutras": "Kinh sách",
+    "sutrasDesc": "Kinh, luật, luận trình bày theo chương để tiện đọc và tra.",
+    "talks": "Bài giảng",
+    "talksDesc": "Pháp thoại audio và video.",
+    "calendar": "Phật lịch",
+    "calendarDesc": "Ngày rằm, mùng một và các ngày vía trong tháng.",
+    "viewAll": "Xem tất cả",
+    "sutrasEyebrow": "Kinh, luật, luận",
+    "sutrasDesc2": "Đọc theo chương, giữ nguyên bản dịch và ghi rõ xuất xứ.",
+    "talksEyebrow": "Nghe và xem",
+    "talksDesc2": "Mỗi bài đều kèm toàn văn để tiện đối chiếu và tra cứu.",
+    "browseBy": "Duyệt theo",
+    "categories": "Chuyên mục"
+  },
+  "search": {
+    "title": "Tìm kiếm",
+    "placeholder": "Nhập từ khoá…",
+    "submit": "Tìm",
+    "resultsFor": "Kết quả cho",
+    "found": "kết quả",
+    "empty": "Không tìm thấy nội dung nào khớp với từ khoá này.",
+    "prompt": "Nhập từ khoá để tìm trong bài viết, kinh sách và bài giảng."
+  },
+  "account": {
+    "eyebrow": "Khu vực cá nhân",
+    "title": "Tài khoản",
+    "description": "Đăng nhập để lưu bài, đánh dấu tiến độ nghe và đồng bộ giữa các thiết bị.",
+    "signIn": "Đăng nhập"
+  },
+  "calendar": {
+    "title": "Phật lịch",
+    "today": "Hôm nay",
+    "fullMoon": "Rằm",
+    "newMoon": "Mùng một",
+    "leapMonth": "nhuận",
+    "eventKind": {
+      "via": "Ngày vía",
+      "le": "Ngày lễ",
+      "gio-to": "Giỗ tổ",
+      "bat-quan-trai": "Bát quan trai"
+    }
+  },
+  "media": {
+    "play": "Phát",
+    "pause": "Tạm dừng",
+    "transcript": "Lời thoại",
+    "duration": "Thời lượng"
+  },
+  "theme": {
+    "toggle": "Đổi giao diện sáng/tối",
+    "light": "Sáng",
+    "dark": "Tối"
+  },
+  "error": {
+    "title": "Có lỗi xảy ra",
+    "description": "Trang này không tải được. Thử lại sau ít phút.",
+    "retry": "Thử lại",
+    "notFoundTitle": "Không tìm thấy trang",
+    "notFoundDescription": "Trang bạn tìm không tồn tại hoặc đã được chuyển đi."
+  },
+  "list": {
+    "articlesDesc": "Pháp thoại, tuỳ bút và hỏi đáp Phật pháp, cập nhật thường xuyên.",
+    "sutrasDesc": "Kinh, luật, luận trình bày theo chương để tiện đọc và tra.",
+    "talksDesc": "Pháp thoại audio và video, kèm toàn văn.",
+    "emptyArticles": "Chưa có bài viết nào",
+    "emptySutras": "Chưa có kinh sách nào",
+    "emptyTalks": "Chưa có bài giảng nào"
+  }
+}

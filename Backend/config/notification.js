@@ -39,6 +39,12 @@ module.exports.notification = {
                 messageVNI: "Thành công"
             }
         },
+        notFound: {
+            message: {
+                messageEN: "Not found",
+                messageVNI: "Không tìm thấy"
+            }
+        },
         error: {
             message: {
                 messageEN: "Success",

@@ -49,6 +49,7 @@ export const tags = {
   contentByType: (type: ContentType) => `content-type:${type}`,
   categories: "categories",
   calendar: "calendar",
+  settings: "settings",
 } as const;
 
 class ApiError extends Error {
@@ -214,6 +215,12 @@ export type SiteSettings = {
   supportphonenumber?: string;
   supportfacebook?: string;
   isMaintaning?: boolean;
+  /**
+   * Màu quản trị viên đặt, dạng { accent: "#8a6414", ... }. Khoá lạ và giá
+   * trị không phải hex bị bỏ qua ở lib/theme.ts, nên kiểu ở đây để lỏng.
+   */
+  theme?: Record<string, unknown>;
+  themeDark?: Record<string, unknown>;
 };
 
 export async function getSiteSettings(): Promise<SiteSettings | null> {
@@ -222,6 +229,11 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   try {
     return await get("/v1/public/settings", (raw) => raw as SiteSettings, {
       revalidate: revalidate.home,
+      // Có tag để admin đổi màu / đổi thông báo là làm mới được ngay qua
+      // webhook, thay vì chờ hết 5 phút ISR. Quan trọng vì layout dùng dữ
+      // liệu này, nên nếu chờ theo ISR thì mỗi trang đổi màu vào một lúc
+      // khác nhau - trang chi tiết mất tới 1 giờ.
+      tags: [tags.settings],
     });
   } catch {
     // Cấu hình phụ trợ: hỏng thì trang vẫn phải lên, chỉ mất banner.

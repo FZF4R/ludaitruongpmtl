@@ -1,14 +1,43 @@
 import type { Metadata } from "next";
-import { site, contentTypeBase, contentTypeLabel } from "@/lib/site";
+import { site, contentTypeBase } from "@/lib/site";
+import { defaultLocale, localePath, localeTags, locales, type Locale } from "@/lib/i18n";
+import { getLocale } from "@/lib/dictionary";
 import type { Content, ContentSummary } from "@/lib/schema";
+
+/**
+ * Canonical + hreflang cho một trang, tính theo ngôn ngữ đang xem.
+ *
+ * Phải dùng ở MỌI trang tự đặt `alternates`: metadata của trang con ghi đè
+ * hoàn toàn `alternates` của layout, nên nếu trang chỉ đặt canonical thì bộ
+ * hreflang của layout biến mất và canonical lại trỏ về bản tiếng Việt — hai
+ * lỗi SEO cùng lúc, và không lỗi nào lộ ra khi xem trang bằng mắt.
+ *
+ * `path` là đường dẫn KHÔNG tiền tố, ví dụ "/bai-viet".
+ */
+export async function i18nAlternates(path: string) {
+  const locale = await getLocale();
+  const languages: Record<string, string> = {};
+
+  for (const item of locales) {
+    languages[localeTags[item]] = localePath(item, path);
+  }
+  languages["x-default"] = localePath(defaultLocale, path);
+
+  return { canonical: localePath(locale, path), languages };
+}
 
 export function absoluteUrl(path: string): string {
   return new URL(path, site.url).toString();
 }
 
 /** Đường dẫn công khai của một mục nội dung. */
-export function contentHref(c: Pick<ContentSummary, "type" | "slug">): string {
-  return `${contentTypeBase[c.type]}/${c.slug}`;
+export function contentHref(
+  c: Pick<ContentSummary, "type" | "slug">,
+  locale?: Locale,
+): string {
+  const path = `${contentTypeBase[c.type]}/${c.slug}`;
+
+  return locale ? localePath(locale, path) : path;
 }
 
 /**
@@ -131,7 +160,7 @@ export function contentJsonLd(c: Content): JsonLd {
       return {
         ...base,
         "@type": "Article",
-        articleSection: c.categories[0]?.name ?? contentTypeLabel[c.type],
+        articleSection: c.categories[0]?.name ?? c.type,
         wordCount: undefined,
         mainEntityOfPage: { "@type": "WebPage", "@id": url },
       };

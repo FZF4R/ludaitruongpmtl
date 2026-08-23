@@ -9,6 +9,31 @@ import { mainNav, site } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/primitives";
 import { ThemeToggle } from "@/components/layout/theme";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { localePath, splitLocale } from "@/lib/i18n";
+
+/**
+ * Header là Client Component (menu mobile có state) nên không đọc được
+ * next/root-params. Chuỗi đã dịch truyền xuống từ layout, còn ngôn ngữ hiện
+ * tại suy ra từ đường dẫn — usePathname trả về URL người dùng thấy trên thanh
+ * địa chỉ, tức là đã có sẵn tiền tố (hoặc không, với tiếng Việt).
+ */
+type NavDict = {
+  mainLabel: string;
+  homeAria: string;
+  search: string;
+  account: string;
+  openMenu: string;
+  closeMenu: string;
+  articles: string;
+  articlesHint: string;
+  sutras: string;
+  sutrasHint: string;
+  talks: string;
+  talksHint: string;
+  calendar: string;
+  calendarHint: string;
+};
 
 function Lotus({ className }: { className?: string }) {
   return (
@@ -24,23 +49,33 @@ function Lotus({ className }: { className?: string }) {
   );
 }
 
-export function SiteHeader() {
+export function SiteHeader({
+  dict,
+  language,
+}: {
+  dict: NavDict;
+  language: { label: string; choose: string };
+}) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
 
   // Đóng menu khi điều hướng sang trang khác.
   React.useEffect(() => setOpen(false), [pathname]);
 
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+  const { locale, path } = splitLocale(pathname);
+  const lp = (href: string) => localePath(locale, href);
+
+  // So khớp trên đường dẫn ĐÃ bỏ tiền tố, nếu không thì ở /en/... không mục
+  // nào được đánh dấu đang xem.
+  const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-paper/85 backdrop-blur-sm">
       <Container className="flex h-16 items-center gap-4">
         <Link
-          href="/"
+          href={lp("/")}
           className="flex items-center gap-2.5 text-ink"
-          aria-label={`${site.name} — trang chủ`}
+          aria-label={`${site.name} — ${dict.homeAria}`}
         >
           <Lotus className="size-7 text-accent" />
           <span className="font-serif text-lg font-bold tracking-tight">
@@ -48,11 +83,11 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav className="ml-4 hidden items-center gap-1 md:flex" aria-label="Chính">
+        <nav className="ml-4 hidden items-center gap-1 md:flex" aria-label={dict.mainLabel}>
           {mainNav.map((item) => (
             <Link
               key={item.href}
-              href={item.href}
+              href={lp(item.href)}
               aria-current={isActive(item.href) ? "page" : undefined}
               className={cn(
                 "rounded-md px-3 py-2 text-sm font-medium transition-colors",
@@ -61,20 +96,21 @@ export function SiteHeader() {
                   : "text-body hover:bg-surface-2 hover:text-ink",
               )}
             >
-              {item.label}
+              {dict[item.key]}
             </Link>
           ))}
         </nav>
 
         <div className="ml-auto flex items-center gap-1">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/tim-kiem" aria-label="Tìm kiếm">
+            <Link href={lp("/tim-kiem")} aria-label={dict.search}>
               <Search />
             </Link>
           </Button>
           <ThemeToggle />
+          <LanguageSwitcher label={language.label} chooseLabel={language.choose} />
           <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
-            <Link href="/tai-khoan">Tài khoản</Link>
+            <Link href={lp("/tai-khoan")}>{dict.account}</Link>
           </Button>
           <Button
             variant="ghost"
@@ -83,7 +119,7 @@ export function SiteHeader() {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="menu-mobile"
-            aria-label={open ? "Đóng menu" : "Mở menu"}
+            aria-label={open ? dict.closeMenu : dict.openMenu}
           >
             {open ? <X /> : <Menu />}
           </Button>
@@ -96,20 +132,20 @@ export function SiteHeader() {
             {mainNav.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={lp(item.href)}
                 className="flex flex-col gap-0.5 rounded-md px-3 py-3 hover:bg-surface-2"
               >
-                <span className="font-medium text-ink">{item.label}</span>
-                {item.hint ? (
-                  <span className="text-xs text-muted">{item.hint}</span>
-                ) : null}
+                <span className="font-medium text-ink">{dict[item.key]}</span>
+                <span className="text-xs text-muted">
+                  {dict[`${item.key}Hint` as keyof NavDict]}
+                </span>
               </Link>
             ))}
             <Link
-              href="/tai-khoan"
+              href={lp("/tai-khoan")}
               className="rounded-md px-3 py-3 font-medium text-ink hover:bg-surface-2 sm:hidden"
             >
-              Tài khoản
+              {dict.account}
             </Link>
           </Container>
         </div>

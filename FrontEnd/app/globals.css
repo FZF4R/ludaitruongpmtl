@@ -5,70 +5,15 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ------------------------------------------------------------------
-   Bảng màu: men ngọc (celadon) thời Lý - Trần trên nền mực.
-   Neutral lệch nhẹ về xanh để không bị "xám máy tính".
+   Màu KHÔNG khai ở đây.
+
+   Bảng màu mặc định nằm ở lib/theme.ts, và layout dựng khối
+   `:root { --paper: ...; }` từ đó rồi chèn vào <head> lúc render trên
+   server. Lý do: quản trị viên đổi được màu qua /v1/public/settings, nên
+   nếu tệp này cũng khai màu thì có hai nguồn và chúng sẽ lệch nhau.
+
+   Các biến bên dưới chỉ ÁNH XẠ sang tên lớp Tailwind, không đặt giá trị.
    ------------------------------------------------------------------ */
-:root {
-  --paper: #f2f5f1;
-  --surface: #ffffff;
-  --surface-2: #e8eee9;
-  --ink: #16201b;
-  --body: #2c3a33;
-  --muted: #65746c;
-  --line: #d3dcd4;
-  --line-strong: #b4c2b7;
-  --accent: #3f7358;
-  --accent-hover: #33604a;
-  --accent-soft: #e1ede5;
-  --lacquer: #a6402f;
-  --brass: #8e7028;
-  --brass-soft: #f1ead5;
-  --ring: #3f7358;
-}
-
-/*
- * next-themes gắn class .light hoặc .dark lên <html> sau khi script chạy.
- * Khối media này lo trường hợp chưa có class nào: JavaScript bị chặn,
- * hoặc khoảnh khắc trước khi script kịp chạy. Loại trừ .light để lựa
- * chọn sáng của người dùng vẫn thắng khi hệ điều hành đang ở chế độ tối.
- */
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --paper: #101713;
-    --surface: #17201b;
-    --surface-2: #1e2923;
-    --ink: #e9f1ea;
-    --body: #c0cec5;
-    --muted: #8a9990;
-    --line: #28352e;
-    --line-strong: #3a4b41;
-    --accent: #7fb394;
-    --accent-hover: #97c6a9;
-    --accent-soft: #1d2e25;
-    --lacquer: #e4907e;
-    --brass: #d5b466;
-    --brass-soft: #2a2418;
-    --ring: #7fb394;
-  }
-}
-
-.dark {
-  --paper: #101713;
-  --surface: #17201b;
-  --surface-2: #1e2923;
-  --ink: #e9f1ea;
-  --body: #c0cec5;
-  --muted: #8a9990;
-  --line: #28352e;
-  --line-strong: #3a4b41;
-  --accent: #7fb394;
-  --accent-hover: #97c6a9;
-  --accent-soft: #1d2e25;
-  --lacquer: #e4907e;
-  --brass: #d5b466;
-  --brass-soft: #2a2418;
-  --ring: #7fb394;
-}
 
 @theme inline {
   --color-paper: var(--paper);

@@ -16,6 +16,16 @@ module.exports.routes = {
     'GET  /v1/public/settings': 'System.Public.PublicController.getSettings',
     'GET  /v1/public/settings/warning': 'System.Public.PublicController.getSystemWarning',
 
+    //==== Noi dung (khong can dang nhap) =====
+    // '/content/list' PHAI dung truoc '/content/:slug', neu khong thi chuoi
+    // 'list' se roi vao :slug va khong bao gio goi duoc danh sach.
+    'GET  /v1/public/content/list': 'System.Public.ContentController.listContent',
+    'GET  /v1/public/content/:slug': 'System.Public.ContentController.getContentBySlug',
+    'GET  /v1/public/search': 'System.Public.ContentController.search',
+    'GET  /v1/public/category/tree': 'System.Public.ContentController.categoryTree',
+    'GET  /v1/public/calendar': 'System.Public.ContentController.calendar',
+    'GET  /v1/public/slugs': 'System.Public.ContentController.slugs',
+
     //==== Auth =====
     'POST /v1/user/login': 'System.Users.UsersController.login',
     'POST /v1/user/login/google': 'System.Users.UsersController.loginGoogle',

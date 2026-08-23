@@ -45,6 +45,10 @@ module.exports = {
         },
         role: {
             type: "string",
+            // Danh sách lấy từ config/roles.js - sửa ở một chỗ thì sửa cả hai.
+            // Waterline chỉ kiểm isIn lúc ghi nên dữ liệu cũ không bị chặn;
+            // cũng không cần chặn, vì roles.can() coi vai trò lạ là không có quyền gì.
+            isIn: ['User', 'Partner', 'Moderator', 'Manager', 'Admin'],
             defaultsTo: "User"
         },
         is2FAEnabled: {

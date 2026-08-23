@@ -9,6 +9,9 @@ import { tags } from "@/lib/api";
  *   x-revalidate-secret: <REVALIDATE_SECRET>
  *   { "slug": "kinh-phap-cu", "type": "sutra" }
  *
+ * Đổi màu hoặc thông báo trong trang quản trị thì gọi:
+ *   { "settings": true }
+ *
  * Không có webhook này thì bài mới phải chờ hết hạn ISR (tới 1 giờ)
  * mới xuất hiện — admin sẽ tưởng là hệ thống hỏng.
  *
@@ -30,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Sai secret." }, { status: 401 });
   }
 
-  let body: { slug?: string; type?: string } = {};
+  let body: { slug?: string; type?: string; settings?: boolean } = {};
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -49,6 +52,13 @@ export async function POST(request: Request) {
   if (body.type) {
     revalidateTag(`content-type:${body.type}`, "max");
     invalidated.push(`content-type:${body.type}`);
+  }
+
+  // Gọi với { "settings": true } sau khi admin đổi màu hoặc đổi thông báo.
+  // Layout đọc cấu hình này nên nó ảnh hưởng MỌI trang, không riêng trang nào.
+  if (body.settings) {
+    revalidateTag(tags.settings, "max");
+    invalidated.push(tags.settings);
   }
 
   return NextResponse.json({ revalidated: invalidated, at: Date.now() });
