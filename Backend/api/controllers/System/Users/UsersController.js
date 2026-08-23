@@ -22,6 +22,29 @@ function getClientIp(req) {
     return req.ip;
 }
 
+/**
+ * Hồ sơ trả về cho FrontEnd: gộp phần đăng nhập (Users) với phần khai báo
+ * (UserProfile) để màn hình tài khoản chỉ phải gọi một endpoint.
+ *
+ * `isNewUser` là thứ FrontEnd dựa vào để đẩy người mới sang /hoan-thien-ho-so.
+ * Nó suy ra từ cờ profileCompleted chứ không phải từ "tài khoản vừa được tạo":
+ * người bỏ dở form giữa chừng vẫn phải được hỏi lại ở lần đăng nhập sau.
+ */
+function dinhDangHoSo(user, profile) {
+    return {
+        isNewUser: !user.profileCompleted,
+        profileCompleted: !!user.profileCompleted,
+        username: user.username || '',
+        email: user.email || '',
+        role: user.role || 'User',
+        fullName: (profile && profile.fullName) || user.fullName || '',
+        dharmaName: (profile && profile.dharmaName) || '',
+        nickname: (profile && profile.nickname) || '',
+        hometown: (profile && profile.hometown) || {},
+        survey: (profile && profile.survey) || {}
+    }
+}
+
 async function completeSocialLogin(verifyResult, exits) {
     if (!verifyResult.success) {
         sails.checkErrorOutput({
@@ -41,6 +64,9 @@ async function completeSocialLogin(verifyResult, exits) {
 
         delete response.userDetail.password;
         response = Object.assign(tokenResult, response);
+        // Tài khoản Google/Facebook mới tạo chưa có hồ sơ -> FrontEnd chuyển
+        // thẳng sang form khai báo thay vì thả người dùng về trang chủ.
+        response.isNewUser = !userDetail.profileCompleted;
 
         if (response.userDetail.is2FAEnabled) {
             exits.successRequest({
@@ -182,6 +208,7 @@ module.exports = {
             }).then(async (result) => {
                 delete response.userDetail.password
                 response = Object.assign(result, response);
+                response.isNewUser = !response.userDetail.profileCompleted;
                 if (response.userDetail.is2FAEnabled) {
                   exits.successRequest({
                     message: 'loginSucess',
@@ -301,6 +328,7 @@ module.exports = {
                 .then(async (result) => {
                     delete response.userDetail.password;
                     response.userDetail.is2FAEnabled = true;
+                    response.isNewUser = !userInfo.profileCompleted;
                     await sails.dataProcess.updateDocument(Users,{ condition: { id: userInfo.id }, updateObject: { is2FAEnabled: true } });
                     response = Object.assign(result, response)
                     exits.successRequest({
@@ -317,6 +345,100 @@ module.exports = {
                 })
         }
     }),
+    /**
+     * Hồ sơ Phật tử của người đang đăng nhập.
+     * Chưa điền thì trả về khung rỗng kèm isNewUser = true, KHÔNG trả 404:
+     * FrontEnd luôn cần biết phải hiện form hay hiện thông tin.
+     */
+    getProfile: ({
+        inputs: sails.config.inputs.Users.getProfile,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            let { User } = inputs;
+            try {
+                let profile = await sails.dataProcess.findOne(UserProfile, {
+                    condition: { userId: String(User.id) }
+                });
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: dinhDangHoSo(User, profile)
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    /**
+     * Lưu hồ sơ + khảo sát, và bật cờ Users.profileCompleted.
+     *
+     * Dùng cho cả lần khai đầu tiên lẫn các lần sửa sau này, nên phải ghi đè
+     * chứ không cộng dồn: bỏ chọn một mục ở form thì mục đó phải mất khỏi CSDL.
+     */
+    saveProfile: ({
+        inputs: sails.config.inputs.Users.saveProfile,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            let { User } = inputs;
+            let { chuoiNgan, locQueQuan, locKhaoSat } = sails.config.survey;
+
+            let hoTen = chuoiNgan(inputs.fullName, 80);
+            if (!hoTen) {
+                exits.successRequest({
+                    messageNode: 'Users',
+                    message: 'profileNameRequired'
+                });
+                return;
+            }
+
+            let banGhi = {
+                fullName: hoTen,
+                dharmaName: chuoiNgan(inputs.dharmaName, 80),
+                nickname: chuoiNgan(inputs.nickname, 40),
+                hometown: locQueQuan(inputs.hometown),
+                survey: locKhaoSat(inputs.survey)
+            };
+
+            try {
+                let userId = String(User.id);
+                let hienCo = await sails.dataProcess.findOne(UserProfile, { condition: { userId } });
+                let hoSo;
+
+                if (hienCo) {
+                    hoSo = await sails.dataProcess.updateDocument(UserProfile, {
+                        condition: { id: hienCo.id },
+                        updateObject: banGhi
+                    });
+                } else {
+                    hoSo = await sails.dataProcess.createDocument(
+                        UserProfile,
+                        Object.assign({ userId, completedAt: Date.now() }, banGhi)
+                    );
+                }
+
+                // Chép hai trường sang Users để trang quản trị và các màn hình
+                // cũ không phải biết tới bảng UserProfile mới.
+                let capNhatUser = { fullName: hoTen, profileCompleted: true };
+                if (banGhi.survey.gender) capNhatUser.gender = banGhi.survey.gender;
+
+                await sails.dataProcess.updateDocument(Users, {
+                    condition: { id: userId },
+                    updateObject: capNhatUser
+                });
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: dinhDangHoSo(Object.assign({}, User, capNhatUser), hoSo)
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
     getUserInfo: ({
         inputs: sails.config.inputs.Users.getUserInfo,
         exits: sails.config.responseType,

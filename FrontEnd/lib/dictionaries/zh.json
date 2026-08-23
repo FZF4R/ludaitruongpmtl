@@ -19,7 +19,21 @@
     "talksHint": "音频与视频",
     "calendar": "佛历",
     "calendarHint": "农历、圣诞日、十五",
-    "skipToContent": "跳到主要内容"
+    "skipToContent": "跳到主要内容",
+    "practice": "修行",
+    "practiceHint": "禅定、诵念、日常课诵",
+    "library": "图书馆",
+    "libraryHint": "资料、图片、下载",
+    "journey": "修行历程",
+    "journeyHint": "记录自己的修行之路",
+    "about": "关于我们",
+    "aboutHint": "编辑部与联系方式",
+    "meditation": "禅定",
+    "chanting": "诵经",
+    "recitation": "念佛",
+    "woodenFish": "木鱼",
+    "mala": "念珠",
+    "prayers": "祈福 / 超度"
   },
   "footer": {
     "content": "内容",
@@ -90,6 +104,131 @@
     "description": "登录后可收藏文章、记录收听进度，并在多台设备间同步。",
     "signIn": "登录"
   },
+  "auth": {
+    "eyebrow": "个人中心",
+    "title": "登录",
+    "description": "使用 Google 或 Facebook 登录，即可收藏文章、记录修行历程，并在各设备间同步。",
+    "google": "使用 Google 继续",
+    "facebook": "使用 Facebook 继续",
+    "connecting": "正在连接…",
+    "notConfigured": "尚未设置社交账号登录。",
+    "failed": "登录失败，请重试。",
+    "cancelled": "您已取消登录。",
+    "needTwoFactor": "此账号启用了两步验证，本页面暂不支持。",
+    "privacy": "我们仅使用您的姓名与邮箱来建立个人资料。",
+    "signOut": "退出登录",
+    "signedInAs": "当前登录",
+    "editProfile": "编辑资料",
+    "loading": "加载中…",
+    "signInPrompt": "您尚未登录。",
+    "profileTitle": "您的资料",
+    "notFilled": "未填写"
+  },
+  "onboarding": {
+    "eyebrow": "最后一步",
+    "title": "完善个人资料",
+    "description": "简单介绍一下自己，我们好推荐更贴合您修行的经文与功课。",
+    "sectionProfile": "关于您",
+    "sectionProfileDesc": "只有姓名为必填。",
+    "sectionSurvey": "您的修行",
+    "sectionSurveyDesc": "以下问题均可跳过，按实际情况填写即可。",
+    "fullName": "姓名",
+    "dharmaName": "法名",
+    "dharmaNameHint": "皈依时所受的名号",
+    "nickname": "昵称",
+    "nicknameHint": "希望在本站被称呼的名字",
+    "hometown": "籍贯",
+    "province": "省 / 直辖市",
+    "addressDetail": "详细信息",
+    "addressDetailHint": "村、屯、街道 — 可不填",
+    "choose": "— 请选择 —",
+    "cityGroup": "中央直辖市",
+    "provinceGroup": "省",
+    "optional": "选填",
+    "multiHint": "可多选",
+    "vegDays": "每月吃素天数",
+    "submit": "保存并开始",
+    "saving": "正在保存…",
+    "nameRequired": "请填写姓名。",
+    "error": "保存失败，请重试。",
+    "skip": "稍后再说",
+    "signInFirst": "请先登录。",
+    "questions": {
+      "ageGroup": "年龄",
+      "gender": "性别",
+      "refuge": "是否已皈依三宝？",
+      "practices": "主修法门",
+      "frequency": "修行频率",
+      "duration": "每座时长",
+      "diet": "素食情况",
+      "goals": "修行目标",
+      "obstacles": "目前的障碍"
+    },
+    "options": {
+      "ageGroup": {
+        "under18": "18 岁以下",
+        "18-30": "18 – 30 岁",
+        "31-45": "31 – 45 岁",
+        "46-60": "46 – 60 岁",
+        "over60": "60 岁以上"
+      },
+      "gender": {
+        "male": "男",
+        "female": "女",
+        "other": "不便透露"
+      },
+      "refuge": {
+        "yes": "已皈依",
+        "no": "尚未皈依",
+        "planning": "有此打算"
+      },
+      "practices": {
+        "meditation": "坐禅",
+        "recitation": "念佛",
+        "mantra": "持咒",
+        "sutra": "诵经",
+        "prostration": "礼佛"
+      },
+      "frequency": {
+        "daily": "每天",
+        "weekly": "每周",
+        "lunarDays": "初一、十五、三十",
+        "occasional": "偶尔"
+      },
+      "duration": {
+        "m15": "约 15 分钟",
+        "m30": "约 30 分钟",
+        "m60": "约 1 小时",
+        "m90": "1 个半小时以上"
+      },
+      "diet": {
+        "none": "尚未吃素",
+        "periodic": "花斋（定期吃素）",
+        "full": "长斋"
+      },
+      "vegDays": {
+        "2": "2 天（初一、十五）",
+        "4": "4 天",
+        "6": "6 天",
+        "8": "8 天",
+        "10": "10 天",
+        "15": "15 天"
+      },
+      "goals": {
+        "peace": "寻求内心安宁",
+        "stress": "缓解压力",
+        "family": "为家人祈求健康平安",
+        "liberation": "趣向解脱、觉悟"
+      },
+      "obstacles": {
+        "time": "时间不够",
+        "community": "缺少共修的环境",
+        "teacher": "尚未找到合适的师父",
+        "family": "家人尚不支持",
+        "doctrine": "对教理还不够了解"
+      }
+    }
+  },
   "calendar": {
     "title": "佛历",
     "today": "今天",
@@ -128,5 +267,9 @@
     "emptyArticles": "暂无文章",
     "emptySutras": "暂无经书",
     "emptyTalks": "暂无开示"
+  },
+  "comingSoon": {
+    "title": "建设中",
+    "body": "此栏目尚未开放。内容正在整理，稍后上线。"
   }
 }

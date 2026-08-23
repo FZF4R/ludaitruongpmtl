@@ -116,6 +116,9 @@ module.exports.notificationEn = {
         oauthUsernameConflict: {
             message: "Cannot create an account name for you, please register manually"
         },
+        profileNameRequired: {
+            message: "Full name is required"
+        },
         wrongPassword: {
             message: "Wrong Password"
         },

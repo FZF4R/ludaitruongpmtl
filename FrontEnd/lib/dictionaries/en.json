@@ -19,7 +19,21 @@
     "talksHint": "Audio and video",
     "calendar": "Lunar calendar",
     "calendarHint": "Lunar dates, observance days, full moons",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "practice": "Practice",
+    "practiceHint": "Meditation, chanting, daily observance",
+    "library": "Library",
+    "libraryHint": "Reference material, images, downloads",
+    "journey": "Practice journal",
+    "journeyHint": "Keep a record of your own path",
+    "about": "About us",
+    "aboutHint": "The editors and how to reach us",
+    "meditation": "Meditation",
+    "chanting": "Sutra chanting",
+    "recitation": "Buddha recitation",
+    "woodenFish": "Wooden fish",
+    "mala": "Prayer beads",
+    "prayers": "Blessing & memorial"
   },
   "footer": {
     "content": "Content",
@@ -90,6 +104,131 @@
     "description": "Sign in to save readings, keep your listening progress, and sync across devices.",
     "signIn": "Sign in"
   },
+  "auth": {
+    "eyebrow": "Your account",
+    "title": "Sign in",
+    "description": "Sign in with Google or Facebook to save readings, keep a record of your practice and sync across devices.",
+    "google": "Continue with Google",
+    "facebook": "Continue with Facebook",
+    "connecting": "Connecting…",
+    "notConfigured": "Social sign-in has not been set up yet.",
+    "failed": "Sign-in failed. Please try again.",
+    "cancelled": "You cancelled the sign-in.",
+    "needTwoFactor": "This account uses two-factor authentication, which this screen does not support yet.",
+    "privacy": "We only use your name and email address to create your profile.",
+    "signOut": "Sign out",
+    "signedInAs": "Signed in as",
+    "editProfile": "Edit profile",
+    "loading": "Loading…",
+    "signInPrompt": "You are not signed in.",
+    "profileTitle": "Your profile",
+    "notFilled": "Not given"
+  },
+  "onboarding": {
+    "eyebrow": "One more step",
+    "title": "Complete your profile",
+    "description": "Tell us a little about yourself so the readings and practice sessions we suggest fit your path.",
+    "sectionProfile": "About you",
+    "sectionProfileDesc": "Only your full name is required.",
+    "sectionSurvey": "Your practice",
+    "sectionSurveyDesc": "Every question is optional — answer what feels right.",
+    "fullName": "Full name",
+    "dharmaName": "Dharma name",
+    "dharmaNameHint": "The name you received when taking refuge",
+    "nickname": "Nickname",
+    "nicknameHint": "What you would like to be called on this site",
+    "hometown": "Hometown",
+    "province": "Province / city",
+    "addressDetail": "Further details",
+    "addressDetailHint": "Village, hamlet, street — optional",
+    "choose": "— Select —",
+    "cityGroup": "Centrally governed cities",
+    "provinceGroup": "Provinces",
+    "optional": "optional",
+    "multiHint": "choose as many as apply",
+    "vegDays": "Vegetarian days per month",
+    "submit": "Save and continue",
+    "saving": "Saving…",
+    "nameRequired": "Please enter your full name.",
+    "error": "Could not save. Please try again.",
+    "skip": "Skip for now",
+    "signInFirst": "Please sign in first.",
+    "questions": {
+      "ageGroup": "Age",
+      "gender": "Gender",
+      "refuge": "Have you taken refuge in the Three Jewels?",
+      "practices": "Main practice",
+      "frequency": "How often do you practise?",
+      "duration": "Length of each session",
+      "diet": "Vegetarian diet",
+      "goals": "What are you seeking?",
+      "obstacles": "What gets in the way?"
+    },
+    "options": {
+      "ageGroup": {
+        "under18": "Under 18",
+        "18-30": "18 – 30",
+        "31-45": "31 – 45",
+        "46-60": "46 – 60",
+        "over60": "Over 60"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Prefer not to say"
+      },
+      "refuge": {
+        "yes": "Yes",
+        "no": "Not yet",
+        "planning": "I plan to"
+      },
+      "practices": {
+        "meditation": "Seated meditation",
+        "recitation": "Reciting the Buddha's name",
+        "mantra": "Mantra recitation",
+        "sutra": "Chanting sutras",
+        "prostration": "Prostrations"
+      },
+      "frequency": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "lunarDays": "Full-moon and new-moon days",
+        "occasional": "Now and then"
+      },
+      "duration": {
+        "m15": "About 15 minutes",
+        "m30": "About 30 minutes",
+        "m60": "About an hour",
+        "m90": "More than 90 minutes"
+      },
+      "diet": {
+        "none": "Not vegetarian yet",
+        "periodic": "Vegetarian on set days",
+        "full": "Fully vegetarian"
+      },
+      "vegDays": {
+        "2": "2 days (new moon and full moon)",
+        "4": "4 days",
+        "6": "6 days",
+        "8": "8 days",
+        "10": "10 days",
+        "15": "15 days"
+      },
+      "goals": {
+        "peace": "Inner peace",
+        "stress": "Relief from stress",
+        "family": "Health and safety for my family",
+        "liberation": "Liberation and awakening"
+      },
+      "obstacles": {
+        "time": "Not enough time",
+        "community": "No group to practise with",
+        "teacher": "Haven't found the right teacher",
+        "family": "My family isn't supportive",
+        "doctrine": "I don't understand the teachings well enough"
+      }
+    }
+  },
   "calendar": {
     "title": "Lunar calendar",
     "today": "Today",
@@ -128,5 +267,9 @@
     "emptyArticles": "No articles yet",
     "emptySutras": "No sutras yet",
     "emptyTalks": "No talks yet"
+  },
+  "comingSoon": {
+    "title": "Coming soon",
+    "body": "This section is not open yet. We are preparing the content and will launch it soon."
   }
 }

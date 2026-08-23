@@ -116,6 +116,9 @@ module.exports.notificationVi = {
         oauthUsernameConflict: {
             message: "Không tạo được tên tài khoản, vui lòng đăng ký thủ công"
         },
+        profileNameRequired: {
+            message: "Vui lòng nhập họ tên"
+        },
         wrongPassword: {
             message: "Sai mật khẩu"
         },

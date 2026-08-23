@@ -35,6 +35,9 @@ module.exports.routes = {
 
     //==== User (yeu cau token) =====
     'GET  /v1/user/detail': 'System.Users.UsersController.getUserInfo',
+    // Ho so Phat tu + khao sat tu tap, dien sau lan dang nhap dau tien.
+    'GET  /v1/user/profile': 'System.Users.UsersController.getProfile',
+    'POST /v1/user/profile': 'System.Users.UsersController.saveProfile',
     'POST /v1/user/updateinfo': 'System.Users.UsersController.updateinfo',
     'POST /v1/user/updatepassword': 'System.Users.UsersController.updatepassword',
     'POST /v1/user/avatar': 'System.Users.UsersController.uploadAvatar',

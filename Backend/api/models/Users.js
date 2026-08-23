@@ -62,6 +62,21 @@ module.exports = {
         facebookId: {
             type: "string",
             defaultsTo: ""
+        },
+        /**
+         * Đã điền xong hồ sơ Phật tử (bảng UserProfile) hay chưa.
+         *
+         * Nằm ở đây chứ không suy ra từ việc "có bản ghi UserProfile không":
+         * policy userPolices đã đọc sẵn bản ghi Users cho mọi request có token,
+         * nên đọc cờ này không tốn thêm truy vấn nào. Tài khoản tạo bằng
+         * Google/Facebook mặc định false -> FrontEnd đẩy thẳng vào form khảo sát.
+         *
+         * Bỏ dở form giữa chừng thì cờ vẫn false và lần đăng nhập sau lại hỏi
+         * tiếp - đúng ý đồ, chứ không phải lỗi.
+         */
+        profileCompleted: {
+            type: "boolean",
+            defaultsTo: false
         }
     },
     beforeCreate: async function(userAccount, proceed) {

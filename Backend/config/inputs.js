@@ -99,6 +99,36 @@ module.exports.inputs = {
                 "type": "string",
                 "required": true
             }
+        },
+        "getProfile": {
+            "User": {
+                "type": "json"
+            }
+        },
+        "saveProfile": {
+            "User": {
+                "type": "json"
+            },
+            "fullName": {
+                "type": "string",
+                "required": true
+            },
+            "dharmaName": {
+                "type": "string",
+                "defaultsTo": ""
+            },
+            "nickname": {
+                "type": "string",
+                "defaultsTo": ""
+            },
+            "hometown": {
+                "type": "json",
+                "defaultsTo": {}
+            },
+            "survey": {
+                "type": "json",
+                "defaultsTo": {}
+            }
         }
     },
     "Admin": {

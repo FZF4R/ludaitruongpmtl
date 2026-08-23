@@ -84,10 +84,14 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+/**
+ * Màu thanh địa chỉ trên di động. Phải khớp `paper` của lib/theme.ts, nếu
+ * không thì đỉnh màn hình là một vệt màu khác hẳn phần trang ngay bên dưới.
+ */
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f2f5f1" },
-    { media: "(prefers-color-scheme: dark)", color: "#101713" },
+    { media: "(prefers-color-scheme: light)", color: lightPalette.paper },
+    { media: "(prefers-color-scheme: dark)", color: darkPalette.paper },
   ],
 };
 

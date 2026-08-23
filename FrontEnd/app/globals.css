@@ -37,6 +37,49 @@
   --font-serif: var(--font-literata), Georgia, "Times New Roman", serif;
 
   --radius-card: 0.625rem;
+
+  /*
+    Bóng đổ: giá trị thật khai ở khối :root bên dưới vì nó đổi theo sáng/tối,
+    còn hai dòng này chỉ mở ra lớp `shadow-card` và `shadow-card-lift`.
+  */
+  --shadow-card: var(--card-shadow);
+  --shadow-card-lift: var(--card-shadow-lift);
+}
+
+/* ------------------------------------------------------------------
+   Bóng đổ của thẻ nội dung.
+
+   KHÔNG nằm trong lib/theme.ts vì tệp đó chỉ nhận mã hex (bộ lọc chống
+   tiêm CSS), mà bóng đổ là cả một chuỗi offset + blur + màu có alpha.
+   Quản trị viên cũng không chỉnh phần này.
+
+   Ba trạng thái giống hệt buildThemeCss: chọn sáng, chọn tối, và "theo
+   hệ thống" — khối @media lo khoảng thời gian trước khi next-themes kịp
+   gắn class lên <html>, và cả trường hợp người dùng chặn JavaScript.
+
+   Sáng: bóng ám nâu (74 56 20) chứ không phải đen trung tính, để không
+   đục một vệt xám lên nền xám vàng.
+   Tối: nền đã tối nên bóng ám nâu vô hình; dùng đen đậm alpha cao, viền
+   mới là thứ tách thẻ khỏi nền.
+   ------------------------------------------------------------------ */
+:root {
+  --card-shadow: 0 1px 2px rgb(74 56 20 / 0.05), 0 4px 12px -4px rgb(74 56 20 / 0.1);
+  --card-shadow-lift: 0 2px 4px rgb(74 56 20 / 0.07),
+    0 12px 26px -8px rgb(74 56 20 / 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --card-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 16px -6px rgb(0 0 0 / 0.5);
+    --card-shadow-lift: 0 2px 6px rgb(0 0 0 / 0.45),
+      0 16px 32px -10px rgb(0 0 0 / 0.6);
+  }
+}
+
+.dark {
+  --card-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 16px -6px rgb(0 0 0 / 0.5);
+  --card-shadow-lift: 0 2px 6px rgb(0 0 0 / 0.45),
+    0 16px 32px -10px rgb(0 0 0 / 0.6);
 }
 
 @layer base {

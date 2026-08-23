@@ -19,7 +19,21 @@
     "talksHint": "Audio và video",
     "calendar": "Phật lịch",
     "calendarHint": "Lịch âm, ngày vía, ngày rằm",
-    "skipToContent": "Bỏ qua phần đầu trang"
+    "skipToContent": "Bỏ qua phần đầu trang",
+    "practice": "Tu tập",
+    "practiceHint": "Thiền định, tụng niệm, nghi thức hằng ngày",
+    "library": "Thư viện",
+    "libraryHint": "Tư liệu, hình ảnh, tài liệu tải về",
+    "journey": "Quá trình tu tập",
+    "journeyHint": "Ghi lại đường tu của riêng bạn",
+    "about": "Về chúng tôi",
+    "aboutHint": "Ban biên tập và cách liên hệ",
+    "meditation": "Thiền định",
+    "chanting": "Tụng kinh",
+    "recitation": "Niệm Phật",
+    "woodenFish": "Gõ mõ",
+    "mala": "Lần chuỗi hạt",
+    "prayers": "Cầu an / Cầu siêu"
   },
   "footer": {
     "content": "Nội dung",
@@ -90,6 +104,131 @@
     "description": "Đăng nhập để lưu bài, đánh dấu tiến độ nghe và đồng bộ giữa các thiết bị.",
     "signIn": "Đăng nhập"
   },
+  "auth": {
+    "eyebrow": "Khu vực cá nhân",
+    "title": "Đăng nhập",
+    "description": "Đăng nhập bằng Google hoặc Facebook để lưu bài, ghi lại quá trình tu tập và đồng bộ giữa các thiết bị.",
+    "google": "Tiếp tục với Google",
+    "facebook": "Tiếp tục với Facebook",
+    "connecting": "Đang kết nối…",
+    "notConfigured": "Đăng nhập mạng xã hội chưa được cấu hình.",
+    "failed": "Đăng nhập không thành công. Vui lòng thử lại.",
+    "cancelled": "Bạn đã huỷ đăng nhập.",
+    "needTwoFactor": "Tài khoản này bật xác thực hai lớp, màn hình này chưa hỗ trợ.",
+    "privacy": "Chúng tôi chỉ dùng tên và email để lập hồ sơ cho bạn.",
+    "signOut": "Đăng xuất",
+    "signedInAs": "Đang đăng nhập",
+    "editProfile": "Sửa hồ sơ",
+    "loading": "Đang tải…",
+    "signInPrompt": "Bạn chưa đăng nhập.",
+    "profileTitle": "Hồ sơ của bạn",
+    "notFilled": "Chưa khai"
+  },
+  "onboarding": {
+    "eyebrow": "Bước cuối",
+    "title": "Hoàn thiện hồ sơ",
+    "description": "Cho chúng tôi biết đôi chút về bạn, để phần gợi ý bài đọc và thời khoá hợp với đường tu của bạn hơn.",
+    "sectionProfile": "Về bạn",
+    "sectionProfileDesc": "Chỉ họ tên là bắt buộc.",
+    "sectionSurvey": "Việc tu tập",
+    "sectionSurveyDesc": "Mọi câu đều có thể bỏ qua, trả lời tới đâu hay tới đó.",
+    "fullName": "Họ và tên",
+    "dharmaName": "Pháp danh",
+    "dharmaNameHint": "Tên được đặt khi quy y",
+    "nickname": "Biệt danh",
+    "nicknameHint": "Tên bạn muốn được gọi trên trang",
+    "hometown": "Quê quán",
+    "province": "Tỉnh / thành phố",
+    "addressDetail": "Chi tiết thêm",
+    "addressDetailHint": "Thôn, xóm, đường — không bắt buộc",
+    "choose": "— Chọn —",
+    "cityGroup": "Thành phố trực thuộc trung ương",
+    "provinceGroup": "Tỉnh",
+    "optional": "không bắt buộc",
+    "multiHint": "chọn được nhiều mục",
+    "vegDays": "Số ngày chay mỗi tháng",
+    "submit": "Lưu và bắt đầu",
+    "saving": "Đang lưu…",
+    "nameRequired": "Vui lòng nhập họ tên.",
+    "error": "Không lưu được, vui lòng thử lại.",
+    "skip": "Để sau",
+    "signInFirst": "Bạn cần đăng nhập trước.",
+    "questions": {
+      "ageGroup": "Độ tuổi",
+      "gender": "Giới tính",
+      "refuge": "Đã quy y Tam bảo chưa?",
+      "practices": "Pháp môn chính",
+      "frequency": "Tần suất tu tập",
+      "duration": "Thời lượng mỗi thời khoá",
+      "diet": "Chế độ ăn chay",
+      "goals": "Mục tiêu tu tập",
+      "obstacles": "Trở ngại hiện tại"
+    },
+    "options": {
+      "ageGroup": {
+        "under18": "Dưới 18 tuổi",
+        "18-30": "18 – 30 tuổi",
+        "31-45": "31 – 45 tuổi",
+        "46-60": "46 – 60 tuổi",
+        "over60": "Trên 60 tuổi"
+      },
+      "gender": {
+        "male": "Nam",
+        "female": "Nữ",
+        "other": "Không muốn nêu"
+      },
+      "refuge": {
+        "yes": "Đã quy y",
+        "no": "Chưa quy y",
+        "planning": "Đang có ý định"
+      },
+      "practices": {
+        "meditation": "Toạ thiền",
+        "recitation": "Niệm Phật",
+        "mantra": "Trì chú",
+        "sutra": "Tụng kinh",
+        "prostration": "Lạy Phật"
+      },
+      "frequency": {
+        "daily": "Hằng ngày",
+        "weekly": "Hằng tuần",
+        "lunarDays": "Ngày rằm, mùng một, 30",
+        "occasional": "Thỉnh thoảng"
+      },
+      "duration": {
+        "m15": "Khoảng 15 phút",
+        "m30": "Khoảng 30 phút",
+        "m60": "Khoảng 1 tiếng",
+        "m90": "Trên 1 tiếng rưỡi"
+      },
+      "diet": {
+        "none": "Chưa ăn chay",
+        "periodic": "Ăn chay kỳ",
+        "full": "Ăn chay trường"
+      },
+      "vegDays": {
+        "2": "2 ngày (mùng một, rằm)",
+        "4": "4 ngày",
+        "6": "6 ngày",
+        "8": "8 ngày",
+        "10": "10 ngày",
+        "15": "15 ngày"
+      },
+      "goals": {
+        "peace": "Tìm sự bình an nội tâm",
+        "stress": "Giải toả căng thẳng",
+        "family": "Cầu sức khoẻ, an lành cho gia đình",
+        "liberation": "Hướng đến giải thoát, giác ngộ"
+      },
+      "obstacles": {
+        "time": "Thiếu thời gian",
+        "community": "Thiếu môi trường tu tập chung",
+        "teacher": "Chưa tìm được Thầy hướng dẫn phù hợp",
+        "family": "Gia đình chưa ủng hộ",
+        "doctrine": "Chưa hiểu rõ giáo lý"
+      }
+    }
+  },
   "calendar": {
     "title": "Phật lịch",
     "today": "Hôm nay",
@@ -128,5 +267,9 @@
     "emptyArticles": "Chưa có bài viết nào",
     "emptySutras": "Chưa có kinh sách nào",
     "emptyTalks": "Chưa có bài giảng nào"
+  },
+  "comingSoon": {
+    "title": "Đang xây dựng",
+    "body": "Phần này chưa mở. Chúng tôi đang chuẩn bị nội dung và sẽ ra mắt trong thời gian tới."
   }
 }

@@ -19,7 +19,21 @@
     "talksHint": "오디오와 영상",
     "calendar": "불교 달력",
     "calendarHint": "음력, 재일, 보름",
-    "skipToContent": "본문으로 건너뛰기"
+    "skipToContent": "본문으로 건너뛰기",
+    "practice": "수행",
+    "practiceHint": "선정, 독송, 일상 의식",
+    "library": "도서관",
+    "libraryHint": "자료와 사진, 내려받기",
+    "journey": "수행 기록",
+    "journeyHint": "나만의 수행 길을 기록합니다",
+    "about": "소개",
+    "aboutHint": "편집진과 연락처",
+    "meditation": "선정",
+    "chanting": "독경",
+    "recitation": "염불",
+    "woodenFish": "목탁",
+    "mala": "염주",
+    "prayers": "기도 / 천도"
   },
   "footer": {
     "content": "콘텐츠",
@@ -90,6 +104,131 @@
     "description": "로그인하면 글을 저장하고 청취 진도를 기록하며 여러 기기에서 이어볼 수 있습니다.",
     "signIn": "로그인"
   },
+  "auth": {
+    "eyebrow": "내 계정",
+    "title": "로그인",
+    "description": "Google 또는 Facebook으로 로그인하면 글을 저장하고 수행 기록을 남기며 기기 간에 동기화할 수 있습니다.",
+    "google": "Google로 계속하기",
+    "facebook": "Facebook으로 계속하기",
+    "connecting": "연결 중…",
+    "notConfigured": "소셜 로그인이 아직 설정되지 않았습니다.",
+    "failed": "로그인하지 못했습니다. 다시 시도해 주세요.",
+    "cancelled": "로그인을 취소했습니다.",
+    "needTwoFactor": "이 계정은 2단계 인증을 사용하며 이 화면에서는 아직 지원하지 않습니다.",
+    "privacy": "이름과 이메일 주소는 프로필을 만드는 데에만 사용합니다.",
+    "signOut": "로그아웃",
+    "signedInAs": "로그인 계정",
+    "editProfile": "프로필 수정",
+    "loading": "불러오는 중…",
+    "signInPrompt": "로그인하지 않았습니다.",
+    "profileTitle": "내 프로필",
+    "notFilled": "미입력"
+  },
+  "onboarding": {
+    "eyebrow": "마지막 단계",
+    "title": "프로필 작성",
+    "description": "간단히 알려 주시면 수행에 맞는 경전과 시간표를 추천해 드립니다.",
+    "sectionProfile": "기본 정보",
+    "sectionProfileDesc": "이름만 필수입니다.",
+    "sectionSurvey": "수행 이야기",
+    "sectionSurveyDesc": "모두 선택 사항이니 편한 만큼만 답해 주세요.",
+    "fullName": "이름",
+    "dharmaName": "법명",
+    "dharmaNameHint": "삼보에 귀의할 때 받은 이름",
+    "nickname": "별명",
+    "nicknameHint": "이 사이트에서 불리고 싶은 이름",
+    "hometown": "고향",
+    "province": "도 · 직할시",
+    "addressDetail": "상세 정보",
+    "addressDetailHint": "마을, 거리 — 선택 사항",
+    "choose": "— 선택 —",
+    "cityGroup": "중앙 직할시",
+    "provinceGroup": "도",
+    "optional": "선택",
+    "multiHint": "여러 개 고를 수 있습니다",
+    "vegDays": "한 달 채식 일수",
+    "submit": "저장하고 시작하기",
+    "saving": "저장 중…",
+    "nameRequired": "이름을 입력해 주세요.",
+    "error": "저장하지 못했습니다. 다시 시도해 주세요.",
+    "skip": "나중에 하기",
+    "signInFirst": "먼저 로그인해 주세요.",
+    "questions": {
+      "ageGroup": "연령",
+      "gender": "성별",
+      "refuge": "삼보에 귀의하셨나요?",
+      "practices": "주된 수행",
+      "frequency": "수행 빈도",
+      "duration": "한 번에 하는 시간",
+      "diet": "채식",
+      "goals": "수행의 목표",
+      "obstacles": "지금의 어려움"
+    },
+    "options": {
+      "ageGroup": {
+        "under18": "18세 미만",
+        "18-30": "18 – 30세",
+        "31-45": "31 – 45세",
+        "46-60": "46 – 60세",
+        "over60": "60세 이상"
+      },
+      "gender": {
+        "male": "남성",
+        "female": "여성",
+        "other": "밝히고 싶지 않음"
+      },
+      "refuge": {
+        "yes": "귀의했습니다",
+        "no": "아직입니다",
+        "planning": "할 생각입니다"
+      },
+      "practices": {
+        "meditation": "좌선",
+        "recitation": "염불",
+        "mantra": "주력(진언)",
+        "sutra": "독경",
+        "prostration": "절"
+      },
+      "frequency": {
+        "daily": "매일",
+        "weekly": "매주",
+        "lunarDays": "보름 · 초하루 · 그믐",
+        "occasional": "가끔"
+      },
+      "duration": {
+        "m15": "15분 정도",
+        "m30": "30분 정도",
+        "m60": "1시간 정도",
+        "m90": "1시간 30분 이상"
+      },
+      "diet": {
+        "none": "아직 채식하지 않음",
+        "periodic": "정해진 날만 채식",
+        "full": "완전 채식"
+      },
+      "vegDays": {
+        "2": "2일 (초하루 · 보름)",
+        "4": "4일",
+        "6": "6일",
+        "8": "8일",
+        "10": "10일",
+        "15": "15일"
+      },
+      "goals": {
+        "peace": "마음의 평안",
+        "stress": "스트레스 해소",
+        "family": "가족의 건강과 평안",
+        "liberation": "해탈과 깨달음"
+      },
+      "obstacles": {
+        "time": "시간이 부족함",
+        "community": "함께 수행할 곳이 없음",
+        "teacher": "맞는 스승을 찾지 못함",
+        "family": "가족이 아직 지지하지 않음",
+        "doctrine": "교리를 잘 알지 못함"
+      }
+    }
+  },
   "calendar": {
     "title": "불교 달력",
     "today": "오늘",
@@ -128,5 +267,9 @@
     "emptyArticles": "아직 글이 없습니다",
     "emptySutras": "아직 경전이 없습니다",
     "emptyTalks": "아직 법문이 없습니다"
+  },
+  "comingSoon": {
+    "title": "준비 중",
+    "body": "이 항목은 아직 열리지 않았습니다. 내용을 준비하여 곧 공개하겠습니다."
   }
 }

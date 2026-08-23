@@ -41,7 +41,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...nhanNgonNgu("/kinh-sach", { lastModified: now, changeFrequency: "weekly", priority: 0.8 }),
     ...nhanNgonNgu("/bai-giang", { lastModified: now, changeFrequency: "daily", priority: 0.8 }),
     ...nhanNgonNgu("/phat-lich", { lastModified: now, changeFrequency: "monthly", priority: 0.6 }),
+    ...nhanNgonNgu("/tu-tap", { lastModified: now, changeFrequency: "monthly", priority: 0.7 }),
   ];
+
+  /*
+   * Sáu trang pháp tu con, /thu-vien, /qua-trinh-tu-tap và /ve-chung-toi CỐ Ý
+   * không có ở đây: chúng đang là trang giữ chỗ và đã đặt noindex. Đưa trang
+   * rỗng vào sitemap là mời Google lập chỉ mục thứ sau này phải gỡ ra.
+   * Thêm vào đây khi từng trang có nội dung thật.
+   */
 
   const contentPages: MetadataRoute.Sitemap = slugs.flatMap((s) =>
     nhanNgonNgu(`${contentTypeBase[s.type]}/${s.slug}`, {

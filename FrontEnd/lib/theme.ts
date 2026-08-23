@@ -9,8 +9,16 @@
  * Vì chèn ở server nên màu có sẵn ngay trong HTML đầu tiên — không nháy màu
  * mặc định rồi mới đổi như cách nhét bằng JavaScript.
  *
- * Tông: vàng nâu (hổ phách, gỗ mít, tượng thếp vàng) trên nền trắng.
- * Neutral lệch nhẹ về vàng để không bị "xám máy tính".
+ * Tông lấy từ những gì hay thấy trong ảnh đức Phật: tượng thếp vàng, y ca-sa
+ * màu nghệ, sơn son thếp vàng ở chùa, gỗ mít và trầm hương.
+ *
+ *   accent   vàng nâu sẫm  - bóng đổ của lớp thếp vàng, đủ đậm để làm chữ
+ *   brass    vàng kim sáng - chính lớp thếp, chỉ dùng trang trí vì quá sáng
+ *            để đọc trên nền trắng
+ *   lacquer  đỏ son        - sơn son ở hoành phi, câu đối
+ *   surface-2 ngà ấm       - màu giấy điệp, gỗ mít
+ *
+ * Neutral lệch về vàng chứ không xám trung tính, để nền sáng không bị lạnh.
  */
 
 export const themeTokens = [
@@ -34,23 +42,32 @@ export const themeTokens = [
 export type ThemeToken = (typeof themeTokens)[number];
 export type Palette = Record<ThemeToken, string>;
 
-/** Nền trắng, chữ nâu đậm, nhấn vàng nâu. */
+/**
+ * Nền xám vàng, chữ nâu đậm, nhấn vàng nâu.
+ *
+ * `paper` (nền trang) cố tình KHÔNG trắng: tông xám ngả vàng của giấy dó dịu
+ * mắt hơn và — quan trọng hơn — tạo chênh lệch với `surface`, nhờ vậy các thẻ
+ * nội dung nổi hẳn lên thay vì chìm vào nền như hồi cả hai cùng trắng. Bóng đổ
+ * (`--card-shadow` trong app/globals.css) làm nốt phần còn lại.
+ */
 export const lightPalette: Palette = {
-  paper: "#ffffff",
-  surface: "#ffffff",
-  "surface-2": "#f6f1e6",
-  ink: "#1f1810",
-  body: "#3f3527",
-  muted: "#7b6e59",
-  line: "#e7dec9",
-  "line-strong": "#d2c3a3",
-  accent: "#8a6414",
-  "accent-hover": "#6f4f0e",
-  "accent-soft": "#f7efd9",
+  paper: "#eeeade",
+  surface: "#fffdf8",
+  "surface-2": "#f6f0e0",
+  ink: "#241a0e",
+  body: "#453620",
+  // Đậm hơn mã cũ #7a6746 một bậc: trên nền xám vàng #eeeade mã đó chỉ còn
+  // tương phản 4.48:1, trượt dưới ngưỡng 4.5:1 của WCAG AA cho chữ nhỏ.
+  muted: "#6f5c3d",
+  line: "#e2d8c0",
+  "line-strong": "#cdbb92",
+  accent: "#8a5a14",
+  "accent-hover": "#6d460d",
+  "accent-soft": "#fbf1d9",
   lacquer: "#a6402f",
-  brass: "#8a6414",
-  "brass-soft": "#f7efd9",
-  ring: "#8a6414",
+  brass: "#a17b12",
+  "brass-soft": "#fdf5de",
+  ring: "#8a5a14",
 };
 
 /**
@@ -58,21 +75,21 @@ export const lightPalette: Palette = {
  * cùng một gia đình màu. Nhấn sáng lên vì vàng nâu đậm không đọc được trên nền tối.
  */
 export const darkPalette: Palette = {
-  paper: "#16120b",
-  surface: "#1d1810",
+  paper: "#15110a",
+  surface: "#1c1710",
   "surface-2": "#251e14",
-  ink: "#f2ead9",
-  body: "#cfc3ab",
-  muted: "#998c74",
-  line: "#332a1c",
-  "line-strong": "#4a3d29",
-  accent: "#d9ab53",
-  "accent-hover": "#e8c078",
-  "accent-soft": "#2b2214",
-  lacquer: "#e4907e",
-  brass: "#d9ab53",
-  "brass-soft": "#2b2214",
-  ring: "#d9ab53",
+  ink: "#f4ecd9",
+  body: "#d3c6a9",
+  muted: "#9d8f73",
+  line: "#332a1b",
+  "line-strong": "#4c3e28",
+  accent: "#e0b45c",
+  "accent-hover": "#eec983",
+  "accent-soft": "#2c2314",
+  lacquer: "#e59480",
+  brass: "#e0b45c",
+  "brass-soft": "#2c2314",
+  ring: "#e0b45c",
 };
 
 /**

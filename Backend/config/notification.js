@@ -222,6 +222,12 @@ module.exports.notification = {
                 messageVNI: "Không tạo được tên tài khoản, vui lòng đăng ký thủ công"
             }
         },
+        profileNameRequired: {
+            message: {
+                messageEN: "Full name is required",
+                messageVNI: "Vui lòng nhập họ tên"
+            }
+        },
         wrongPassword: {
             message: {
                 messageEN: "Wrong Password",

@@ -3,9 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search, X } from "lucide-react";
+import { ChevronDown, Menu, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { mainNav, site } from "@/lib/site";
+import { mainNav, site, type NavItem } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/primitives";
 import { ThemeToggle } from "@/components/layout/theme";
@@ -13,27 +13,12 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { localePath, splitLocale } from "@/lib/i18n";
 
 /**
- * Header là Client Component (menu mobile có state) nên không đọc được
- * next/root-params. Chuỗi đã dịch truyền xuống từ layout, còn ngôn ngữ hiện
- * tại suy ra từ đường dẫn — usePathname trả về URL người dùng thấy trên thanh
- * địa chỉ, tức là đã có sẵn tiền tố (hoặc không, với tiếng Việt).
+ * Header là Client Component (menu mobile và menu thả xuống đều có state) nên
+ * không đọc được next/root-params. Chuỗi đã dịch truyền xuống từ layout, còn
+ * ngôn ngữ hiện tại suy ra từ đường dẫn — usePathname trả về URL người dùng
+ * thấy trên thanh địa chỉ, tức là đã có sẵn tiền tố (hoặc không, với tiếng Việt).
  */
-type NavDict = {
-  mainLabel: string;
-  homeAria: string;
-  search: string;
-  account: string;
-  openMenu: string;
-  closeMenu: string;
-  articles: string;
-  articlesHint: string;
-  sutras: string;
-  sutrasHint: string;
-  talks: string;
-  talksHint: string;
-  calendar: string;
-  calendarHint: string;
-};
+type NavDict = Record<string, string>;
 
 function Lotus({ className }: { className?: string }) {
   return (
@@ -46,6 +31,102 @@ function Lotus({ className }: { className?: string }) {
         strokeLinejoin="round"
       />
     </svg>
+  );
+}
+
+/**
+ * Một mục menu có nhóm con.
+ *
+ * Mở bằng cả di chuột LẪN bàn phím: chỉ dùng :hover thì người đi bằng Tab
+ * không bao giờ tới được sáu mục con. Nút cha vẫn bấm được để vào trang tổng
+ * quan, nên người dùng chạm (không có hover) cũng không bị kẹt.
+ */
+function NavWithSubmenu({
+  item,
+  dict,
+  lp,
+  isActive,
+}: {
+  item: NavItem & { children: NonNullable<NavItem["children"]> };
+  dict: NavDict;
+  lp: (href: string) => string;
+  isActive: (href: string) => boolean;
+}) {
+  const [mo, setMo] = React.useState(false);
+  const boc = React.useRef<HTMLDivElement>(null);
+  const dongTre = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Trễ một nhịp khi rời chuột: đi chéo từ nút cha xuống menu con sẽ lướt ra
+  // ngoài vùng phủ trong khoảnh khắc, đóng ngay lập tức thì menu chớp tắt.
+  const moNgay = () => {
+    if (dongTre.current) clearTimeout(dongTre.current);
+    setMo(true);
+  };
+  const dongSau = () => {
+    if (dongTre.current) clearTimeout(dongTre.current);
+    dongTre.current = setTimeout(() => setMo(false), 120);
+  };
+
+  React.useEffect(() => () => {
+    if (dongTre.current) clearTimeout(dongTre.current);
+  }, []);
+
+  return (
+    <div
+      ref={boc}
+      className="relative"
+      onMouseEnter={moNgay}
+      onMouseLeave={dongSau}
+      onFocus={moNgay}
+      onBlur={(e) => {
+        if (!boc.current?.contains(e.relatedTarget as Node)) setMo(false);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") setMo(false);
+      }}
+    >
+      <Link
+        href={lp(item.href)}
+        aria-current={isActive(item.href) ? "page" : undefined}
+        aria-expanded={mo}
+        className={cn(
+          "flex items-center gap-1 rounded-md px-2.5 py-2 text-sm font-medium transition-colors",
+          isActive(item.href)
+            ? "bg-accent-soft text-accent"
+            : "text-body hover:bg-surface-2 hover:text-ink",
+        )}
+      >
+        {dict[item.key]}
+        <ChevronDown
+          className={cn("size-3.5 transition-transform", mo && "rotate-180")}
+          aria-hidden
+        />
+      </Link>
+
+      {mo ? (
+        <div className="absolute left-0 top-full z-50 pt-1">
+          <ul className="min-w-52 overflow-hidden rounded-md border border-line bg-surface py-1 shadow-lg">
+            {item.children.map((con) => (
+              <li key={con.href}>
+                <Link
+                  href={lp(con.href)}
+                  onClick={() => setMo(false)}
+                  aria-current={isActive(con.href) ? "page" : undefined}
+                  className={cn(
+                    "block px-3 py-2 text-sm transition-colors",
+                    isActive(con.href)
+                      ? "font-medium text-accent"
+                      : "text-body hover:bg-surface-2 hover:text-ink",
+                  )}
+                >
+                  {dict[con.key]}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -71,10 +152,10 @@ export function SiteHeader({
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-paper/85 backdrop-blur-sm">
-      <Container className="flex h-16 items-center gap-4">
+      <Container className="flex h-16 items-center gap-3">
         <Link
           href={lp("/")}
-          className="flex items-center gap-2.5 text-ink"
+          className="flex shrink-0 items-center gap-2.5 text-ink"
           aria-label={`${site.name} — ${dict.homeAria}`}
         >
           <Lotus className="size-7 text-accent" />
@@ -83,25 +164,39 @@ export function SiteHeader({
           </span>
         </Link>
 
-        <nav className="ml-4 hidden items-center gap-1 md:flex" aria-label={dict.mainLabel}>
-          {mainNav.map((item) => (
-            <Link
-              key={item.href}
-              href={lp(item.href)}
-              aria-current={isActive(item.href) ? "page" : undefined}
-              className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isActive(item.href)
-                  ? "bg-accent-soft text-accent"
-                  : "text-body hover:bg-surface-2 hover:text-ink",
-              )}
-            >
-              {dict[item.key]}
-            </Link>
-          ))}
+        {/*
+          Bảy mục là nhiều cho một hàng ngang, nên thanh ngang chỉ hiện từ
+          breakpoint lg trở lên; dưới đó dùng menu mở rộng để không bị chen chúc.
+        */}
+        <nav className="ml-2 hidden items-center gap-0.5 lg:flex" aria-label={dict.mainLabel}>
+          {mainNav.map((item) =>
+            item.children ? (
+              <NavWithSubmenu
+                key={item.href}
+                item={item as NavItem & { children: NonNullable<NavItem["children"]> }}
+                dict={dict}
+                lp={lp}
+                isActive={isActive}
+              />
+            ) : (
+              <Link
+                key={item.href}
+                href={lp(item.href)}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                className={cn(
+                  "rounded-md px-2.5 py-2 text-sm font-medium transition-colors",
+                  isActive(item.href)
+                    ? "bg-accent-soft text-accent"
+                    : "text-body hover:bg-surface-2 hover:text-ink",
+                )}
+              >
+                {dict[item.key]}
+              </Link>
+            ),
+          )}
         </nav>
 
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex shrink-0 items-center gap-1">
           <Button variant="ghost" size="icon" asChild>
             <Link href={lp("/tim-kiem")} aria-label={dict.search}>
               <Search />
@@ -115,7 +210,7 @@ export function SiteHeader({
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="lg:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="menu-mobile"
@@ -127,20 +222,42 @@ export function SiteHeader({
       </Container>
 
       {open ? (
-        <div id="menu-mobile" className="border-t border-line bg-surface md:hidden">
+        <div
+          id="menu-mobile"
+          className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-surface lg:hidden"
+        >
           <Container className="flex flex-col py-2">
             {mainNav.map((item) => (
-              <Link
-                key={item.href}
-                href={lp(item.href)}
-                className="flex flex-col gap-0.5 rounded-md px-3 py-3 hover:bg-surface-2"
-              >
-                <span className="font-medium text-ink">{dict[item.key]}</span>
-                <span className="text-xs text-muted">
-                  {dict[`${item.key}Hint` as keyof NavDict]}
-                </span>
-              </Link>
+              <div key={item.href} className="flex flex-col">
+                <Link
+                  href={lp(item.href)}
+                  className="flex flex-col gap-0.5 rounded-md px-3 py-3 hover:bg-surface-2"
+                >
+                  <span className="font-medium text-ink">{dict[item.key]}</span>
+                  <span className="text-xs text-muted">{dict[`${item.key}Hint`]}</span>
+                </Link>
+
+                {/*
+                  Trên màn hình cảm ứng không có hover, nên mục con hiện luôn
+                  chứ không giấu sau một cú chạm nữa.
+                */}
+                {item.children ? (
+                  <ul className="mb-1 ml-3 flex flex-col border-l border-line pl-3">
+                    {item.children.map((con) => (
+                      <li key={con.href}>
+                        <Link
+                          href={lp(con.href)}
+                          className="block rounded-md px-3 py-2 text-sm text-body hover:bg-surface-2 hover:text-ink"
+                        >
+                          {dict[con.key]}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
             ))}
+
             <Link
               href={lp("/tai-khoan")}
               className="rounded-md px-3 py-3 font-medium text-ink hover:bg-surface-2 sm:hidden"

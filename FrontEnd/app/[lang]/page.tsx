@@ -40,20 +40,59 @@ export default async function HomePage() {
         </div>
       ) : null}
 
-      {/* Mở đầu: câu kệ, không phải khẩu hiệu marketing. */}
-      <section className="border-b border-line bg-surface">
-        <Container className="grid items-center gap-10 py-16 sm:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-14">
-          <div className="flex flex-col gap-8">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+      {/*
+        Mở đầu: câu kệ trên nền ảnh phủ kín khối.
+
+        Ảnh đổi mỗi lần trang được sinh lại (ISR 5 phút), không phải mỗi lượt xem.
+
+        Chữ nằm ĐÈ lên ảnh nên không thể trông cậy vào token màu của giao diện:
+        ảnh nào cũng có thể sáng hoặc tối ở bất kỳ vùng nào. Vì vậy khối này cố
+        định chữ trắng trên một lớp phủ tối, giống nhau ở cả chế độ sáng và tối
+        — đây là chỗ hiếm hoi trong site không theo bảng màu, và là chủ ý.
+      */}
+      <section className="relative isolate overflow-hidden border-b border-line">
+        {/*
+          priority: đây là ảnh lớn nhất trong khung nhìn đầu tiên, để Next tải
+          sớm thay vì lazy-load — lazy ở đây làm chậm LCP.
+          alt rỗng + aria-hidden: ảnh trang trí, mọi thông tin đã có trong chữ.
+        */}
+        <Image
+          src={heroImage}
+          alt=""
+          aria-hidden
+          priority
+          placeholder="blur"
+          fill
+          sizes="100vw"
+          className="-z-10 object-cover"
+        />
+
+        {/*
+          Hai lớp phủ chồng nhau: một lớp tối đều để bảo đảm tương phản tối
+          thiểu ở mọi vùng ảnh, một lớp chuyển sắc đậm dần xuống dưới để phần
+          chân khối (nơi có nút bấm) luôn đủ tối.
+        */}
+        <div className="absolute inset-0 -z-10 bg-black/55" aria-hidden />
+        <div
+          className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-black/20 to-black/40"
+          aria-hidden
+        />
+
+        <Container className="flex flex-col gap-8 py-24 sm:py-32">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/80">
             <CalendarDays className="size-3.5" aria-hidden />
             <TodayLunarBadge />
           </div>
 
           <blockquote className="max-w-3xl">
-            <p className="whitespace-pre-line font-serif text-2xl leading-relaxed text-ink sm:text-[2rem] sm:leading-[1.5]">
-              {"Ý dẫn đầu các pháp,\nÝ làm chủ, ý tạo;\nNếu với ý thanh tịnh,\nAn lạc bước theo sau,\nNhư bóng, không rời hình."}
+            <p className="whitespace-pre-line font-serif text-2xl leading-relaxed text-white drop-shadow-sm sm:text-[2rem] sm:leading-[1.5]">
+              {`Ý dẫn đầu các pháp,
+Ý làm chủ, ý tạo;
+Nếu với ý thanh tịnh,
+An lạc bước theo sau,
+Như bóng, không rời hình.`}
             </p>
-            <footer className="mt-5 text-sm text-muted">
+            <footer className="mt-5 text-sm text-white/75">
               — Kinh Pháp Cú, phẩm Song Yếu
             </footer>
           </blockquote>
@@ -64,29 +103,13 @@ export default async function HomePage() {
                 Đọc kinh sách <ArrowRight />
               </Link>
             </Button>
-            <Button variant="outline" asChild>
+            <Button
+              variant="outline"
+              className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              asChild
+            >
               <Link href="/bai-giang">Nghe bài giảng</Link>
             </Button>
-          </div>
-          </div>
-
-          {/*
-            Ảnh bìa đổi mỗi lần trang được sinh lại (ISR 5 phút).
-            priority: đây là ảnh lớn nhất trong khung nhìn đầu tiên, để Next
-            tải sớm thay vì lazy-load - lazy ở đây làm chậm LCP.
-            aria-hidden + alt rỗng: ảnh trang trí, không mang thông tin nào
-            mà phần chữ bên cạnh chưa nói.
-          */}
-          <div className="relative aspect-[4/5] overflow-hidden rounded-card border border-line sm:aspect-[3/2] lg:aspect-[4/5]">
-            <Image
-              src={heroImage}
-              alt=""
-              aria-hidden
-              priority
-              placeholder="blur"
-              sizes="(min-width: 1024px) 26rem, 100vw"
-              className="size-full object-cover"
-            />
           </div>
         </Container>
       </section>
@@ -111,7 +134,7 @@ export default async function HomePage() {
               </div>
               <div className="flex flex-col gap-3">
                 {rest.slice(0, 4).map((item) => (
-                  <Card key={item.id} className="relative p-4 hover:border-line-strong">
+                  <Card key={item.id} className="relative p-4 hover:border-line-strong hover:shadow-card-lift">
                     <Link href={contentHref(item)} className="flex flex-col gap-1.5">
                       <span className="font-serif font-semibold leading-snug text-ink">
                         {item.title}

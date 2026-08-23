@@ -104,7 +104,7 @@ export default async function SutraPage(props: {
             <ol className="flex flex-col gap-2">
               {content.chapters.map((ch) => (
                 <li key={ch.slug}>
-                  <Card className="p-0 hover:border-line-strong">
+                  <Card className="p-0 hover:border-line-strong hover:shadow-card-lift">
                     <Link
                       href={`/kinh-sach/${content.slug}/${ch.slug}`}
                       className="flex items-center gap-4 px-4 py-3.5"

@@ -67,7 +67,7 @@ export async function ChapterNav({
                   "flex gap-3 border-l-2 py-2 pl-3 text-sm transition-colors",
                   active
                     ? "border-accent font-medium text-accent"
-                    : "border-line text-muted hover:border-line-strong hover:text-ink",
+                    : "border-line text-muted hover:border-line-strong hover:shadow-card-lift hover:text-ink",
                 )}
               >
                 <span className="tabular-nums opacity-60">
@@ -99,7 +99,7 @@ export async function ChapterPager({
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {prev ? (
-        <Card className="p-4 hover:border-line-strong">
+        <Card className="p-4 hover:border-line-strong hover:shadow-card-lift">
           <Link href={`/kinh-sach/${bookSlug}/${prev.slug}`} className="flex flex-col gap-1">
             <span className="flex items-center gap-1 text-xs text-muted">
               <ChevronLeft className="size-3" aria-hidden /> {dict.common.previousChapter}
@@ -111,7 +111,7 @@ export async function ChapterPager({
         <div className="hidden sm:block" />
       )}
       {next ? (
-        <Card className="p-4 text-right hover:border-line-strong">
+        <Card className="p-4 text-right hover:border-line-strong hover:shadow-card-lift">
           <Link href={`/kinh-sach/${bookSlug}/${next.slug}`} className="flex flex-col gap-1">
             <span className="flex items-center justify-end gap-1 text-xs text-muted">
               {dict.common.nextChapter} <ChevronRight className="size-3" aria-hidden />

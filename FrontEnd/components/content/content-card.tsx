@@ -33,7 +33,10 @@ export async function ContentCard({
   return (
     <Card
       className={cn(
-        "group flex flex-col gap-3 p-5 hover:border-line-strong",
+        // Thẻ bài viết là item được bấm nhiều nhất nên nhấc hẳn lên khi rê
+        // chuột, không chỉ đổi viền. Người dùng prefers-reduced-motion vẫn
+        // thấy bóng đậm lên, chỉ mất phần trượt (globals.css tắt transition).
+        "group flex flex-col gap-3 p-5 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-card-lift",
         featured && "sm:p-7",
       )}
     >
