@@ -364,6 +364,84 @@ module.exports.notification = {
                 messageVNI: "Không thể cấp quyền mà chính bạn không có"
             }
         },
+        prayerInvalid: {
+            message: {
+                messageEN: "Prayers must be 2 to 500 characters long",
+                messageVNI: "Lời cầu nguyện phải dài từ 2 đến 500 ký tự"
+            }
+        },
+        prayerOncePerDay: {
+            message: {
+                messageEN: "You can write up to 3 prayers per day. See you tomorrow",
+                messageVNI: "Mỗi ngày bạn viết được tối đa 3 lời cầu nguyện. Hẹn bạn ngày mai"
+            }
+        },
+        prayerNotFound: {
+            message: {
+                messageEN: "Prayer not found",
+                messageVNI: "Không tìm thấy lời cầu nguyện"
+            }
+        },
+        prayerForbidden: {
+            message: {
+                messageEN: "You can only delete your own prayers",
+                messageVNI: "Bạn chỉ xoá được lời cầu nguyện của chính mình"
+            }
+        },
+        avatarInvalid: {
+            message: {
+                messageEN: "Invalid avatar (JPG, PNG or WebP under 1MB only)",
+                messageVNI: "Ảnh đại diện không hợp lệ (chỉ nhận JPG, PNG, WebP dưới 1MB)"
+            }
+        },
+        commentFlagged: {
+            message: {
+                messageEN: "Your comment contains inappropriate words and is not displayed",
+                messageVNI: "Bình luận của bạn chứa từ ngữ không phù hợp nên chưa được hiển thị"
+            }
+        },
+        moderationSelf: {
+            message: {
+                messageEN: "You cannot take action on your own account",
+                messageVNI: "Không thể tự xử lý tài khoản của chính mình"
+            }
+        },
+        moderationRank: {
+            message: {
+                messageEN: "You can only act on accounts with a lower role than yours",
+                messageVNI: "Bạn chỉ xử lý được tài khoản có vai trò thấp hơn mình"
+            }
+        },
+        moderationWarnLimit: {
+            message: {
+                messageEN: "This account has already received 5 warnings",
+                messageVNI: "Tài khoản này đã nhận đủ 5 lần cảnh cáo"
+            }
+        },
+        feedbackThanks: {
+            message: {
+                messageEN: "Thank you for your feedback. The team will review it soon.",
+                messageVNI: "Cảm ơn bạn đã gửi góp ý. Ban quản trị sẽ xem xét sớm."
+            }
+        },
+        feedbackInvalid: {
+            message: {
+                messageEN: "Feedback must be 5 to 2000 characters long",
+                messageVNI: "Nội dung góp ý phải dài từ 5 đến 2000 ký tự"
+            }
+        },
+        feedbackTooMany: {
+            message: {
+                messageEN: "You have sent several messages, please try again in a few minutes",
+                messageVNI: "Bạn đã gửi khá nhiều góp ý, vui lòng thử lại sau ít phút"
+            }
+        },
+        feedbackNotFound: {
+            message: {
+                messageEN: "Feedback not found",
+                messageVNI: "Không tìm thấy góp ý"
+            }
+        },
         commentInvalid: {
             message: {
                 messageEN: "Comments must be 2 to 2000 characters long",

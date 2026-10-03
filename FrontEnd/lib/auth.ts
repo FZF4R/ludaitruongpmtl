@@ -16,18 +16,28 @@
  * có thao tác nhạy cảm hơn thì phải chuyển sang cookie HttpOnly do một route
  * handler của Next đặt.
  */
-import { localeApiCodes, type Locale } from "@/lib/i18n";
+import { localeApiCodes, localePath, splitLocale, type Locale } from "@/lib/i18n";
 import type { KhaoSat, QueQuan } from "@/lib/survey";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:1337";
 
 const KHOA_TOKEN = "sv_access_token";
 
+/**
+ * Đường dẫn tương đối backend trả về (avatar, ảnh...) -> URL tuyệt đối trên
+ * API. Chuỗi rỗng giữ nguyên rỗng để nơi gọi biết là "không có".
+ */
+export function urlApi(duongDan: string | undefined | null): string {
+  return duongDan ? new URL(duongDan, API_URL).toString() : "";
+}
+
 export type NhaCungCap = "google" | "facebook";
 
 /** Hình dạng dinhDangHoSo() của Backend trả về. */
 export type HoSo = {
   id: string;
+  /** Đường dẫn avatar trên API (rỗng nếu chưa tải). */
+  avatarUrl: string;
   isNewUser: boolean;
   profileCompleted: boolean;
   username: string;
@@ -148,6 +158,16 @@ export async function goiApi<T>(
     throw new LoiApi("", 0);
   }
 
+  // 423 = tài khoản bị khoá do vi phạm (backend: responseType.accountBanned,
+  // userPolices). Xử lý ở MỘT chỗ này: mọi lời gọi - đăng nhập, gọi bằng token
+  // cũ của phiên đang mở - đều đăng xuất rồi chuyển sang trang thông báo khoá.
+  if (res.status === 423 && typeof window !== "undefined") {
+    dangXuat();
+    const dangO = splitLocale(window.location.pathname).locale;
+    window.location.assign(localePath(dangO, "/tai-khoan-bi-khoa"));
+    throw new LoiApi("", 423);
+  }
+
   const noiDung = (await res.json().catch(() => null)) as {
     message?: { text?: string };
     data?: unknown;
@@ -209,6 +229,15 @@ export async function dangNhapMangXaHoi(
 /* ------------------------------------------------------------------ */
 /* Hồ sơ                                                               */
 /* ------------------------------------------------------------------ */
+
+/** Tải avatar mới (data URL ảnh đã thu nhỏ). Trả về đường dẫn avatar mới, có phiên bản. */
+export function taiAvatar(dataUrl: string, locale: Locale) {
+  return goiApi<{ avatarUrl: string }>("/v1/user/avatar", {
+    method: "POST",
+    body: { avatar: dataUrl },
+    locale,
+  });
+}
 
 export function layHoSo(locale: Locale): Promise<HoSo> {
   return goiApi<HoSo>("/v1/user/profile", { locale });

@@ -11,6 +11,7 @@ import { Container } from "@/components/ui/primitives";
 import { ThemeToggle } from "@/components/layout/theme";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { localePath, splitLocale } from "@/lib/i18n";
+import { NotificationBell, type NhanThongBao } from "@/components/layout/notification-bell";
 
 /**
  * Header là Client Component (menu mobile và menu thả xuống đều có state) nên
@@ -133,9 +134,11 @@ function NavWithSubmenu({
 export function SiteHeader({
   dict,
   language,
+  thongBao,
 }: {
   dict: NavDict;
   language: { label: string; choose: string };
+  thongBao: NhanThongBao;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
@@ -202,6 +205,7 @@ export function SiteHeader({
               <Search />
             </Link>
           </Button>
+          <NotificationBell nhan={thongBao} />
           <ThemeToggle />
           <LanguageSwitcher label={language.label} chooseLabel={language.choose} />
           <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>

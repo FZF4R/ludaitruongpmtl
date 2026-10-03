@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge, Card } from "@/components/ui/primitives";
 import { SocialLogin, type NhanDangNhap } from "@/components/auth/social-login";
+import { AvatarPicker } from "@/components/auth/avatar-picker";
 import { localePath, splitLocale } from "@/lib/i18n";
 import type { Dictionary } from "@/lib/dictionary";
 import { LoiApi, dangXuat, docToken, layHoSo, type HoSo } from "@/lib/auth";
@@ -111,6 +112,13 @@ export function AccountPanel({
   return (
     <div className="flex flex-col gap-6">
       <Card className="flex flex-wrap items-center gap-x-4 gap-y-2 p-6">
+        <AvatarPicker
+          src={hoSo.avatarUrl}
+          name={hoSo.fullName || hoSo.username}
+          locale={locale}
+          nhan={nhanAuth}
+          onDoi={(avatarUrl) => setHoSo((cu) => (cu ? { ...cu, avatarUrl } : cu))}
+        />
         <div className="flex flex-col gap-0.5">
           <span className="text-xs uppercase tracking-[0.12em] text-muted">
             {nhanAuth.signedInAs}

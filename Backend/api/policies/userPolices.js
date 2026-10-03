@@ -14,7 +14,8 @@ module.exports = async function (req, res, proceed) {
         return proceed()
     }).catch((err) => {
         responseObject.message = err
-        return res.status(401).json(responseObject);
+        // Tài khoản bị khoá: 423 để FrontEnd chuyển sang trang thông báo khoá.
+        return res.status(err === 'accountBanned' ? 423 : 401).json(responseObject);
     });
 };
 

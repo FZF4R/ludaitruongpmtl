@@ -1,6 +1,16 @@
 import { LocaleLink as Link } from "@/components/ui/locale-link";
 import { ArrowRight, CalendarDays } from "lucide-react";
-import { listContent, listCategories, getSiteSettings, getHeroImages } from "@/lib/api";
+import {
+  listContent,
+  listCategories,
+  getSiteSettings,
+  getHeroImages,
+  listLunarEvents,
+} from "@/lib/api";
+import { baKhoang, cacThangToi, homNayVN, sangChuoiNgay, suKienTrongKhoang } from "@/lib/buddhist-events";
+import { HomeCalendar } from "@/components/home/home-calendar";
+import { PrayerWall } from "@/components/home/prayer-wall";
+import { ContactDock } from "@/components/home/contact-dock";
 import { Container, SectionHeading, Badge } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { ContentGrid } from "@/components/content/content-card";
@@ -30,7 +40,7 @@ export default async function HomePage() {
   const sua = (k: string, macDinh: string) => (
     <EditableText k={k} value={texts[k] ?? macDinh} />
   );
-  const [popular, newest, popularSutras, newestSutras, talks, categories, settings, uploaded] =
+  const [popular, newest, popularSutras, newestSutras, talks, categories, settings, uploaded, lunarEvents] =
     await Promise.all([
       listContent({ type: ["article", "blog"], sort: "popular", limit: 2 }),
       listContent({ type: ["article", "blog"], limit: 6 }),
@@ -40,19 +50,50 @@ export default async function HomePage() {
       listCategories(),
       getSiteSettings(),
       getHeroImages(),
+      // Lịch là phụ trợ: API hỏng thì mục lịch rỗng, trang chủ vẫn lên.
+      listLunarEvents().catch(() => []),
     ]);
+
+  // Lịch Phật giáo: tính sẵn ba khoảng trên server. Trang chủ ISR 5 phút nên
+  // "hôm nay" lệch tối đa 5 phút - đủ cho lịch tính theo ngày.
+  const homNay = homNayVN();
+  const khoang = baKhoang(homNay);
+  const tenTuDong = {
+    mungMot: (m: number) => `${dict.calendar.newMoon} ${dict.homeCalendar.monthOf.replace("{m}", String(m))}`,
+    ram: (m: number) => `${dict.calendar.fullMoon} ${dict.homeCalendar.monthOf.replace("{m}", String(m))}`,
+  };
+  const lichPhat = {
+    baThangToi: suKienTrongKhoang(lunarEvents, khoang.baThangToi.tu, khoang.baThangToi.den, tenTuDong),
+    // Cả năm: chỉ sự kiện thật, bỏ Mùng Một / Rằm cho danh sách khỏi dài.
+    namNay: suKienTrongKhoang(lunarEvents, khoang.namNay.tu, khoang.namNay.den, null),
+  };
+  const linkLich = `/phat-lich/${homNay.getUTCFullYear()}/${homNay.getUTCMonth() + 1}`;
+  // Lịch tháng bên phải: 12 tháng từ tháng này, chuyển qua lại ở trình duyệt.
+  const lichThang = cacThangToi(homNay, 12, lunarEvents);
+  // Sự kiện của từng tháng trong lịch (kèm Mùng Một / Rằm), để tab tháng bên
+  // phải đổi theo tháng đang lật ở lịch bên trái.
+  const suKienTheoThang = lichThang.map((t) =>
+    suKienTrongKhoang(
+      lunarEvents,
+      new Date(Date.UTC(t.nam, t.thang - 1, 1)),
+      new Date(Date.UTC(t.nam, t.thang, 0)),
+      tenTuDong,
+    ),
+  );
 
   // Bài đã nằm ở khối nổi bật thì không lặp lại ở cột "mới".
   const mostRead = popular.data;
   const latest = boTrung(mostRead, newest.data);
   const sutrasPopular = popularSutras.data;
   const sutrasLatest = boTrung(sutrasPopular, newestSutras.data);
-  // Ảnh admin tải lên ở /admin/dashboard, theo đúng thứ tự admin xếp. Chưa có
-  // thì xoay vòng bộ ảnh sẵn có, bắt đầu từ một ảnh ngẫu nhiên mỗi lần trang
-  // được sinh lại (ISR) như trước.
-  const anhNen: AnhHero[] = uploaded.length
-    ? uploaded.map((a) => ({ src: a.src, alt: a.alt }))
-    : heroImages.map((src) => ({ src, alt: "" }));
+  // Xoay vòng CẢ ảnh admin tải lên (/admin/dashboard, theo thứ tự admin xếp)
+  // lẫn bộ ảnh sẵn có trong lib/img nối phía sau. Có ảnh admin thì bắt đầu từ
+  // ảnh admin đầu tiên; chưa có thì bắt đầu từ một ảnh sẵn có ngẫu nhiên mỗi
+  // lần trang được sinh lại (ISR).
+  const anhNen: AnhHero[] = [
+    ...uploaded.map((a) => ({ src: a.src, alt: a.alt })),
+    ...heroImages.map((src) => ({ src, alt: "" })),
+  ];
   const anhDau = uploaded.length ? 0 : Math.floor(Math.random() * anhNen.length);
 
   return (
@@ -131,6 +172,26 @@ export default async function HomePage() {
       </section>
 
       <Container className="flex flex-col gap-16 py-16">
+        {/*
+          Lịch Phật giáo: trái là lịch tháng chuyển qua lại được (ngày Trai + sự
+          kiện), phải là danh sách sự kiện theo tab. Màn hình hẹp thì xếp dọc.
+        */}
+        <section className="flex flex-col gap-6">
+          <SectionHeading
+            eyebrow={sua("homeCalendar.eyebrow", dict.homeCalendar.eyebrow)}
+            title={sua("homeCalendar.title", dict.homeCalendar.title)}
+          />
+          <HomeCalendar
+            thang={lichThang}
+            suKienTheoThang={suKienTheoThang}
+            baThangToi={lichPhat.baThangToi}
+            namNay={lichPhat.namNay}
+            homNay={sangChuoiNgay(homNay)}
+            linkLich={linkLich}
+            nhan={{ ...dict.homeCalendar, eventKind: dict.calendar.eventKind }}
+          />
+        </section>
+
         {mostRead.length > 0 ? (
           <section className="flex flex-col gap-6">
             <SectionHeading
@@ -217,7 +278,25 @@ export default async function HomePage() {
             </div>
           </section>
         ) : null}
+
+        {/* Lời cầu nguyện là mục cuối cùng của trang chủ. */}
+        <section className="flex flex-col gap-6">
+          <SectionHeading
+            eyebrow={sua("prayers.eyebrow", dict.prayers.eyebrow)}
+            title={sua("prayers.title", dict.prayers.title)}
+            description={sua("prayers.description", dict.prayers.description)}
+          />
+          <PrayerWall nhan={dict.prayers} />
+        </section>
       </Container>
+
+      <ContactDock
+        zaloKenh={settings?.zalosupportinfo}
+        facebook={settings?.supportfacebook}
+        tiktok={settings?.supporttiktok}
+        zaloAdmin={settings?.zaloadminsupportinfo}
+        nhan={dict.contact}
+      />
     </>
   );
 }

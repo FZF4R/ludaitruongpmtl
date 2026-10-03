@@ -30,6 +30,20 @@ module.exports = {
         pagefacebookinfo: {
             type: 'string',
         },
+        // Khung liên hệ góc dưới phải trang chủ (FrontEnd components/home/contact-dock.tsx).
+        // Nhận link đầy đủ hoặc dạng rút gọn (số điện thoại Zalo, @tên TikTok).
+        zalosupportinfo: {
+            type: 'string',
+            description: 'Kenh Zalo (Zalo OA / nhom) - link zalo.me/...'
+        },
+        zaloadminsupportinfo: {
+            type: 'string',
+            description: 'Zalo admin - so dien thoai hoac link zalo.me/...'
+        },
+        supporttiktok: {
+            type: 'string',
+            description: 'Kenh TikTok - link hoac @ten'
+        },
         supportfacebook: {
             type: 'string',
         },
@@ -48,6 +62,11 @@ module.exports = {
             type: 'json',
             defaultsTo: {},
             description: 'Mau giao dien sang, ghi de bang mac dinh cua FrontEnd. Dang { accent: "#8a6414", paper: "#ffffff", ... }. Chi nhan ma hex; FrontEnd bo qua khoa la va gia tri sai dinh dang.'
+        },
+        bannedWords: {
+            type: 'json',
+            defaultsTo: [],
+            description: 'Tu khoa bi cam trong binh luan (api/utils/tuCam.js). KHONG tra ra o /v1/public/settings.'
         },
         articleLayout: {
             type: 'string',

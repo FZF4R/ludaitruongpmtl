@@ -46,6 +46,8 @@ module.exports = class JwtProcess {
                 return this.verifyPasswordFromDB(userTokenDetails)
             }).then((result) => {
                 if (result.status !== 1) {
+                    // Bị khoá giữa phiên: token còn hạn nhưng không dùng được nữa.
+                    reason = 'accountBanned'
                     return Promise.reject()
                 }
                 resolve(result)

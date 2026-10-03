@@ -136,8 +136,14 @@ export type CauHinh = {
   pagefacebookinfo: string | null;
   supportfacebook: string | null;
   supporttelegram: string | null;
+  /** Khung liên hệ trang chủ: kênh Zalo, Zalo admin, TikTok (Facebook dùng supportfacebook). */
+  zalosupportinfo: string | null;
+  zaloadminsupportinfo: string | null;
+  supporttiktok: string | null;
   isMaintaning: boolean | null;
   articleLayout: "card" | "list" | null;
+  /** Từ khoá bị cấm trong bình luận (backend lọc, không lộ ra công khai). */
+  bannedWords: string[] | null;
   langLib: unknown;
   theme: Record<string, string> | null;
   themeDark: Record<string, string> | null;
@@ -160,12 +166,15 @@ export type AnhTrangChu = {
 
 export const urlAnh = (anh: AnhTrangChu) => new URL(anh.url, API_URL).toString();
 
-export function layAnhTrangChu(locale: Locale) {
-  return goiApi<AnhTrangChu[]>("/v1/public/hero-images", { locale });
+/** Nhóm ảnh: `hero` = ảnh bìa xoay vòng trang chủ, `prayer` = ảnh thẻ lời nguyện. */
+export type NhomAnh = "hero" | "prayer";
+
+export function layAnhTrangChu(locale: Locale, group: NhomAnh = "hero") {
+  return goiApi<AnhTrangChu[]>("/v1/public/hero-images", { query: { group }, locale });
 }
 
 export function themAnhTrangChu(
-  than: { image: string; width: number; height: number; alt?: string },
+  than: { image: string; width: number; height: number; alt?: string; group?: NhomAnh },
   locale: Locale,
 ) {
   return goiApi<AnhTrangChu>("/v1/admin/hero-images/add", { method: "POST", body: than, locale });
@@ -183,6 +192,102 @@ export function sapXepAnhTrangChu(ids: string[], locale: Locale) {
   return goiApi<{ ids: string[] }>("/v1/admin/hero-images/reorder", {
     method: "POST",
     body: { ids },
+    locale,
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Kiểm duyệt: bình luận vi phạm, cảnh cáo, khoá tài khoản             */
+/* ------------------------------------------------------------------ */
+
+export type BinhLuanViPham = {
+  id: string;
+  userId: string;
+  parentId: string;
+  body: string;
+  createdAt: string;
+  author: { name: string; dharmaName: string; avatarUrl?: string };
+  /** Các từ cấm đã khớp. */
+  flaggedWords: string[];
+  content: { slug: string; title: string };
+};
+
+export type KyLuatNguoiDung = {
+  id: string;
+  username: string;
+  name: string;
+  dharmaName: string;
+  role: string;
+  banned: boolean;
+  bannedAt: string;
+  bannedReason: string;
+  warningCount: number;
+  maxWarnings: number;
+  /** Người đang xem có được cảnh cáo / khoá người này không (bậc cao hơn, không phải chính mình). */
+  canAct: boolean;
+  flaggedComments: BinhLuanViPham[];
+  log: { id: string; action: "warn" | "ban" | "unban" | "delete-comment"; reason: string; commentBody: string; actorName: string; createdAt: string }[];
+};
+
+export function layBinhLuanViPham(slug: string, locale: Locale) {
+  return goiApi<BinhLuanViPham[]>("/v1/admin/moderation/comments", { query: { slug }, locale });
+}
+
+export function xoaHanBinhLuan(id: string, locale: Locale) {
+  return goiApi<{ id: string }>("/v1/admin/moderation/comments/delete", { method: "POST", body: { id }, locale });
+}
+
+export function layKyLuat(id: string, locale: Locale) {
+  return goiApi<KyLuatNguoiDung>("/v1/admin/moderation/user", { query: { id }, locale });
+}
+
+export function canhCao(id: string, reason: string, locale: Locale) {
+  return goiApi<{ warningCount: number }>("/v1/admin/moderation/warn", { method: "POST", body: { id, reason }, locale });
+}
+
+export function khoaTaiKhoan(id: string, reason: string, locale: Locale) {
+  return goiApi<{ banned: boolean }>("/v1/admin/moderation/ban", { method: "POST", body: { id, reason }, locale });
+}
+
+export function moKhoaTaiKhoan(id: string, reason: string, locale: Locale) {
+  return goiApi<{ banned: boolean }>("/v1/admin/moderation/unban", { method: "POST", body: { id, reason }, locale });
+}
+
+/* ------------------------------------------------------------------ */
+/* Đề xuất & góp ý                                                     */
+/* ------------------------------------------------------------------ */
+
+export type GopY = {
+  id: string;
+  kind: "de-xuat" | "gop-y";
+  name: string;
+  contact: string;
+  body: string;
+  /** Người gửi đang đăng nhập lúc gửi. */
+  loggedIn: boolean;
+  userId: string;
+  /** Người gửi chọn ẩn danh: chỉ quản trị thấy tên thật. */
+  anonymous: boolean;
+  status: "new" | "done";
+  handledByName: string;
+  handledAt: string;
+  createdAt: string;
+};
+
+export function layGopY(
+  { status, page }: { status: "" | "new" | "done"; page: number },
+  locale: Locale,
+) {
+  return goiApi<{ data: GopY[]; total: number; unhandled: number; page: number; limit: number }>(
+    "/v1/admin/feedback",
+    { query: { status, page, limit: 10 }, locale },
+  );
+}
+
+export function doiTrangThaiGopY(id: string, status: "new" | "done", locale: Locale) {
+  return goiApi<{ id: string; status: string }>("/v1/admin/feedback/status", {
+    method: "POST",
+    body: { id, status },
     locale,
   });
 }

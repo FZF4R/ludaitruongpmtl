@@ -22,6 +22,7 @@ module.exports.routes = {
     'GET  /v1/public/content/list': 'System.Public.ContentController.listContent',
     // Phai dung truoc '/content/:slug' (cung ly do voi '/content/list').
     'POST /v1/public/content/view': 'System.Public.ContentController.addView',
+    'GET  /v1/public/content/related': 'System.Public.ContentController.relatedContent',
     'GET  /v1/public/content/:slug': 'System.Public.ContentController.getContentBySlug',
     'GET  /v1/public/search': 'System.Public.ContentController.search',
     'GET  /v1/public/category/tree': 'System.Public.ContentController.categoryTree',
@@ -30,6 +31,11 @@ module.exports.routes = {
     // Chu giao dien admin da sua truc tiep tren trang, theo ngon ngu.
     'GET  /v1/public/texts': 'System.Public.SiteTextController.getTexts',
     'GET  /v1/public/comments': 'System.Public.CommentController.listComments',
+    'GET  /v1/public/prayers': 'System.Public.PrayerController.listPrayers',
+    'GET  /v1/public/prayers/featured': 'System.Public.PrayerController.listFeatured',
+    // De xuat & gop y tu trang chu (khong can dang nhap).
+    'POST /v1/public/feedback': 'System.Public.FeedbackController.sendFeedback',
+    'GET  /v1/public/avatar/:userId': 'System.Public.AvatarController.getFile',
     // Anh xoay vong trang chu: danh sach + noi dung tung anh.
     'GET  /v1/public/hero-images': 'System.Public.HeroImageController.listImages',
     'GET  /v1/public/hero-images/:id/file': 'System.Public.HeroImageController.getFile',
@@ -54,12 +60,34 @@ module.exports.routes = {
     // Binh luan bai viet (doc thi o /v1/public/comments).
     'POST /v1/user/comments': 'System.Users.CommentController.addComment',
     'POST /v1/user/comments/delete': 'System.Users.CommentController.deleteComment',
+    // Thong bao rieng (binh luan moi o bai cua minh, co nguoi tra loi minh).
+    'GET  /v1/user/notifications': 'System.Users.NotificationController.listNotifications',
+    'POST /v1/user/notifications/read': 'System.Users.NotificationController.markRead',
+    // Cau an / cau sieu: moi nguoi toi da 3 loi moi ngay.
+    'GET  /v1/user/prayers/list': 'System.Users.PrayerController.listMine',
+    'POST /v1/user/prayers': 'System.Users.PrayerController.addPrayer',
+    'POST /v1/user/prayers/delete': 'System.Users.PrayerController.deletePrayer',
 
     //==== Admin =====
     'GET  /v1/admin/user/list': 'System.Admin.UsersController.getListUser',
     'GET  /v1/admin/user/detail': 'System.Admin.UsersController.getUserDetail',
     'POST /v1/admin/user/update': 'System.Admin.UsersController.updateUser',
     'POST /v1/admin/user/changepass': 'System.Admin.UsersController.changePass',
+
+    //==== Loi nguyen noi bat (slideshow trang chu) =====
+    'POST /v1/admin/prayers/feature': 'System.Admin.PrayerController.setFeatured',
+
+    //==== De xuat & gop y =====
+    'GET  /v1/admin/feedback': 'System.Admin.FeedbackController.listFeedback',
+    'POST /v1/admin/feedback/status': 'System.Admin.FeedbackController.setStatus',
+
+    //==== Kiem duyet binh luan vi pham, canh cao / khoa tai khoan =====
+    'GET  /v1/admin/moderation/comments': 'System.Admin.ModerationController.listFlagged',
+    'POST /v1/admin/moderation/comments/delete': 'System.Admin.ModerationController.deleteComment',
+    'GET  /v1/admin/moderation/user': 'System.Admin.ModerationController.userInfo',
+    'POST /v1/admin/moderation/warn': 'System.Admin.ModerationController.warnUser',
+    'POST /v1/admin/moderation/ban': 'System.Admin.ModerationController.banUser',
+    'POST /v1/admin/moderation/unban': 'System.Admin.ModerationController.unbanUser',
 
     //==== Anh xoay vong trang chu =====
     'POST /v1/admin/hero-images/add': 'System.Admin.HeroImageController.addImage',

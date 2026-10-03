@@ -21,6 +21,8 @@ const { boDau, thoatRegex } = require('../../../utils/vietnamese')
 const LOAI_HOP_LE = ['article', 'blog', 'sutra', 'audio', 'video']
 
 /** Truy cập thẳng collection để dùng $or, khớp trường lồng và đếm trong một vòng. */
+const { layAvatarUrls } = require('../../../utils/avatar')
+
 const bangNoiDung = () => Content.getDatastore().manager.collection(Content.tableName)
 
 /** Số ms của Waterline -> chuỗi ISO mà zod chờ đợi. */
@@ -178,6 +180,65 @@ module.exports = {
         }
     }),
 
+    /**
+     * Bài viết liên quan, để hiện cuối một bài.
+     *
+     * Chấm điểm một nhóm ứng viên (bài đã đăng cùng loại, mới nhất trước) theo
+     * thứ tự ưu tiên: cùng chuyên mục > cùng tác giả > nhiều lượt đọc > mới.
+     * Lượt đọc và độ mới được chuẩn hoá về 0..1 nên chỉ phân định thứ tự giữa
+     * những bài cùng hạng, không lấn được tiêu chí chuyên mục / tác giả.
+     */
+    relatedContent: ({
+        inputs: sails.config.inputs.Public.Content.relatedContent,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let bai = await Content.findOne({ slug: inputs.slug, status: 'published' })
+                let rong = { data: [] }
+                if (!bai) return exits.successRequest({ messageNode: 'GlobalNotifications', message: 'success', data: rong })
+
+                let cungLoai = bai.type === 'sutra' ? ['sutra'] : ['article', 'blog']
+                let ungVien = await bangNoiDung()
+                    .find(
+                        { status: 'published', type: { $in: cungLoai }, slug: { $ne: bai.slug } },
+                        { projection: { bodyHtml: 0, chapters: 0, searchText: 0 } }
+                    )
+                    .sort({ publishedAt: -1 })
+                    .limit(300)
+                    .toArray()
+
+                let chuyenMuc = new Set((bai.categories || []).map(c => c.slug))
+                let tacGia = (bai.author && bai.author.name) || ''
+                let luotXemMax = Math.max(1, ...ungVien.map(r => r.viewCount || 0))
+                let thoiGian = ungVien.map(r => Date.parse(r.publishedAt) || 0)
+                let moiNhat = Math.max(...thoiGian, 1)
+                let cuNhat = Math.min(...thoiGian, moiNhat)
+
+                let diem = ungVien.map((r, i) => {
+                    let d = 0
+                    if ((r.categories || []).some(c => chuyenMuc.has(c.slug))) d += 4
+                    let cungTacGia = (bai.authorId && r.authorId === bai.authorId && r.author && r.author.fromProfile) ||
+                        (tacGia && r.author && r.author.name === tacGia)
+                    if (cungTacGia) d += 2
+                    d += (r.viewCount || 0) / luotXemMax
+                    d += moiNhat === cuNhat ? 0 : (thoiGian[i] - cuNhat) / (moiNhat - cuNhat)
+
+                    return { r: r, d: d }
+                })
+
+                diem.sort((a, b) => b.d - a.d)
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: { data: diem.slice(0, inputs.limit).map(x => dinhDangNoiDung(x.r, { rutGon: true })) }
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
     listContent: ({
         inputs: sails.config.inputs.Public.Content.listContent,
         exits: sails.config.responseType,
@@ -237,10 +298,23 @@ module.exports = {
                     return;
                 }
 
+                let data = dinhDangNoiDung(row)
+
+                // Avatar tác giả (khi tác giả lấy theo hồ sơ) và người đăng. Chỉ
+                // trang chi tiết cần, nên không gắn ở dinhDangNoiDung dùng chung.
+                let avatar = await layAvatarUrls([
+                    row.author && row.author.fromProfile ? row.authorId : '',
+                    row.createdById
+                ])
+                if (data.author && row.author.fromProfile && avatar[row.authorId]) {
+                    data.author = Object.assign({}, data.author, { avatarUrl: avatar[row.authorId] })
+                }
+                if (data.postedBy && avatar[row.createdById]) data.postedBy.avatarUrl = avatar[row.createdById]
+
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',
                     message: 'success',
-                    data: dinhDangNoiDung(row)
+                    data: data
                 });
             } catch (err) {
                 sails.checkErrorOutput(err, exits);

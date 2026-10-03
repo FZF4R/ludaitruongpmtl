@@ -46,6 +46,31 @@ module.exports.policies = {
     'System/Users/CommentController': {
         '*': ['userPolices', 'requirePermission']
     },
+    'System/Public/PrayerController': {
+        '*': true
+    },
+    // Chỉ cần đăng nhập: ai cũng đọc được thông báo của chính mình.
+    'System/Users/NotificationController': {
+        '*': ['userPolices']
+    },
+    'System/Users/PrayerController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    'System/Admin/PrayerController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    'System/Public/FeedbackController': {
+        '*': true
+    },
+    'System/Admin/FeedbackController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    'System/Public/AvatarController': {
+        '*': true
+    },
+    'System/Admin/ModerationController': {
+        '*': ['userPolices', 'requirePermission']
+    },
     'System/Admin/HeroImageController': {
         '*': ['userPolices', 'requirePermission']
     },

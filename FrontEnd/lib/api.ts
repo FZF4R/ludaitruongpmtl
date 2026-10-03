@@ -135,6 +135,27 @@ export async function listContent(
   );
 }
 
+/**
+ * Bài liên quan để hiện cuối một bài: backend ưu tiên cùng chuyên mục, cùng
+ * tác giả, rồi nhiều lượt đọc, rồi mới. Hỏng thì trả rỗng - phần phụ.
+ */
+export async function getRelated(slug: string, limit = 3): Promise<ContentSummary[]> {
+  if (isMock) {
+    const ds = await mock.listContent({ type: ["article", "blog"], limit: limit + 1 });
+    return ds.data.filter((b) => b.slug !== slug).slice(0, limit);
+  }
+
+  try {
+    return await get(
+      "/v1/public/content/related",
+      (raw) => contentSummarySchema.array().parse((raw as { data?: unknown }).data ?? []),
+      { query: { slug, limit }, revalidate: revalidate.list, tags: [tags.content] },
+    );
+  } catch {
+    return [];
+  }
+}
+
 export async function getContent(slug: string): Promise<Content | null> {
   if (isMock) return mock.getContent(slug);
 
@@ -218,6 +239,10 @@ export type SiteSettings = {
   warning?: string;
   supportphonenumber?: string;
   supportfacebook?: string;
+  /** Khung liên hệ góc dưới phải trang chủ. */
+  zalosupportinfo?: string;
+  zaloadminsupportinfo?: string;
+  supporttiktok?: string;
   isMaintaning?: boolean;
   /** Kiểu hiển thị danh sách /bai-viet, admin chọn ở trang Tổng quan. */
   articleLayout?: "card" | "list";

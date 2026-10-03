@@ -20,8 +20,27 @@ module.exports = {
             minLength: 6,
         },
         status: {
+            // 1 = hoạt động; 2 = bị khoá do vi phạm (ModerationController.ban).
+            // Khác 1 là không đăng nhập, không đăng ký lại được (API trả 423).
             type: "number",
             defaultsTo: 1
+        },
+        warningCount: {
+            type: "number",
+            defaultsTo: 0,
+            description: 'Số lần bị cảnh cáo, tối đa 5'
+        },
+        bannedAt: {
+            type: "number",
+            defaultsTo: 0
+        },
+        bannedReason: {
+            type: "string",
+            defaultsTo: ""
+        },
+        bannedById: {
+            type: "string",
+            defaultsTo: ""
         },
         email: {
             type: "string",

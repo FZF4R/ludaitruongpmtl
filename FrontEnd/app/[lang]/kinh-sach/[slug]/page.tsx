@@ -10,6 +10,7 @@ import { Breadcrumbs } from "@/components/content/navigation";
 import { ProseBody } from "@/components/content/prose-body";
 import { formatDualDate } from "@/lib/format";
 import { ViewTracker } from "@/components/content/view-tracker";
+import { Avatar } from "@/components/ui/avatar";
 
 export const revalidate = 3600;
 
@@ -114,7 +115,10 @@ export default async function SutraPage(props: {
             {content.postedBy ? (
               <>
                 <dt className="text-muted">Người đăng</dt>
-                <dd className="text-ink">{content.postedBy.name}</dd>
+                <dd className="flex items-center gap-2 text-ink">
+                  <Avatar src={content.postedBy.avatarUrl} name={content.postedBy.name} size={22} />
+                  {content.postedBy.name}
+                </dd>
               </>
             ) : null}
             <dt className="text-muted">Ngày đăng</dt>

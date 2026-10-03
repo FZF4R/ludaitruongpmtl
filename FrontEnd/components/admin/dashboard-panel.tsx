@@ -16,15 +16,20 @@ import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/form";
 import { HopLoi, chuLoi, useLocale } from "@/components/admin/admin-shell";
 import { themeTokens, isHexColor } from "@/lib/theme";
+import { localePath } from "@/lib/i18n";
 import { docToken } from "@/lib/auth";
 import { lamMoiCauHinh } from "@/lib/settings-action";
 import {
+  doiTrangThaiGopY,
+  layGopY,
+  type GopY,
   layAnhTrangChu,
   sapXepAnhTrangChu,
   themAnhTrangChu,
   urlAnh,
   xoaAnhTrangChu,
   type AnhTrangChu,
+  type NhomAnh,
   layCauHinh,
   luuCauHinh,
   suaThongBao,
@@ -44,7 +49,7 @@ import {
  * người lưu sau xoá sạch việc của người lưu trước.
  */
 
-type Khoi = "chung" | "thongBao" | "mau" | "hienThi";
+type Khoi = "chung" | "thongBao" | "mau" | "hienThi" | "tuCam";
 
 /** Xoá cache cấu hình + ảnh trang chủ của Next sau khi lưu, để trang công khai đổi ngay. */
 async function lamMoiTrangCongKhai() {
@@ -120,7 +125,24 @@ export function DashboardPanel() {
         onLuu={(articleLayout) => luu("hienThi", { articleLayout })}
       />
 
+      <KhoiGopY onLoi={setLoi} />
+
+      <KhoiTuCam
+        giaTri={cauHinh.bannedWords ?? []}
+        dangLuu={dangLuu === "tuCam"}
+        daLuu={daLuu === "tuCam"}
+        onLuu={(bannedWords) => luu("tuCam", { bannedWords })}
+      />
+
       <KhoiAnhTrangChu onLoi={setLoi} />
+
+      <KhoiAnhTrangChu
+        onLoi={setLoi}
+        nhom="prayer"
+        tieuDe="Ảnh thẻ lời nguyện"
+        moTa={`Ảnh minh hoạ đầu mỗi thẻ trong slideshow lời nguyện ở trang chủ. Mỗi lời nguyện được gán ngẫu nhiên một ảnh trong nhóm này (cố định theo từng lời, không nhảy ảnh khi tải lại). Chưa có ảnh nào thì dùng bộ ảnh sẵn có của giao diện. Tối đa ${TOI_DA_ANH} ảnh.`}
+        khiTrong="Chưa có ảnh nào — thẻ lời nguyện đang dùng bộ ảnh sẵn có của giao diện."
+      />
 
       <KhoiThongBao
         danhSach={cauHinh.notify}
@@ -216,6 +238,212 @@ function KhoiHienThi({
 
 /* ------------------------------------------------------------------ */
 
+/**
+ * Đề xuất & góp ý người xem gửi từ trang chủ. Mặc định lọc "Chưa xử lý" để
+ * việc cần làm nằm ngay trên cùng; đánh dấu đã xử lý ghi tên người xử lý.
+ */
+function KhoiGopY({ onLoi }: { onLoi: (loi: string) => void }) {
+  const locale = useLocale();
+  const [loc, setLoc] = React.useState<"" | "new" | "done">("new");
+  const [ds, setDs] = React.useState<GopY[] | null>(null);
+  const [tong, setTong] = React.useState(0);
+  const [chuaXuLy, setChuaXuLy] = React.useState(0);
+  const [trang, setTrang] = React.useState(1);
+  const [ban, setBan] = React.useState("");
+
+  const nap = React.useCallback(
+    (soTrang: number) => {
+      layGopY({ status: loc, page: soTrang }, locale)
+        .then((kq) => {
+          setDs((cu) => (soTrang === 1 || !cu ? kq.data : [...cu, ...kq.data]));
+          setTong(kq.total);
+          setChuaXuLy(kq.unhandled);
+          setTrang(soTrang);
+        })
+        .catch((err) => onLoi(chuLoi(err, "Không tải được góp ý.")));
+    },
+    [loc, locale, onLoi],
+  );
+
+  React.useEffect(() => nap(1), [nap]);
+
+  const doi = async (g: GopY) => {
+    setBan(g.id);
+    try {
+      await doiTrangThaiGopY(g.id, g.status === "new" ? "done" : "new", locale);
+      nap(1);
+    } catch (err) {
+      onLoi(chuLoi(err));
+    } finally {
+      setBan("");
+    }
+  };
+
+  return (
+    <Card className="flex flex-col gap-4 p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h2 className="flex items-center gap-2 font-serif text-lg font-bold">
+            Đề xuất &amp; góp ý
+            {chuaXuLy > 0 ? (
+              <span className="rounded-full bg-lacquer px-2 py-0.5 text-xs font-semibold text-white">
+                {chuaXuLy} chưa xử lý
+              </span>
+            ) : null}
+          </h2>
+          <p className="text-sm text-muted">Người xem gửi từ form cuối trang chủ.</p>
+        </div>
+        <div className="flex gap-1.5">
+          {(
+            [
+              ["new", "Chưa xử lý"],
+              ["done", "Đã xử lý"],
+              ["", "Tất cả"],
+            ] as const
+          ).map(([k, nhan]) => (
+            <Button
+              key={k || "all"}
+              size="sm"
+              variant={loc === k ? "solid" : "outline"}
+              onClick={() => setLoc(k)}
+            >
+              {nhan}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {ds === null ? (
+        <p className="text-sm text-muted">Đang tải…</p>
+      ) : ds.length === 0 ? (
+        <p className="rounded-md border border-dashed border-line p-6 text-center text-sm text-muted">
+          Không có góp ý nào ở mục này.
+        </p>
+      ) : (
+        <ul className="flex flex-col divide-y divide-line">
+          {ds.map((g) => (
+            <li key={g.id} className="flex flex-col gap-1.5 py-3">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+                <span
+                  className={
+                    "rounded-full px-2 py-0.5 font-medium " +
+                    (g.kind === "de-xuat" ? "bg-accent-soft text-accent" : "bg-brass-soft text-brass")
+                  }
+                >
+                  {g.kind === "de-xuat" ? "Đề xuất" : "Góp ý"}
+                </span>
+                {/* Ẩn danh với người xem, nhưng quản trị vẫn thấy tên thật để kiểm tra tài khoản. */}
+                {g.anonymous ? (
+                  <span className="rounded-full bg-surface-2 px-2 py-0.5 font-medium">Ẩn danh</span>
+                ) : null}
+                {g.userId ? (
+                  <a
+                    href={`${localePath(locale, "/admin/user")}?xem=${encodeURIComponent(g.userId)}`}
+                    className="font-medium text-ink hover:text-accent hover:underline"
+                  >
+                    {g.name || "—"}
+                  </a>
+                ) : (
+                  <span className="font-medium text-ink">{g.name || "Ẩn danh"}</span>
+                )}
+                {g.contact ? <span>· {g.contact}</span> : null}
+                {g.loggedIn ? <span>· đã đăng nhập</span> : null}
+                <span>· {new Date(g.createdAt).toLocaleString("vi-VN")}</span>
+                <Button
+                  size="sm"
+                  variant={g.status === "new" ? "solid" : "ghost"}
+                  className="ml-auto"
+                  disabled={ban === g.id}
+                  onClick={() => void doi(g)}
+                >
+                  {g.status === "new" ? (
+                    <>
+                      <Check aria-hidden /> Đã xử lý
+                    </>
+                  ) : (
+                    "Mở lại"
+                  )}
+                </Button>
+              </div>
+              <p className="whitespace-pre-line text-sm leading-relaxed text-body">{g.body}</p>
+              {g.status === "done" && g.handledByName ? (
+                <span className="text-xs text-muted">
+                  Xử lý bởi {g.handledByName} · {new Date(g.handledAt).toLocaleString("vi-VN")}
+                </span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {ds && ds.length < tong ? (
+        <Button variant="outline" size="sm" className="self-center" onClick={() => nap(trang + 1)}>
+          Xem thêm
+        </Button>
+      ) : null}
+    </Card>
+  );
+}
+
+/**
+ * Từ khoá bị cấm trong bình luận. Mỗi dòng một từ / cụm từ. Cách khớp (xem
+ * Backend/api/utils/tuCam.js): gõ CÓ DẤU thì chỉ bắt đúng chữ có dấu đó; gõ
+ * KHÔNG DẤU thì bắt người cố tình viết không dấu. Muốn chặn cả hai thì nhập cả hai.
+ */
+function KhoiTuCam({
+  giaTri,
+  dangLuu,
+  daLuu,
+  onLuu,
+}: {
+  giaTri: string[];
+  dangLuu: boolean;
+  daLuu: boolean;
+  onLuu: (ds: string[]) => Promise<boolean>;
+}) {
+  const XUONG_DONG = String.fromCharCode(10);
+  const [vanBan, setVanBan] = React.useState(giaTri.join(XUONG_DONG));
+  const ds = vanBan
+    .split(/\r?\n/)
+    .map((t) => t.trim())
+    .filter(Boolean);
+  const daDoi = ds.join(XUONG_DONG) !== giaTri.join(XUONG_DONG);
+
+  return (
+    <Card className="flex flex-col gap-4 p-6">
+      <div className="flex flex-col gap-1">
+        <h2 className="font-serif text-lg font-bold">Từ khoá bị cấm trong bình luận</h2>
+        <p className="max-w-3xl text-sm text-muted">
+          Bình luận chứa một trong các từ dưới đây vẫn được lưu nhưng <b>không hiện</b> trên trang;
+          chỉ Quản lý thấy (ngay dưới bài viết) để xoá hoặc xử lý người viết. Mỗi dòng một từ hoặc
+          cụm từ. Gõ <b>có dấu</b> (“đần”) thì chỉ bắt đúng chữ đó; gõ <b>không dấu</b> (“dan”) thì
+          bắt người cố tình viết không dấu — muốn chặn cả hai cách viết thì nhập cả hai.
+        </p>
+      </div>
+      <textarea
+        value={vanBan}
+        onChange={(e) => setVanBan(e.target.value)}
+        rows={8}
+        spellCheck={false}
+        placeholder={`từ cấm 1${XUONG_DONG}cụm từ cấm 2`}
+        aria-label="Danh sách từ khoá bị cấm"
+        className="w-full rounded-md border border-line bg-surface px-3 py-2.5 font-mono text-sm leading-relaxed text-ink focus:border-accent focus:outline-none"
+      />
+      <div className="flex flex-wrap items-center gap-3">
+        <Button disabled={dangLuu || !daDoi} onClick={() => void onLuu(ds)}>
+          {dangLuu ? "Đang lưu…" : "Lưu danh sách"}
+        </Button>
+        <span className="text-sm text-muted">{ds.length} từ</span>
+        {daLuu ? (
+          <span className="flex items-center gap-1.5 text-sm text-accent">
+            <Check className="size-4" aria-hidden /> Đã lưu, có hiệu lực ngay
+          </span>
+        ) : null}
+      </div>
+    </Card>
+  );
+}
+
 const TOI_DA_ANH = 12;
 /** Số mục hiện sẵn trước khi bấm "Xem thêm". */
 const HIEN_ANH = 6;
@@ -282,7 +510,24 @@ async function chuanBiAnh(tep: File): Promise<{ image: string; width: number; he
   throw new Error("Ảnh quá lớn, hãy chọn ảnh nhỏ hơn.");
 }
 
-function KhoiAnhTrangChu({ onLoi }: { onLoi: (loi: string) => void }) {
+/**
+ * Quản lý một nhóm ảnh tải lên: mặc định là ảnh bìa xoay vòng trang chủ; với
+ * `nhom="prayer"` là ảnh minh hoạ thẻ lời nguyện. Hai nhóm lưu chung bảng
+ * HeroImage, giới hạn và thứ tự tính riêng từng nhóm.
+ */
+function KhoiAnhTrangChu({
+  onLoi,
+  nhom = "hero",
+  tieuDe = "Ảnh xoay vòng trang chủ",
+  moTa,
+  khiTrong = "Chưa có ảnh nào — trang chủ đang xoay vòng bộ ảnh sẵn có của giao diện.",
+}: {
+  onLoi: (loi: string) => void;
+  nhom?: NhomAnh;
+  tieuDe?: string;
+  moTa?: string;
+  khiTrong?: string;
+}) {
   const locale = useLocale();
   const [ds, setDs] = React.useState<AnhTrangChu[] | null>(null);
   const [ban, setBan] = React.useState("");
@@ -290,10 +535,10 @@ function KhoiAnhTrangChu({ onLoi }: { onLoi: (loi: string) => void }) {
   const chonTep = React.useRef<HTMLInputElement>(null);
 
   const nap = React.useCallback(() => {
-    layAnhTrangChu(locale)
+    layAnhTrangChu(locale, nhom)
       .then(setDs)
       .catch((err) => onLoi(chuLoi(err, "Không tải được danh sách ảnh.")));
-  }, [locale, onLoi]);
+  }, [locale, onLoi, nhom]);
 
   React.useEffect(nap, [nap]);
 
@@ -323,7 +568,7 @@ function KhoiAnhTrangChu({ onLoi }: { onLoi: (loi: string) => void }) {
     void chay("Đang tải ảnh lên…", async () => {
       for (const tep of teps) {
         const anh = await chuanBiAnh(tep);
-        await themAnhTrangChu({ ...anh, alt: tep.name.replace(/\.[^.]+$/, "") }, locale);
+        await themAnhTrangChu({ ...anh, alt: tep.name.replace(/\.[^.]+$/, ""), group: nhom }, locale);
       }
     });
   };
@@ -340,11 +585,15 @@ function KhoiAnhTrangChu({ onLoi }: { onLoi: (loi: string) => void }) {
     <Card className="flex flex-col gap-4 p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="font-serif text-lg font-bold">Ảnh xoay vòng trang chủ</h2>
+          <h2 className="font-serif text-lg font-bold">{tieuDe}</h2>
           <p className="max-w-2xl text-sm text-muted">
-            Ảnh nền khối mở đầu, tự chuyển sau mỗi 7 giây theo thứ tự dưới đây. Chưa có ảnh nào thì
-            trang chủ dùng bộ ảnh sẵn có. Nên chọn ảnh ngang, tối đa {TOI_DA_ANH} ảnh; ảnh lớn được
-            tự thu nhỏ trước khi tải lên.
+            {moTa ?? (
+              <>
+                Ảnh nền khối mở đầu, tự chuyển sau mỗi 7 giây: các ảnh dưới đây chạy trước theo đúng
+                thứ tự, rồi tới bộ ảnh sẵn có của giao diện. Nên chọn ảnh ngang, tối đa {TOI_DA_ANH}{" "}
+                ảnh; ảnh lớn được tự thu nhỏ trước khi tải lên.
+              </>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -373,7 +622,7 @@ function KhoiAnhTrangChu({ onLoi }: { onLoi: (loi: string) => void }) {
         <p className="text-sm text-muted">Đang tải…</p>
       ) : ds.length === 0 ? (
         <p className="rounded-md border border-dashed border-line p-6 text-center text-sm text-muted">
-          Chưa có ảnh nào — trang chủ đang dùng bộ ảnh sẵn có.
+          {khiTrong}
         </p>
       ) : (
         <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -451,13 +700,19 @@ function KhoiChung({
   const [warning, setWarning] = React.useState(cauHinh.warning ?? "");
   const [phone, setPhone] = React.useState(cauHinh.supportphonenumber ?? "");
   const [facebook, setFacebook] = React.useState(cauHinh.supportfacebook ?? "");
+  const [zaloKenh, setZaloKenh] = React.useState(cauHinh.zalosupportinfo ?? "");
+  const [zaloAdmin, setZaloAdmin] = React.useState(cauHinh.zaloadminsupportinfo ?? "");
+  const [tiktok, setTiktok] = React.useState(cauHinh.supporttiktok ?? "");
   const [baoTri, setBaoTri] = React.useState(!!cauHinh.isMaintaning);
 
   return (
     <Card className="flex flex-col gap-5 p-6">
       <div className="flex flex-col gap-1">
         <h2 className="font-serif text-xl font-bold">Thông tin chung</h2>
-        <p className="text-sm text-muted">Tiêu đề site và thông tin liên hệ.</p>
+        <p className="text-sm text-muted">
+          Tiêu đề site và thông tin liên hệ. Zalo, Facebook, TikTok hiện ở khung liên hệ góc dưới
+          phải trang chủ; ô nào để trống thì mục đó không hiện.
+        </p>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
@@ -470,6 +725,24 @@ function KhoiChung({
         <Field id="cf-phone" label="Số điện thoại hỗ trợ">
           {(p) => (
             <Input {...p} value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={40} />
+          )}
+        </Field>
+
+        <Field id="cf-zalo" label="Kênh Zalo" hint="Link Zalo OA / nhóm, vd: https://zalo.me/g/abcxyz">
+          {(p) => (
+            <Input {...p} value={zaloKenh} onChange={(e) => setZaloKenh(e.target.value)} maxLength={200} />
+          )}
+        </Field>
+
+        <Field id="cf-zalo-admin" label="Zalo admin" hint="Số điện thoại Zalo hoặc link zalo.me/…">
+          {(p) => (
+            <Input {...p} value={zaloAdmin} onChange={(e) => setZaloAdmin(e.target.value)} maxLength={200} />
+          )}
+        </Field>
+
+        <Field id="cf-tiktok" label="Kênh TikTok" hint="Link hoặc @tên kênh; để trống nếu chưa có">
+          {(p) => (
+            <Input {...p} value={tiktok} onChange={(e) => setTiktok(e.target.value)} maxLength={200} />
           )}
         </Field>
 
@@ -519,6 +792,9 @@ function KhoiChung({
               warning,
               supportphonenumber: phone,
               supportfacebook: facebook,
+              zalosupportinfo: zaloKenh.trim(),
+              zaloadminsupportinfo: zaloAdmin.trim(),
+              supporttiktok: tiktok.trim(),
               isMaintaning: baoTri,
             })
           }

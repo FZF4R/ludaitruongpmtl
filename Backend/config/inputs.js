@@ -105,6 +105,84 @@ module.exports.inputs = {
                 "type": "json"
             }
         },
+        "Prayer": {
+            "listMine": {
+                "User": {
+                    "type": "json"
+                },
+                "page": {
+                    "type": "number",
+                    "defaultsTo": 1,
+                    "min": 1
+                },
+                "limit": {
+                    "type": "number",
+                    "defaultsTo": 10,
+                    "min": 1,
+                    "max": 50
+                },
+                "kind": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "addPrayer": {
+                "User": {
+                    "type": "json"
+                },
+                "kind": {
+                    "type": "string",
+                    "required": true
+                },
+                "forName": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "body": {
+                    "type": "string",
+                    "required": true
+                },
+                "anonymous": {
+                    "type": "boolean",
+                    "defaultsTo": false
+                }
+            },
+            "deletePrayer": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        },
+        "Notification": {
+            "listNotifications": {
+                "User": {
+                    "type": "json"
+                },
+                "limit": {
+                    "type": "number",
+                    "defaultsTo": 20,
+                    "min": 1,
+                    "max": 50
+                },
+                "onlyCount": {
+                    "type": "boolean",
+                    "defaultsTo": false
+                }
+            },
+            "markRead": {
+                "User": {
+                    "type": "json"
+                },
+                "ids": {
+                    "type": "json",
+                    "defaultsTo": []
+                }
+            }
+        },
         "Comment": {
             "addComment": {
                 "User": {
@@ -117,6 +195,11 @@ module.exports.inputs = {
                 "body": {
                     "type": "string",
                     "required": true
+                },
+                "parentId": {
+                    "type": "string",
+                    "defaultsTo": "",
+                    "description": "Tra loi binh luan nao (mot cap)"
                 }
             },
             "deleteComment": {
@@ -255,6 +338,9 @@ module.exports.inputs = {
                 "zaloadminsupportinfo": {
                     "type": "string"
                 },
+                "supporttiktok": {
+                    "type": "string"
+                },
                 "supporttelegramgroup": {
                     "type": "string"
                 },
@@ -276,6 +362,9 @@ module.exports.inputs = {
                 "articleLayout": {
                     "type": "string",
                     "isIn": ["card", "list"]
+                },
+                "bannedWords": {
+                    "type": "json"
                 },
                 "theme": {
                     "type": "json"
@@ -329,10 +418,133 @@ module.exports.inputs = {
                 }
             }
         },
+        "Prayer": {
+            "setFeatured": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "featured": {
+                    "type": "boolean",
+                    "required": true
+                }
+            }
+        },
+        "Feedback": {
+            "listFeedback": {
+                "User": {
+                    "type": "json"
+                },
+                "status": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "page": {
+                    "type": "number",
+                    "defaultsTo": 1,
+                    "min": 1
+                },
+                "limit": {
+                    "type": "number",
+                    "defaultsTo": 10,
+                    "min": 1,
+                    "max": 50
+                }
+            },
+            "setStatus": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "status": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        },
+        "Moderation": {
+            "listFlagged": {
+                "User": {
+                    "type": "json"
+                },
+                "slug": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "deleteComment": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "userInfo": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "warnUser": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "reason": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "banUser": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "reason": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "unbanUser": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "reason": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            }
+        },
         "HeroImage": {
             "addImage": {
                 "User": {
                     "type": "json"
+                },
+                "group": {
+                    "type": "string",
+                    "defaultsTo": "hero",
+                    "description": "hero = anh bia trang chu, prayer = anh the loi nguyen"
                 },
                 "image": {
                     "type": "string",
@@ -764,6 +976,55 @@ module.exports.inputs = {
             }
         },
         "getSettings": {},
+        "Feedback": {
+            "sendFeedback": {
+                "kind": {
+                    "type": "string",
+                    "defaultsTo": "gop-y"
+                },
+                "name": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "contact": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "body": {
+                    "type": "string",
+                    "required": true
+                },
+                "website": {
+                    "type": "string",
+                    "defaultsTo": "",
+                    "description": "O bay chong bot - nguoi that de trong"
+                },
+                "anonymous": {
+                    "type": "boolean",
+                    "defaultsTo": false,
+                    "description": "Hien an danh, van luu thong tin nguoi gui cho quan tri"
+                }
+            }
+        },
+        "Prayer": {
+            "listPrayers": {
+                "page": {
+                    "type": "number",
+                    "defaultsTo": 1,
+                    "min": 1
+                },
+                "limit": {
+                    "type": "number",
+                    "defaultsTo": 10,
+                    "min": 1,
+                    "max": 50
+                },
+                "kind": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            }
+        },
         "Comment": {
             "listComments": {
                 "slug": {
@@ -821,6 +1082,18 @@ module.exports.inputs = {
                     "type": "string",
                     "isIn": ["newest", "popular"],
                     "defaultsTo": "newest"
+                }
+            },
+            "relatedContent": {
+                "slug": {
+                    "type": "string",
+                    "required": true
+                },
+                "limit": {
+                    "type": "number",
+                    "defaultsTo": 3,
+                    "min": 1,
+                    "max": 12
                 }
             },
             "addView": {

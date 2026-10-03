@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Sai secret." }, { status: 401 });
   }
 
-  let body: { slug?: string; type?: string; settings?: boolean } = {};
+  let body: { slug?: string; type?: string; settings?: boolean; calendar?: boolean } = {};
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -59,6 +59,13 @@ export async function POST(request: Request) {
   if (body.settings) {
     revalidateTag(tags.settings, "max");
     invalidated.push(tags.settings);
+  }
+
+  // Gọi với { "calendar": true } sau khi thêm/sửa ngày vía, ngày lễ (LunarEvent).
+  // Lịch cache tới 1 ngày; trang chủ và /phat-lich đều đọc nó.
+  if (body.calendar) {
+    revalidateTag(tags.calendar, "max");
+    invalidated.push(tags.calendar);
   }
 
   return NextResponse.json({ revalidated: invalidated, at: Date.now() });

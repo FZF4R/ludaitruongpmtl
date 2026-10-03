@@ -11,7 +11,7 @@ const MIME_HOP_LE = ['image/jpeg', 'image/png', 'image/webp']
 const TOI_DA_BYTE = 5 * 1024 * 1024
 const TOI_DA_SO_ANH = 12
 
-const { dinhDangAnh: dinhDang } = require('../../../utils/heroImage')
+const { dinhDangAnh: dinhDang, chuanNhom, dieuKienNhom } = require('../../../utils/heroImage')
 
 /** Ba byte đầu thật sự là ảnh đúng loại khai báo không, đừng tin `mime` client gửi. */
 const dungLoai = (buf, mime) => {
@@ -38,7 +38,10 @@ module.exports = {
                     return baoLoi(exits, 'heroImageInvalid')
                 }
 
-                let soAnh = await HeroImage.count()
+                // Giới hạn và thứ tự tính RIÊNG từng nhóm (ảnh bìa / ảnh lời nguyện).
+                let nhom = chuanNhom(inputs.group)
+                let soAnh = await HeroImage.getDatastore().manager.collection(HeroImage.tableName)
+                    .countDocuments(dieuKienNhom(nhom))
                 if (soAnh >= TOI_DA_SO_ANH) return baoLoi(exits, 'heroImageTooMany')
 
                 let moi = await HeroImage.create({
@@ -49,6 +52,7 @@ module.exports = {
                     alt: sails.config.survey.chuoiNgan(inputs.alt, 200),
                     // Ảnh mới xếp cuối hàng.
                     order: soAnh,
+                    group: nhom,
                     uploadedBy: inputs.User.username || ''
                 }).fetch()
 

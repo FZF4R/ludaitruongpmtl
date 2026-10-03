@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, Check } from "lucide-react";
 import { Badge, Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/form";
 import { HopLoi, chuLoi, useLocale, useQuyen } from "@/components/admin/admin-shell";
+import { DisciplinePanel } from "@/components/admin/discipline-panel";
 import {
   coQuyen,
   layDanhSachNguoiDung,
@@ -46,7 +48,11 @@ export function UserPanel() {
   const [dangTai, setDangTai] = React.useState(true);
   const [loi, setLoi] = React.useState("");
 
-  const [dangChon, setDangChon] = React.useState<string | null>(null);
+  // ?xem=<id> (vd: bấm vào bình luận vi phạm ở trang bài viết) mở thẳng người đó;
+  // ?binhLuan=<id> làm nổi bình luận vi phạm tương ứng trong khối Kỷ luật.
+  const thamSo = useSearchParams();
+  const binhLuanId = thamSo.get("binhLuan");
+  const [dangChon, setDangChon] = React.useState<string | null>(thamSo.get("xem"));
 
   const nap = React.useCallback(() => {
     setDangTai(true);
@@ -143,9 +149,14 @@ export function UserPanel() {
                           </div>
                         </td>
                         <td className="px-4 py-2.5">
-                          <Badge tone={u.role === "Admin" ? "accent" : "neutral"}>
-                            {nhanVaiTro[u.role ?? ""] ?? u.role ?? "—"}
-                          </Badge>
+                          <span className="flex flex-wrap gap-1">
+                            <Badge tone={u.role === "Admin" ? "accent" : "neutral"}>
+                              {nhanVaiTro[u.role ?? ""] ?? u.role ?? "—"}
+                            </Badge>
+                            {u.status === 2 ? (
+                              <Badge className="bg-lacquer/15 text-lacquer">Đã khoá</Badge>
+                            ) : null}
+                          </span>
                         </td>
                         <td className="px-4 py-2.5 tabular-nums text-muted">{ngay(u.createdAt)}</td>
                         <td className="px-4 py-2.5 text-right">
@@ -190,7 +201,7 @@ export function UserPanel() {
           ) : null}
         </Card>
 
-        {xemChiTiet ? <ChiTiet id={dangChon} onLuuXong={nap} /> : null}
+        {xemChiTiet ? <ChiTiet id={dangChon} binhLuanId={binhLuanId} onLuuXong={nap} /> : null}
       </div>
     </div>
   );
@@ -198,8 +209,17 @@ export function UserPanel() {
 
 /* ------------------------------------------------------------------ */
 
-function ChiTiet({ id, onLuuXong }: { id: string | null; onLuuXong: () => void }) {
+function ChiTiet({
+  id,
+  binhLuanId,
+  onLuuXong,
+}: {
+  id: string | null;
+  binhLuanId: string | null;
+  onLuuXong: () => void;
+}) {
   const locale = useLocale();
+  const xuLyViPham = coQuyen(useQuyen(), "moderation.manage");
 
   const [nd, setNd] = React.useState<NguoiDungChiTiet | null>(null);
   const [dangTai, setDangTai] = React.useState(false);
@@ -362,6 +382,8 @@ function ChiTiet({ id, onLuuXong }: { id: string | null; onLuuXong: () => void }
           <p className="text-sm text-muted">Người này chưa khai hồ sơ.</p>
         )}
       </div>
+
+      {xuLyViPham ? <DisciplinePanel key={nd.id} userId={nd.id} binhLuanId={binhLuanId} /> : null}
     </Card>
   );
 }

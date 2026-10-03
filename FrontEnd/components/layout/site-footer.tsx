@@ -4,6 +4,7 @@ import { LocaleLink } from "@/components/ui/locale-link";
 import { buddhistYear, canChiYear, solarToLunar } from "@/lib/lunar";
 import { getDictionary } from "@/lib/dictionary";
 import { EditableText } from "@/components/layout/inline-edit";
+import { FooterFeedback } from "@/components/layout/footer-feedback";
 
 /**
  * Footer là Server Component: nó tính năm Phật lịch một lần lúc render rồi
@@ -54,6 +55,9 @@ export async function SiteFooter() {
             );
           })}
         </div>
+
+        {/* Góp ý gọn: chỉ trang chủ, chỉ người đã đăng nhập (tự ẩn trong các trường hợp khác). */}
+        <FooterFeedback nhan={dict.feedback} />
 
         <div className="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
           <p lang="vi">

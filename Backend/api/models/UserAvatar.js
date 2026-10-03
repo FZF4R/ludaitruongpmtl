@@ -21,6 +21,12 @@ module.exports = {
         avatar: {
             type: 'string',
             required: true,
+        },
+        // Loại ảnh để trả đúng Content-Type ở /v1/public/avatar/:userId.
+        // Bản ghi cũ không có trường này thì coi là image/jpeg.
+        mime: {
+            type: 'string',
+            defaultsTo: 'image/jpeg',
         }
     },
 };

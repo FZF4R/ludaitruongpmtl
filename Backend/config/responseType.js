@@ -29,6 +29,13 @@ module.exports.responseType = {
         description: 'Not unique',
         responseType: 'responseToClient',
     },
+    // Tài khoản bị khoá do vi phạm (Users.status = 2). Mã riêng để FrontEnd
+    // nhận ra ngay và chuyển sang trang thông báo, thay vì coi như hết phiên.
+    accountBanned: {
+        statusCode: 423,
+        description: 'Account banned',
+        responseType: 'responseToClient',
+    },
     apiFailure: {
         statusCode: 202,
         description: 'Error calling third party API',

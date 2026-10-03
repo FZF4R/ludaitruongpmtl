@@ -26,6 +26,8 @@ type TrangThaiSua = {
   quyen: string[];
   /** id người đang đăng nhập; null nếu chưa đăng nhập hoặc đang đọc hồ sơ. */
   nguoiDungId: string | null;
+  /** Tên + avatar người đang đăng nhập (null nếu chưa), để hiện "gửi với tên…". */
+  nguoiDung: { name: string; avatarUrl: string } | null;
   /** Đã biết trạng thái đăng nhập chưa (tránh nháy nút "Đăng nhập" khi hồ sơ chưa về). */
   daBiet: boolean;
   /** Có quyền `site.text.edit`. */
@@ -37,6 +39,7 @@ type TrangThaiSua = {
 const SuaContext = React.createContext<TrangThaiSua>({
   quyen: [],
   nguoiDungId: null,
+  nguoiDung: null,
   daBiet: false,
   coQuyen: false,
   dangSua: false,
@@ -49,6 +52,7 @@ export function InlineEditProvider({ children }: { children: React.ReactNode }) 
   const { locale } = splitLocale(usePathname());
   const [quyen, setQuyen] = React.useState<string[]>([]);
   const [nguoiDungId, setNguoiDungId] = React.useState<string | null>(null);
+  const [nguoiDung, setNguoiDung] = React.useState<{ name: string; avatarUrl: string } | null>(null);
   const [daBiet, setDaBiet] = React.useState(false);
   const coQuyen = quyen.includes("site.text.edit");
   const [dangSua, setDangSua] = React.useState(false);
@@ -66,6 +70,7 @@ export function InlineEditProvider({ children }: { children: React.ReactNode }) 
         if (!conSong) return;
         setQuyen(hoSo.permissions ?? []);
         setNguoiDungId(hoSo.id || null);
+        setNguoiDung({ name: hoSo.fullName || hoSo.username, avatarUrl: hoSo.avatarUrl || "" });
         if (!hoSo.permissions?.includes("site.text.edit")) return;
         try {
           setDangSua(window.sessionStorage.getItem(KHOA_CHE_DO) === "1");
@@ -95,14 +100,15 @@ export function InlineEditProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   return (
-    <SuaContext.Provider value={{ quyen, nguoiDungId, daBiet, coQuyen, dangSua, doiCheDo }}>
+    <SuaContext.Provider value={{ quyen, nguoiDungId, nguoiDung, daBiet, coQuyen, dangSua, doiCheDo }}>
       {children}
       {coQuyen ? (
         <button
           type="button"
           onClick={doiCheDo}
           className={cn(
-            "fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium shadow-card-lift transition-colors",
+            // Góc dưới TRÁI: góc phải dành cho khung liên hệ trang chủ (ContactDock).
+            "fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium shadow-card-lift transition-colors",
             dangSua
               ? "border-accent bg-accent text-paper hover:opacity-90"
               : "border-line bg-surface text-ink hover:border-line-strong",

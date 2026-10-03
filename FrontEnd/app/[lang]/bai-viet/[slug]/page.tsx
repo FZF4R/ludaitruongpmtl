@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LocaleLink as Link } from "@/components/ui/locale-link";
-import { getContent, listSlugs } from "@/lib/api";
+import { getContent, getRelated, listSlugs } from "@/lib/api";
+import { ContentGrid } from "@/components/content/content-card";
 import { contentMetadata, contentJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { Container, Badge, JsonLd, Separator } from "@/components/ui/primitives";
 import { Breadcrumbs } from "@/components/content/navigation";
@@ -10,6 +11,7 @@ import { formatDualDate, readingTime } from "@/lib/format";
 import { getDictionary } from "@/lib/dictionary";
 import { ViewTracker } from "@/components/content/view-tracker";
 import { CommentSection } from "@/components/content/comment-section";
+import { Avatar } from "@/components/ui/avatar";
 
 export const revalidate = 3600;
 
@@ -37,8 +39,11 @@ export default async function ArticlePage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await props.params;
-  const content = await getContent(slug);
-  const dict = await getDictionary();
+  const [content, dict, lienQuan] = await Promise.all([
+    getContent(slug),
+    getDictionary(),
+    getRelated(slug, 3),
+  ]);
 
   if (!content || (content.type !== "article" && content.type !== "blog")) {
     notFound();
@@ -52,7 +57,8 @@ export default async function ArticlePage(props: {
 
   return (
     <Container className="py-12">
-      <article className="mx-auto flex max-w-3xl flex-col gap-8">
+      {/* Rộng hơn trang danh sách (5xl thay vì 3xl) để thân bài thoáng hai bên. */}
+      <article className="mx-auto flex max-w-5xl flex-col gap-8">
         <Breadcrumbs trail={trail} />
 
         <header className="flex flex-col gap-4">
@@ -77,7 +83,9 @@ export default async function ArticlePage(props: {
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
             {content.author ? (
-              <span>
+              <span className="flex items-center gap-2">
+                <Avatar src={content.author.avatarUrl} name={content.author.name} size={28} />
+                <span>
                 {content.author.title ? `${content.author.title} ` : ""}
                 <span className="font-medium text-ink">{content.author.name}</span>
                 {content.author.dharmaName ? (
@@ -86,6 +94,7 @@ export default async function ArticlePage(props: {
                     · {dict.comments.dharmaName}: {content.author.dharmaName}
                   </span>
                 ) : null}
+                </span>
               </span>
             ) : null}
             <span aria-hidden>·</span>
@@ -132,6 +141,15 @@ export default async function ArticlePage(props: {
         ) : null}
 
         <CommentSection slug={content.slug} nhan={dict.comments} />
+
+        {lienQuan.length > 0 ? (
+          <section aria-labelledby="bai-lien-quan" className="flex flex-col gap-5 border-t border-line pt-8">
+            <h2 id="bai-lien-quan" className="font-serif text-2xl font-bold tracking-tight">
+              {dict.comments.related}
+            </h2>
+            <ContentGrid items={lienQuan} columns={3} thumbnail />
+          </section>
+        ) : null}
       </article>
 
       <ViewTracker slug={content.slug} />

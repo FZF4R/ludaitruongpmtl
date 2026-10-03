@@ -189,6 +189,45 @@ module.exports.notificationEn = {
         permissionNotGrantable: {
             message: "You cannot grant a permission you do not have"
         },
+        prayerInvalid: {
+            message: "Prayers must be 2 to 500 characters long"
+        },
+        prayerOncePerDay: {
+            message: "You can write up to 3 prayers per day. See you tomorrow"
+        },
+        prayerNotFound: {
+            message: "Prayer not found"
+        },
+        prayerForbidden: {
+            message: "You can only delete your own prayers"
+        },
+        avatarInvalid: {
+            message: "Invalid avatar (JPG, PNG or WebP under 1MB only)"
+        },
+        commentFlagged: {
+            message: "Your comment contains inappropriate words and is not displayed"
+        },
+        moderationSelf: {
+            message: "You cannot take action on your own account"
+        },
+        moderationRank: {
+            message: "You can only act on accounts with a lower role than yours"
+        },
+        moderationWarnLimit: {
+            message: "This account has already received 5 warnings"
+        },
+        feedbackThanks: {
+            message: "Thank you for your feedback. The team will review it soon."
+        },
+        feedbackInvalid: {
+            message: "Feedback must be 5 to 2000 characters long"
+        },
+        feedbackTooMany: {
+            message: "You have sent several messages, please try again in a few minutes"
+        },
+        feedbackNotFound: {
+            message: "Feedback not found"
+        },
         commentInvalid: {
             message: "Comments must be 2 to 2000 characters long"
         },

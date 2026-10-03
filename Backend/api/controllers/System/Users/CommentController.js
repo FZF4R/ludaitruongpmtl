@@ -6,6 +6,8 @@
  * `comment.moderate`, kiểm tra trong action vì phụ thuộc chủ bình luận.
  */
 const { ganTacGia } = require('../../../utils/binhLuan')
+const { guiThongBao } = require('../../../utils/thongBao')
+const { timTuCam } = require('../../../utils/tuCam')
 
 const DAI_TOI_THIEU = 2
 const DAI_TOI_DA = 2000
@@ -40,11 +42,54 @@ module.exports = {
                     return baoLoi(exits, 'commentTooFast')
                 }
 
+                // Trả lời: chỉ một cấp. Trả lời một câu trả lời thì gắn vào bình
+                // luận gốc của nó, và ghi người được trả lời để báo đúng người.
+                let parentId = ''
+                let replyToUserId = ''
+                if (inputs.parentId) {
+                    let cha = await Comment.findOne({ id: String(inputs.parentId) })
+                    if (!cha || cha.status !== 'visible' || cha.contentId !== String(bai.id)) {
+                        return baoLoi(exits, 'commentNotFound')
+                    }
+                    parentId = cha.parentId || String(cha.id)
+                    replyToUserId = String(cha.userId)
+                }
+
+                // Chứa từ cấm: VẪN lưu (để quản trị xem, xử lý người viết) nhưng ở
+                // trạng thái `flagged` - không hiện công khai, không gửi thông báo.
+                let tuCam = await timTuCam(body)
+
                 let moi = await Comment.create({
                     contentId: String(bai.id),
                     userId: String(User.id),
-                    body: body
+                    body: body,
+                    parentId: parentId,
+                    replyToUserId: replyToUserId,
+                    status: tuCam.length ? 'flagged' : 'visible',
+                    flaggedWords: tuCam
                 }).fetch()
+
+                if (tuCam.length) {
+                    // Không nói từ nào bị bắt - nói ra là chỉ cách lách.
+                    return exits.successRequest({
+                        messageNode: 'Users',
+                        message: 'commentFlagged',
+                        data: Object.assign((await ganTacGia([moi]))[0], { flagged: true })
+                    });
+                }
+
+                // Báo cho người được trả lời, và cho tác giả bài (bài lấy tác giả
+                // theo hồ sơ, hoặc người tạo bài). guiThongBao tự bỏ chính mình
+                // và người trùng.
+                await guiThongBao({
+                    danhSach: [
+                        { userId: replyToUserId, type: 'reply' },
+                        { userId: bai.authorId || bai.createdById, type: 'comment' }
+                    ],
+                    actorId: User.id,
+                    bai: bai,
+                    binhLuan: moi
+                })
 
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',

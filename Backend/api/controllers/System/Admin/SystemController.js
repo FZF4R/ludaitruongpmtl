@@ -19,7 +19,8 @@ const path = require('path');
 const TRUONG_QUAN_TRI = [
     'title', 'warning', 'note',
     'supportphonenumber', 'pagefacebookinfo', 'supportfacebook', 'supporttelegram',
-    'isMaintaning', 'langLib', 'theme', 'themeDark'
+    'zalosupportinfo', 'zaloadminsupportinfo', 'supporttiktok',
+    'isMaintaning', 'langLib', 'theme', 'themeDark', 'articleLayout', 'bannedWords'
 ]
 
 /** Bản ghi cấu hình -> đúng những gì trang quản trị cần, không thừa một cột. */

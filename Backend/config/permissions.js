@@ -27,6 +27,27 @@ const actionPermissions = {
   'POST /v1/user/comments': 'comment.write',
   'POST /v1/user/comments/delete': 'comment.write',
 
+  //==== Cầu an / cầu siêu =====
+  // Xoá lời của người khác cần thêm `comment.moderate` (kiểm tra trong action).
+  'GET /v1/user/prayers/list': 'prayer.write',
+  'POST /v1/user/prayers': 'prayer.write',
+  'POST /v1/user/prayers/delete': 'prayer.write',
+
+  //==== Lời nguyện nổi bật: người kiểm duyệt chọn hiện trong slideshow trang chủ =====
+  'POST /v1/admin/prayers/feature': 'comment.moderate',
+
+  //==== Đề xuất & góp ý (danh sách nằm ở trang Tổng quan) =====
+  'GET /v1/admin/feedback': 'system.settings',
+  'POST /v1/admin/feedback/status': 'system.settings',
+
+  //==== Kiểm duyệt: bình luận vi phạm, cảnh cáo, khoá tài khoản =====
+  'GET /v1/admin/moderation/comments': 'moderation.manage',
+  'POST /v1/admin/moderation/comments/delete': 'moderation.manage',
+  'GET /v1/admin/moderation/user': 'moderation.manage',
+  'POST /v1/admin/moderation/warn': 'moderation.manage',
+  'POST /v1/admin/moderation/ban': 'moderation.manage',
+  'POST /v1/admin/moderation/unban': 'moderation.manage',
+
   //==== Ảnh xoay vòng trang chủ =====
   'POST /v1/admin/hero-images/add': 'system.settings',
   'POST /v1/admin/hero-images/delete': 'system.settings',

@@ -26,10 +26,29 @@ module.exports = {
             type: 'string',
             required: true,
         },
+        // Trả lời MỘT cấp: `parentId` luôn là bình luận gốc (cấp 1). Trả lời
+        // một câu trả lời thì vẫn gắn vào bình luận gốc, còn người được trả
+        // lời ghi ở `replyToUserId` để hiện "@tên" và gửi thông báo đúng người.
+        parentId: {
+            type: 'string',
+            defaultsTo: '',
+            description: 'Rỗng = bình luận gốc'
+        },
+        replyToUserId: {
+            type: 'string',
+            defaultsTo: '',
+        },
         status: {
             type: 'string',
-            isIn: ['visible', 'hidden'],
+            // flagged = chứa từ cấm: vẫn lưu nhưng không hiện công khai, chỉ
+            // người có `moderation.manage` thấy (System/Admin/ModerationController).
+            isIn: ['visible', 'hidden', 'flagged'],
             defaultsTo: 'visible',
+        },
+        flaggedWords: {
+            type: 'json',
+            defaultsTo: [],
+            description: 'Các từ cấm đã khớp khi status = flagged'
         },
         hiddenBy: {
             type: 'string',

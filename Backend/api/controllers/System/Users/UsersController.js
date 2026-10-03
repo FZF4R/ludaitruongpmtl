@@ -7,6 +7,10 @@
 const fs = require('fs')
 const path = require('path');
 const { dongBoBaiCuaTacGia } = require('../../../utils/tacGia');
+const { docAnhBase64, layAvatarUrl } = require('../../../utils/avatar');
+
+/** Avatar đã được trình duyệt thu nhỏ (256px); quá mức này là ảnh gốc gửi thẳng lên. */
+const AVATAR_TOI_DA_BYTE = 1024 * 1024;
 
 /**
  * Lấy IP client để gửi kèm khi verify captcha (tuỳ chọn với Google, không có cũng không sao).
@@ -31,8 +35,9 @@ function getClientIp(req) {
  * Nó suy ra từ cờ profileCompleted chứ không phải từ "tài khoản vừa được tạo":
  * người bỏ dở form giữa chừng vẫn phải được hỏi lại ở lần đăng nhập sau.
  */
-function dinhDangHoSo(user, profile) {
+function dinhDangHoSo(user, profile, avatarUrl) {
     return {
+        avatarUrl: avatarUrl || '',
         // Để FrontEnd nhận ra nội dung của chính mình (bình luận có nút xoá).
         id: String(user.id || ''),
         isNewUser: !user.profileCompleted,
@@ -287,6 +292,17 @@ module.exports = {
                 });
                 return;
             }
+            // Email thuộc một tài khoản đã bị khoá: không cho đăng ký lại để lách lệnh khoá.
+            if (inputs.email) {
+                let daKhoa = await sails.dataProcess.findOne(Users, {
+                    condition: { email: String(inputs.email).trim().toLowerCase(), status: { '!=': 1 } }
+                });
+                if (daKhoa) {
+                    sails.checkErrorOutput({ messageNode: 'Users', message: 'userBanned', reponseType: 'accountBanned' }, exits);
+                    return;
+                }
+            }
+
             var newUser = {
               email: inputs.email,
               username: inputs.username,
@@ -369,7 +385,7 @@ module.exports = {
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',
                     message: 'success',
-                    data: dinhDangHoSo(User, profile)
+                    data: dinhDangHoSo(User, profile, await layAvatarUrl(User.id))
                 });
             } catch (err) {
                 sails.checkErrorOutput(err, exits);
@@ -440,7 +456,7 @@ module.exports = {
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',
                     message: 'success',
-                    data: dinhDangHoSo(Object.assign({}, User, capNhatUser), hoSo)
+                    data: dinhDangHoSo(Object.assign({}, User, capNhatUser), hoSo, await layAvatarUrl(userId))
                 });
             } catch (err) {
                 sails.checkErrorOutput(err, exits);
@@ -570,8 +586,14 @@ module.exports = {
                     });
                 }
 
-                // Normalize base64 (strip data URI prefix if present)
-                const base64Data = avatar.includes(',') ? avatar.split(',').pop() : avatar;
+                // Chỉ nhận data URL ảnh thật (JPG/PNG/WebP, kiểm tra bằng byte
+                // đầu tệp) và không quá 1MB - ảnh này hiện công khai cạnh bài
+                // viết và bình luận, nên không nhận bừa nội dung client gửi.
+                const anh = docAnhBase64(avatar, AVATAR_TOI_DA_BYTE);
+                if (!anh) {
+                    return sails.checkErrorOutput({ messageNode: 'Users', message: 'avatarInvalid' }, exits);
+                }
+                const base64Data = anh.base64;
 
                 // Upsert logic: find existing avatar record for user
                 let existing = await sails.dataProcess.findOne(UserAvatar, { condition: { userId: User.id } });
@@ -579,20 +601,20 @@ module.exports = {
                 if (existing) {
                     avatarDoc = await sails.dataProcess.updateDocument(UserAvatar, {
                         condition: { id: existing.id },
-                        updateObject: { avatar: base64Data, username: User.username }
+                        updateObject: { avatar: base64Data, mime: anh.mime, username: User.username }
                     });
                     avatarDoc = Array.isArray(avatarDoc) ? avatarDoc[0] : avatarDoc;
                 } else {
                     avatarDoc = await sails.dataProcess.createDocument(UserAvatar, {
                         userId: User.id,
                         username: User.username,
-                        avatar: base64Data
+                        avatar: base64Data,
+                        mime: anh.mime
                     });
                 }
 
-                // Construct a data URI to return for immediate display (PNG assumed). Frontend can cache.
-                // In future, switch to file storage & return URL path.
-                const avatarUrl = 'data:image/png;base64,' + avatarDoc.avatar;
+                // URL công khai kèm phiên bản: đổi ảnh là đổi URL, cache không giữ ảnh cũ.
+                const avatarUrl = await layAvatarUrl(User.id);
 
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',

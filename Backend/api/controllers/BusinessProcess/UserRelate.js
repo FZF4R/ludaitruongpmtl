@@ -15,6 +15,7 @@ module.exports = class UserRelate {
                     return Promise.reject({
                         message: 'userBanned',
                         messageNode: 'Users',
+                        reponseType: 'accountBanned'
                     })
                 }
                 return sails.helpers.passwords.checkPassword(password, userDetail.password);
@@ -48,7 +49,8 @@ module.exports = class UserRelate {
             if (existingUser.status !== 1) {
                 return Promise.reject({
                     messageNode: 'Users',
-                    message: 'userBanned'
+                    message: 'userBanned',
+                    reponseType: 'accountBanned'
                 })
             }
 

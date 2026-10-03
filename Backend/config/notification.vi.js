@@ -189,6 +189,45 @@ module.exports.notificationVi = {
         permissionNotGrantable: {
             message: "Không thể cấp quyền mà chính bạn không có"
         },
+        prayerInvalid: {
+            message: "Lời cầu nguyện phải dài từ 2 đến 500 ký tự"
+        },
+        prayerOncePerDay: {
+            message: "Mỗi ngày bạn viết được tối đa 3 lời cầu nguyện. Hẹn bạn ngày mai"
+        },
+        prayerNotFound: {
+            message: "Không tìm thấy lời cầu nguyện"
+        },
+        prayerForbidden: {
+            message: "Bạn chỉ xoá được lời cầu nguyện của chính mình"
+        },
+        avatarInvalid: {
+            message: "Ảnh đại diện không hợp lệ (chỉ nhận JPG, PNG, WebP dưới 1MB)"
+        },
+        commentFlagged: {
+            message: "Bình luận của bạn chứa từ ngữ không phù hợp nên chưa được hiển thị"
+        },
+        moderationSelf: {
+            message: "Không thể tự xử lý tài khoản của chính mình"
+        },
+        moderationRank: {
+            message: "Bạn chỉ xử lý được tài khoản có vai trò thấp hơn mình"
+        },
+        moderationWarnLimit: {
+            message: "Tài khoản này đã nhận đủ 5 lần cảnh cáo"
+        },
+        feedbackThanks: {
+            message: "Cảm ơn bạn đã gửi góp ý. Ban quản trị sẽ xem xét sớm."
+        },
+        feedbackInvalid: {
+            message: "Nội dung góp ý phải dài từ 5 đến 2000 ký tự"
+        },
+        feedbackTooMany: {
+            message: "Bạn đã gửi khá nhiều góp ý, vui lòng thử lại sau ít phút"
+        },
+        feedbackNotFound: {
+            message: "Không tìm thấy góp ý"
+        },
         commentInvalid: {
             message: "Bình luận phải dài từ 2 đến 2000 ký tự"
         },

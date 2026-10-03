@@ -133,6 +133,8 @@ module.exports = {
             delete systemSettings.isPublicServiceForAll
             delete systemSettings.serviceToken
             delete systemSettings.id
+            // Danh sách từ cấm chỉ để máy lọc bình luận - lộ ra là chỉ đường lách.
+            delete systemSettings.bannedWords
 
             systemSettings.notify = sails.config.siteSettings.chonThongBao(systemSettings.notify);
 

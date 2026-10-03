@@ -4,12 +4,18 @@
  * Danh sách ảnh xoay vòng trang chủ và nội dung từng ảnh.
  */
 
-const { dinhDangAnh: dinhDang } = require('../../../utils/heroImage')
+const { dinhDangAnh: dinhDang, dieuKienNhom } = require('../../../utils/heroImage')
 
 module.exports = {
 
     listImages: ({
-        inputs: {},
+        inputs: {
+            group: {
+                type: 'string',
+                defaultsTo: 'hero',
+                description: 'hero = anh bia trang chu, prayer = anh the loi nguyen'
+            }
+        },
         exits: sails.config.responseType,
         fn: async function (inputs, exits) {
             try {
@@ -17,7 +23,7 @@ module.exports = {
                 // Truy vấn Mongo trực tiếp vì app để schema:false, Waterline không
                 // cho `select`/`omit` - mà lấy cả `data` thì mỗi lượt là vài MB.
                 let ds = await HeroImage.getDatastore().manager.collection(HeroImage.tableName)
-                    .find({}, { projection: { data: 0 } })
+                    .find(dieuKienNhom(inputs.group), { projection: { data: 0 } })
                     .sort({ order: 1, createdAt: 1 })
                     .toArray()
                 ds = ds.map(row => Object.assign({}, row, { id: String(row._id) }))

@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const { dongBoBaiCuaTacGia } = require('../../../utils/tacGia')
+const { lamSachDanhSach, xoaCache } = require('../../../utils/tuCam')
 
 /**
  * IP client để ghi vào nhật ký đổi vai trò.
@@ -316,6 +317,10 @@ module.exports = {
                     id: result.id
                 }
                 let updateObject = inputs
+                if (inputs.bannedWords !== undefined) {
+                    updateObject.bannedWords = lamSachDanhSach(inputs.bannedWords)
+                    xoaCache()
+                }
                 if (inputs.langLib !== undefined) {
                     updateObject.langLib = sails.Ultils.normalizeLangLib(inputs.langLib, sails.Ultils.langLibFields('systemSettings'))
                 }

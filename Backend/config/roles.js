@@ -42,7 +42,8 @@ const GRANTS = {
   User: [
     'content.read',
     'content.bookmark',
-    'comment.write'
+    'comment.write',
+    'prayer.write'
   ],
   Partner: [
     'content.draft',
@@ -76,12 +77,18 @@ const GRANTS = {
     'system.settings',
     'audit.read',
     'role.permissions.manage',
-    'site.text.edit'
+    'site.text.edit',
+    'moderation.manage'
   ]
 }
 
 /**
  * Danh mục mọi quyền, kèm nhãn cho màn hình Phân quyền.
+ *
+ * `since` (quyền thêm về sau): vai trò có bản phân quyền lưu TRƯỚC mốc này
+ * chưa từng thấy quyền đó, nên được tự cộng thêm nếu bản mặc định của vai trò
+ * có nó (xem `napTuCSDL`). Bản lưu SAU mốc này thì tôn trọng nguyên văn - admin
+ * đã thấy quyền và chủ động bỏ tick. Thêm quyền mới thì nhớ đặt `since`.
  *
  * Đây cũng là DANH SÁCH TRẮNG khi lưu: quyền không có ở đây bị từ chối, nên
  * thêm quyền mới phải thêm cả vào GRANTS (bậc mặc định) lẫn vào đây (nhãn).
@@ -96,11 +103,13 @@ const CATALOG = [
   { key: 'content.editAny', group: 'Nội dung', label: 'Soạn và sửa mọi bài viết, kinh sách' },
   { key: 'content.publish', group: 'Nội dung', label: 'Đăng, ẩn, lưu trữ bài' },
   { key: 'content.delete', group: 'Nội dung', label: 'Xoá bài' },
-  { key: 'sutra.manage', group: 'Nội dung', label: 'Thêm, sửa kinh sách (kèm chọn dịch giả)' },
+  { key: 'sutra.manage', group: 'Nội dung', label: 'Thêm, sửa kinh sách (kèm chọn dịch giả)', since: '2026-10-04T00:35:00+07:00' },
   { key: 'category.manage', group: 'Nội dung', label: 'Quản lý chuyên mục' },
   { key: 'calendar.manage', group: 'Nội dung', label: 'Quản lý Phật lịch' },
   { key: 'comment.write', group: 'Bình luận', label: 'Viết bình luận' },
-  { key: 'comment.moderate', group: 'Bình luận', label: 'Kiểm duyệt bình luận' },
+  { key: 'comment.moderate', group: 'Bình luận', label: 'Kiểm duyệt bình luận và lời cầu nguyện' },
+  { key: 'moderation.manage', group: 'Bình luận', label: 'Xem bình luận vi phạm, xoá hẳn, cảnh cáo / khoá tài khoản', since: '2026-10-04T02:00:00+07:00' },
+  { key: 'prayer.write', group: 'Bình luận', label: 'Viết lời cầu an / cầu siêu', since: '2026-10-04T00:50:00+07:00' },
   { key: 'user.list', group: 'Người dùng', label: 'Xem danh sách tài khoản' },
   { key: 'user.manage', group: 'Người dùng', label: 'Xem chi tiết và sửa email, họ tên tài khoản' },
   { key: 'user.role.assign', group: 'Người dùng', label: 'Đổi vai trò tài khoản (bậc thấp hơn mình)' },
@@ -159,7 +168,16 @@ const napTuCSDL = async () => {
   try {
     const banGhi = await RolePermission.find()
     const daLuu = {}
-    banGhi.forEach(muc => { daLuu[muc.role] = muc.permissions })
+    banGhi.forEach(muc => {
+      const quyen = Array.isArray(muc.permissions) ? muc.permissions.slice() : []
+      // Cộng quyền mới ra đời sau lần lưu này (xem `since` ở CATALOG).
+      CATALOG.forEach(item => {
+        if (!item.since || quyen.includes(item.key)) return
+        const coMacDinh = (DEFAULTS[muc.role] || []).includes(item.key)
+        if (coMacDinh && (muc.updatedAt || 0) < Date.parse(item.since)) quyen.push(item.key)
+      })
+      daLuu[muc.role] = quyen
+    })
     ROLES.forEach(role => apDung(role, daLuu[role] || null))
   } catch (err) {
     sails.log.error('[roles] Không nạp được quyền từ CSDL, giữ bảng cũ:', err.message)

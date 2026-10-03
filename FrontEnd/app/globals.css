@@ -195,3 +195,13 @@
 .prose-dharma img {
   border-radius: 0.5rem;
 }
+
+/* Lưới tháng ở trang chủ (components/home/month-calendar.tsx) mờ dần vào khi đổi tháng. */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

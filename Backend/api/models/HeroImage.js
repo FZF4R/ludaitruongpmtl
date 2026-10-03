@@ -38,6 +38,13 @@ module.exports = {
             type: 'string',
             defaultsTo: ''
         },
+        // Nhóm ảnh: `hero` = ảnh bìa xoay vòng trang chủ, `prayer` = ảnh minh hoạ
+        // thẻ lời nguyện. Bản ghi cũ không có trường này được coi là `hero`.
+        group: {
+            type: 'string',
+            isIn: ['hero', 'prayer'],
+            defaultsTo: 'hero'
+        },
         order: {
             type: 'number',
             defaultsTo: 0

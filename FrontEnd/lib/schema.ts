@@ -46,6 +46,8 @@ export const authorSchema = z.object({
   /** Hoà thượng, Thượng toạ, Đại đức, Sư cô, Cư sĩ… */
   title: z.string().optional(),
   dharmaName: z.string().optional(),
+  /** Avatar của tác giả khi tác giả lấy theo hồ sơ người dùng. */
+  avatarUrl: z.string().optional(),
 });
 
 export const categoryRefSchema = z.object({
@@ -68,7 +70,7 @@ export const contentSchema = z.object({
   /** Dịch giả kinh sách (người dùng trong hệ thống hoặc nhập tay). */
   translator: z.object({ name: z.string(), dharmaName: z.string().optional() }).optional(),
   /** Người đăng bài trong khu quản trị. */
-  postedBy: z.object({ name: z.string() }).optional(),
+  postedBy: z.object({ name: z.string(), avatarUrl: z.string().optional() }).optional(),
   categories: z.array(categoryRefSchema).default([]),
   tags: z.array(z.string()).default([]),
   publishedAt: z.string(),
