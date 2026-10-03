@@ -39,7 +39,7 @@ export const tabQuanTri = [
   { href: "/admin/dashboard", nhan: "Tổng quan", quyen: "system.settings" },
   { href: "/admin/user", nhan: "Người dùng", quyen: "user.list" },
   { href: "/admin/blog", nhan: "Bài viết", quyen: "content.editAny" },
-  { href: "/admin/library", nhan: "Kinh sách", quyen: "content.editAny" },
+  { href: "/admin/library", nhan: "Kinh sách", quyen: "sutra.manage" },
   { href: "/admin/roles", nhan: "Phân quyền", quyen: "role.permissions.manage" },
 ] as const;
 
@@ -137,10 +137,55 @@ export type CauHinh = {
   supportfacebook: string | null;
   supporttelegram: string | null;
   isMaintaning: boolean | null;
+  articleLayout: "card" | "list" | null;
   langLib: unknown;
   theme: Record<string, string> | null;
   themeDark: Record<string, string> | null;
 };
+
+/* ------------------------------------------------------------------ */
+/* Ảnh xoay vòng trang chủ                                             */
+/* ------------------------------------------------------------------ */
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:1337";
+
+export type AnhTrangChu = {
+  id: string;
+  /** Đường dẫn tương đối trên API; ghép với API_URL qua `urlAnh`. */
+  url: string;
+  width: number;
+  height: number;
+  alt: string;
+};
+
+export const urlAnh = (anh: AnhTrangChu) => new URL(anh.url, API_URL).toString();
+
+export function layAnhTrangChu(locale: Locale) {
+  return goiApi<AnhTrangChu[]>("/v1/public/hero-images", { locale });
+}
+
+export function themAnhTrangChu(
+  than: { image: string; width: number; height: number; alt?: string },
+  locale: Locale,
+) {
+  return goiApi<AnhTrangChu>("/v1/admin/hero-images/add", { method: "POST", body: than, locale });
+}
+
+export function xoaAnhTrangChu(id: string, locale: Locale) {
+  return goiApi<{ id: string }>("/v1/admin/hero-images/delete", {
+    method: "POST",
+    body: { id },
+    locale,
+  });
+}
+
+export function sapXepAnhTrangChu(ids: string[], locale: Locale) {
+  return goiApi<{ ids: string[] }>("/v1/admin/hero-images/reorder", {
+    method: "POST",
+    body: { ids },
+    locale,
+  });
+}
 
 export function layCauHinh(locale: Locale) {
   return goiApi<CauHinh>("/v1/admin/settings", { locale });
@@ -289,6 +334,18 @@ export type Chuong = {
   bodyHtml?: string;
 };
 
+/**
+ * Tác giả của bài. `fromProfile: true` = lấy họ tên + pháp danh theo hồ sơ của
+ * người đăng (authorId) và tự cập nhật khi hồ sơ đổi; backend bỏ qua tên client
+ * gửi kèm. Không có cờ = tác giả gõ tay (bài dịch, bài nhập từ nguồn ngoài).
+ */
+export type TacGiaBai = {
+  name?: string;
+  title?: string;
+  dharmaName?: string;
+  fromProfile?: boolean;
+};
+
 export type BaiTomTat = {
   id: string;
   type: LoaiNoiDung;
@@ -298,7 +355,7 @@ export type BaiTomTat = {
   coverUrl: string;
   status: TrangThai;
   authorId: string;
-  author: { name?: string; title?: string };
+  author: TacGiaBai;
   categories: { slug: string; name: string }[];
   tags: string[];
   publishedAt: string;
@@ -306,13 +363,75 @@ export type BaiTomTat = {
   viewCount: number;
   createdAt: string;
   updatedAt: string;
+  /** Dấu vết nhanh trên bản ghi; bài tạo trước khi có tính năng này để trống. */
+  audit: DauVetBai;
 };
+
+export type DauVetBai = {
+  createdById: string;
+  createdByName: string;
+  updatedById: string;
+  updatedByName: string;
+  approvedById: string;
+  approvedByName: string;
+  /** ISO, rỗng nếu chưa từng được duyệt. */
+  approvedAt: string;
+};
+
+/** Một dòng nhật ký thao tác trên bài (ContentAuditLog). */
+export type NhatKyBai = {
+  id: string;
+  action: "create" | "update" | "status" | "delete";
+  fromStatus: string;
+  toStatus: string;
+  changedFields: string[];
+  actorId: string;
+  actorName: string;
+  actorUsername: string;
+  ip: string;
+  contentTitle: string;
+  /** Lần này có lưu nội dung trước/sau để đối chiếu (tạo, sửa, xoá). */
+  hasRevision: boolean;
+  createdAt: string;
+};
+
+/**
+ * Dịch giả kinh sách. Có `userId` = người dùng trong hệ thống (tên + pháp danh
+ * backend đọc từ hồ sơ, tự đổi theo); không có = nhập tay.
+ */
+export type DichGia = { userId?: string; name?: string; dharmaName?: string };
+
+/** Người dùng tìm được để chọn làm dịch giả (chỉ id, tên, pháp danh). */
+export type NguoiChon = { id: string; name: string; dharmaName: string };
+
+export function timNguoi(q: string, locale: Locale) {
+  return goiApi<NguoiChon[]>("/v1/admin/content/people", { query: { q }, locale });
+}
+
+export function layLichSuBai(id: string, locale: Locale) {
+  return goiApi<NhatKyBai[]>("/v1/admin/content/history", { query: { id }, locale });
+}
+
+/** Giá trị trước/sau của từng trường ở một lần thao tác (ContentRevision). */
+export type ThayDoiTruong = { field: string; before: unknown; after: unknown };
+
+export type BanSuaBai = {
+  logId: string;
+  contentId: string;
+  action: "create" | "update" | "delete";
+  changes: ThayDoiTruong[];
+};
+
+export function layBanSua(logId: string, locale: Locale) {
+  return goiApi<BanSuaBai>("/v1/admin/content/revision", { query: { logId }, locale });
+}
 
 export type BaiChiTiet = Omit<BaiTomTat, "chapterCount"> & {
   bodyHtml: string;
   chapters: Chuong[];
   media: Record<string, unknown>;
   source: { name?: string; url?: string };
+  translator: DichGia;
   seo: Record<string, unknown>;
   readingMinutes: number;
 };
@@ -354,7 +473,7 @@ export type BaiGui = {
   coverUrl?: string;
   bodyHtml?: string;
   chapters?: Chuong[];
-  author?: { name?: string; title?: string };
+  author?: TacGiaBai;
   source?: { name?: string; url?: string };
   categories?: { slug: string; name: string }[];
   tags?: string[];

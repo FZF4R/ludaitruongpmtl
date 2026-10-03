@@ -20,6 +20,8 @@ module.exports.routes = {
     // '/content/list' PHAI dung truoc '/content/:slug', neu khong thi chuoi
     // 'list' se roi vao :slug va khong bao gio goi duoc danh sach.
     'GET  /v1/public/content/list': 'System.Public.ContentController.listContent',
+    // Phai dung truoc '/content/:slug' (cung ly do voi '/content/list').
+    'POST /v1/public/content/view': 'System.Public.ContentController.addView',
     'GET  /v1/public/content/:slug': 'System.Public.ContentController.getContentBySlug',
     'GET  /v1/public/search': 'System.Public.ContentController.search',
     'GET  /v1/public/category/tree': 'System.Public.ContentController.categoryTree',
@@ -27,6 +29,10 @@ module.exports.routes = {
     'GET  /v1/public/slugs': 'System.Public.ContentController.slugs',
     // Chu giao dien admin da sua truc tiep tren trang, theo ngon ngu.
     'GET  /v1/public/texts': 'System.Public.SiteTextController.getTexts',
+    'GET  /v1/public/comments': 'System.Public.CommentController.listComments',
+    // Anh xoay vong trang chu: danh sach + noi dung tung anh.
+    'GET  /v1/public/hero-images': 'System.Public.HeroImageController.listImages',
+    'GET  /v1/public/hero-images/:id/file': 'System.Public.HeroImageController.getFile',
 
     //==== Auth =====
     'POST /v1/user/login': 'System.Users.UsersController.login',
@@ -45,12 +51,20 @@ module.exports.routes = {
     'POST /v1/user/avatar': 'System.Users.UsersController.uploadAvatar',
     'POST /v1/user/update2FA': 'System.Users.UsersController.update2FA',
     'POST /v1/user/generateQRCode': 'System.Users.UsersController.generateQRCode',
+    // Binh luan bai viet (doc thi o /v1/public/comments).
+    'POST /v1/user/comments': 'System.Users.CommentController.addComment',
+    'POST /v1/user/comments/delete': 'System.Users.CommentController.deleteComment',
 
     //==== Admin =====
     'GET  /v1/admin/user/list': 'System.Admin.UsersController.getListUser',
     'GET  /v1/admin/user/detail': 'System.Admin.UsersController.getUserDetail',
     'POST /v1/admin/user/update': 'System.Admin.UsersController.updateUser',
     'POST /v1/admin/user/changepass': 'System.Admin.UsersController.changePass',
+
+    //==== Anh xoay vong trang chu =====
+    'POST /v1/admin/hero-images/add': 'System.Admin.HeroImageController.addImage',
+    'POST /v1/admin/hero-images/delete': 'System.Admin.HeroImageController.deleteImage',
+    'POST /v1/admin/hero-images/reorder': 'System.Admin.HeroImageController.reorderImages',
 
     //==== Sua chu giao dien ngay tren trang =====
     'POST /v1/admin/texts/update': 'System.Admin.SiteTextController.updateText',
@@ -73,6 +87,9 @@ module.exports.routes = {
     'GET  /v1/admin/content/list': 'System.Admin.ContentController.listContent',
     'GET  /v1/admin/content/detail': 'System.Admin.ContentController.getContent',
     'GET  /v1/admin/content/categories': 'System.Admin.ContentController.listCategories',
+    'GET  /v1/admin/content/history': 'System.Admin.ContentController.getHistory',
+    'GET  /v1/admin/content/people': 'System.Admin.ContentController.searchPeople',
+    'GET  /v1/admin/content/revision': 'System.Admin.ContentController.getRevision',
     'POST /v1/admin/content/create': 'System.Admin.ContentController.createContent',
     'POST /v1/admin/content/update': 'System.Admin.ContentController.updateContent',
     'POST /v1/admin/content/status': 'System.Admin.ContentController.setStatus',

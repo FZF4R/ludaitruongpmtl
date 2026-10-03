@@ -107,6 +107,8 @@ export type ListParams = {
   q?: string;
   page?: number;
   limit?: number;
+  /** "popular" = nhiều lượt đọc nhất trước; mặc định mới nhất trước. */
+  sort?: "newest" | "popular";
 };
 
 export async function listContent(
@@ -125,6 +127,7 @@ export async function listContent(
         q: params.q,
         page: params.page ?? 1,
         limit: params.limit ?? 12,
+        sort: params.sort,
       },
       revalidate: revalidate.list,
       tags: [tags.content],
@@ -216,6 +219,8 @@ export type SiteSettings = {
   supportphonenumber?: string;
   supportfacebook?: string;
   isMaintaning?: boolean;
+  /** Kiểu hiển thị danh sách /bai-viet, admin chọn ở trang Tổng quan. */
+  articleLayout?: "card" | "list";
   /**
    * Màu quản trị viên đặt, dạng { accent: "#8a6414", ... }. Khoá lạ và giá
    * trị không phải hex bị bỏ qua ở lib/theme.ts, nên kiểu ở đây để lỏng.
@@ -243,6 +248,44 @@ export async function getSiteTexts(locale: string): Promise<Record<string, strin
   } catch {
     // Như cấu hình site: hỏng thì trang vẫn lên với chữ mặc định.
     return {};
+  }
+}
+
+export type HeroImage = {
+  id: string;
+  /** URL tuyệt đối tới tệp ảnh trên API. */
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+};
+
+/** Hình dạng backend trả về: `url` là đường dẫn tương đối trên API. */
+type HeroImageRaw = { id: string; url: string; width?: number; height?: number; alt?: string };
+
+/**
+ * Ảnh xoay vòng trang chủ admin đã tải lên. Rỗng = dùng bộ ảnh có sẵn trong
+ * lib/img. Chung tag `settings` với cấu hình site, nên lưu ở /admin/dashboard
+ * là làm mới cả hai.
+ */
+export async function getHeroImages(): Promise<HeroImage[]> {
+  if (isMock) return [];
+
+  try {
+    return await get(
+      "/v1/public/hero-images",
+      (raw) =>
+        (Array.isArray(raw) ? (raw as HeroImageRaw[]) : []).map((r) => ({
+          id: r.id,
+          src: new URL(r.url, API_URL).toString(),
+          width: r.width ?? 0,
+          height: r.height ?? 0,
+          alt: r.alt ?? "",
+        })),
+      { revalidate: revalidate.home, tags: [tags.settings] },
+    );
+  } catch {
+    return [];
   }
 }
 

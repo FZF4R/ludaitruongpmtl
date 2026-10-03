@@ -27,6 +27,7 @@ export type NhaCungCap = "google" | "facebook";
 
 /** Hình dạng dinhDangHoSo() của Backend trả về. */
 export type HoSo = {
+  id: string;
   isNewUser: boolean;
   profileCompleted: boolean;
   username: string;

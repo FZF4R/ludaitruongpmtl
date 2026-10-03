@@ -4,6 +4,8 @@ import {
   pageParams,
   parsePageNumber,
 } from "@/components/content/content-list-page";
+import { ListAdminBar } from "@/components/content/list-admin-bar";
+import { getSiteSettings } from "@/lib/api";
 import { i18nAlternates } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -33,12 +35,19 @@ export default async function ArticleListPagedPage(props: {
 }) {
   const { so } = await props.params;
   const page = parsePageNumber(so);
+  const settings = await getSiteSettings();
+  const layout = settings?.articleLayout === "list" ? "list" : "card";
 
   return (
     <ContentListPage
       filter={{ type: [...filter.type] }}
       page={page}
       basePath="/bai-viet"
+      layout={layout}
+      thumbnail
+      adminBar={
+        <ListAdminBar themHref="/admin/blog" themNhan="Thêm bài viết" kieuHienThi={layout} />
+      }
       eyebrow="Chuyên mục"
       title="Bài viết"
       description={`Trang ${page}`}

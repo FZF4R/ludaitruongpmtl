@@ -8,6 +8,8 @@ import { Breadcrumbs } from "@/components/content/navigation";
 import { ProseBody } from "@/components/content/prose-body";
 import { formatDualDate, readingTime } from "@/lib/format";
 import { getDictionary } from "@/lib/dictionary";
+import { ViewTracker } from "@/components/content/view-tracker";
+import { CommentSection } from "@/components/content/comment-section";
 
 export const revalidate = 3600;
 
@@ -77,7 +79,13 @@ export default async function ArticlePage(props: {
             {content.author ? (
               <span>
                 {content.author.title ? `${content.author.title} ` : ""}
-                {content.author.name}
+                <span className="font-medium text-ink">{content.author.name}</span>
+                {content.author.dharmaName ? (
+                  <span className="text-accent">
+                    {" "}
+                    · {dict.comments.dharmaName}: {content.author.dharmaName}
+                  </span>
+                ) : null}
               </span>
             ) : null}
             <span aria-hidden>·</span>
@@ -122,8 +130,11 @@ export default async function ArticlePage(props: {
             ))}
           </div>
         ) : null}
+
+        <CommentSection slug={content.slug} nhan={dict.comments} />
       </article>
 
+      <ViewTracker slug={content.slug} />
       <JsonLd data={contentJsonLd(content)} />
       <JsonLd data={breadcrumbJsonLd(trail)} />
     </Container>

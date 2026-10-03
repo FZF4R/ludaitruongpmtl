@@ -55,6 +55,14 @@ const dinhDangNoiDung = (row, { rutGon = false } = {}) => {
     if (row.viewCount) kq.viewCount = row.viewCount
     if (row.author && row.author.name) kq.author = row.author
     if (row.source && row.source.name) kq.source = row.source
+    // Dịch giả kinh sách: chỉ lộ tên + pháp danh, không lộ userId ra công khai.
+    if (row.translator && row.translator.name) {
+        kq.translator = { name: row.translator.name }
+        if (row.translator.dharmaName) kq.translator.dharmaName = row.translator.dharmaName
+    }
+    // Người đăng (người tạo bài trong khu quản trị). Bài nhập từ trước khi có
+    // dấu vết thì không có trường này.
+    if (row.createdByName) kq.postedBy = { name: row.createdByName }
     if (row.media && row.media.url) kq.media = row.media
 
     if (!rutGon) {
@@ -119,10 +127,12 @@ const dungDieuKien = ({ type, category, q }) => {
 }
 
 /** Chạy một truy vấn danh sách và trả về đúng hình dạng paginated() của zod. */
-const layDanhSach = async (dieuKien, page, limit) => {
+const layDanhSach = async (dieuKien, page, limit, sapXep) => {
     let bang = bangNoiDung()
+    // "popular": nhiều lượt đọc trước; hoà nhau (vd: cùng 0) thì bài mới hơn đứng trước.
+    let thuTu = sapXep === 'popular' ? { viewCount: -1, publishedAt: -1 } : { publishedAt: -1 }
     let bts = bang.find(dieuKien, { projection: { bodyHtml: 0, chapters: 0, searchText: 0 } })
-        .sort({ publishedAt: -1 })
+        .sort(thuTu)
         .skip(limit * (page - 1))
         .limit(limit)
 
@@ -138,13 +148,43 @@ const layDanhSach = async (dieuKien, page, limit) => {
 
 module.exports = {
 
+    /**
+     * Ghi nhận một lượt đọc. Trang chi tiết ở FrontEnd được cache (ISR), nên
+     * backend không thấy lượt xem nào qua getContentBySlug - trình duyệt phải
+     * tự báo về đây, mỗi bài một lần mỗi phiên.
+     *
+     * Đây chỉ là con số để xếp "đọc nhiều nhất", không phải số liệu tính tiền:
+     * không chống gian lận gắt, chỉ nhận slug của bài đã đăng và tăng đúng 1.
+     */
+    addView: ({
+        inputs: sails.config.inputs.Public.Content.addView,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                // $inc nguyên tử ở Mongo: hai người đọc cùng lúc không đè mất lượt của nhau.
+                let kq = await bangNoiDung().updateOne(
+                    { slug: String(inputs.slug), status: 'published' },
+                    { $inc: { viewCount: 1 } }
+                )
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: { counted: kq.modifiedCount === 1 }
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
     listContent: ({
         inputs: sails.config.inputs.Public.Content.listContent,
         exits: sails.config.responseType,
         fn: async function (inputs, exits) {
             try {
                 let dieuKien = dungDieuKien(inputs)
-                let data = await layDanhSach(dieuKien, inputs.page, inputs.limit)
+                let data = await layDanhSach(dieuKien, inputs.page, inputs.limit, inputs.sort)
 
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',

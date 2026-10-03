@@ -311,7 +311,11 @@ export async function listContent(params: ListParams = {}): Promise<Paginated<Co
     return true;
   });
 
-  rows = rows.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  rows = rows.sort(
+    (a, b) =>
+      (params.sort === "popular" ? (b.viewCount ?? 0) - (a.viewCount ?? 0) : 0) ||
+      b.publishedAt.localeCompare(a.publishedAt),
+  );
 
   return {
     data: rows.slice((page - 1) * limit, page * limit).map(toSummary),

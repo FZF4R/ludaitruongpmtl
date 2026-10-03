@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getDictionary } from "@/lib/dictionary";
 import { i18nAlternates } from "@/lib/seo";
 import { ContentListPage } from "@/components/content/content-list-page";
+import { ListAdminBar } from "@/components/content/list-admin-bar";
+import { getSiteSettings } from "@/lib/api";
 
 /**
  * Trang 1 KHÔNG đọc searchParams, nên Next sinh tĩnh được nó.
@@ -24,7 +26,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 
 export default async function ArticleListPage() {
-  const dict = await getDictionary();
+  const [dict, settings] = await Promise.all([getDictionary(), getSiteSettings()]);
+  const layout = settings?.articleLayout === "list" ? "list" : "card";
 
   const trail = [
     { name: dict.nav.home, href: "/" },
@@ -36,6 +39,11 @@ export default async function ArticleListPage() {
       filter={{ type: ["article", "blog"] }}
       page={1}
       basePath="/bai-viet"
+      layout={layout}
+      thumbnail
+      adminBar={
+        <ListAdminBar themHref="/admin/blog" themNhan="Thêm bài viết" kieuHienThi={layout} />
+      }
       eyebrow={dict.footer.categories}
       title={dict.nav.articles}
       description={dict.list.articlesDesc}

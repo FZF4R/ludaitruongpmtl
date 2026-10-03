@@ -1,14 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Search, Trash2, Check, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Plus, Search, Trash2, Check, ArrowLeft, ExternalLink } from "lucide-react";
 import { Badge, Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/form";
-import { HopLoi, chuLoi, useLocale } from "@/components/admin/admin-shell";
+import { HopLoi, chuLoi, useHoSoQuanTri, useLocale } from "@/components/admin/admin-shell";
+import { RevisionDiff, nhanTruong } from "@/components/admin/revision-diff";
 import {
   doiTrangThai,
   layBai,
+  layLichSuBai,
+  timNguoi,
   layChuyenMuc,
   layDanhSachBai,
   luuBai,
@@ -18,12 +23,16 @@ import {
   trangThai as moiTrangThai,
   xoaBai,
   type BaiChiTiet,
+  type NhatKyBai,
+  type NguoiChon,
   type BaiTomTat,
   type Chuong,
   type ChuyenMuc,
   type LoaiNoiDung,
   type TrangThai,
 } from "@/lib/admin-api";
+import { contentTypeBase } from "@/lib/site";
+import { localePath } from "@/lib/i18n";
 
 /**
  * Bảng quản trị nội dung, dùng chung cho /admin/blog và /admin/library.
@@ -82,8 +91,17 @@ export function ContentPanel({
   const [loi, setLoi] = React.useState("");
   const [ban, setBan] = React.useState(false);
 
-  /** null = đang xem danh sách, "moi" = tạo bài, còn lại là id đang sửa. */
-  const [dangSoan, setDangSoan] = React.useState<string | null>(null);
+  /*
+   * Bài đang soạn nằm trên URL (?sua=<id> hoặc ?sua=moi) chứ không trong state:
+   * mỗi bài có link riêng để gửi cho nhau, tải lại trang vẫn mở đúng bài, và
+   * nút Back của trình duyệt quay về danh sách.
+   * null = đang xem danh sách, "moi" = tạo bài, còn lại là id đang sửa.
+   */
+  const router = useRouter();
+  const pathname = usePathname();
+  const dangSoan = useSearchParams().get("sua");
+  const linkSua = (id: string) => `${pathname}?sua=${encodeURIComponent(id)}`;
+  const setDangSoan = (id: string | null) => router.push(id ? linkSua(id) : pathname);
 
   const nap = React.useCallback(() => {
     setDangTai(true);
@@ -119,6 +137,9 @@ export function ContentPanel({
   if (dangSoan !== null) {
     return (
       <TrinhSoan
+        // Đổi bài qua URL (Back/Forward giữa hai bài) thì dựng lại từ đầu,
+        // không để form giữ chữ của bài trước.
+        key={dangSoan}
         id={dangSoan === "moi" ? null : dangSoan}
         loaiChon={loaiChon}
         coChuong={coChuong}
@@ -229,7 +250,12 @@ export function ContentPanel({
                   <tr key={bai.id} className="border-b border-line last:border-0 align-top">
                     <td className="px-4 py-3">
                       <div className="flex flex-col gap-0.5">
-                        <span className="font-medium text-ink">{bai.title}</span>
+                        <Link
+                          href={linkSua(bai.id)}
+                          className="font-medium text-ink underline-offset-2 hover:text-accent hover:underline"
+                        >
+                          {bai.title}
+                        </Link>
                         <span className="text-xs text-muted">
                           {nhanLoai[bai.type] ?? bai.type} · /{bai.slug}
                           {bai.chapterCount ? ` · ${bai.chapterCount} chương` : ""}
@@ -242,9 +268,22 @@ export function ContentPanel({
                     <td className="px-4 py-3 tabular-nums text-muted">{gonNgay(bai.updatedAt)}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1.5">
-                        <Button size="sm" variant="outline" onClick={() => setDangSoan(bai.id)}>
-                          Sửa
+                        <Button size="sm" variant="outline" asChild>
+                          <Link href={linkSua(bai.id)}>Sửa</Link>
                         </Button>
+
+                        {/* Trang công khai chỉ trả bài đã đăng; bài khác mở ra sẽ là 404. */}
+                        {bai.status === "published" ? (
+                          <Button size="sm" variant="outline" asChild>
+                            <a
+                              href={localePath(locale, `${contentTypeBase[bai.type]}/${bai.slug}`)}
+                              target="_blank"
+                              rel="noopener"
+                            >
+                              <ExternalLink aria-hidden /> Xem bài
+                            </a>
+                          </Button>
+                        ) : null}
 
                         {bai.status !== "published" ? (
                           <Button
@@ -397,6 +436,20 @@ function TrinhSoan({
   const [danhMuc, setDanhMuc] = React.useState("");
   const [tenTacGia, setTenTacGia] = React.useState("");
   const [chucDanh, setChucDanh] = React.useState("");
+  const [phapDanh, setPhapDanh] = React.useState("");
+  /*
+   * Tác giả lấy theo hồ sơ người đăng (họ tên + pháp danh, tự cập nhật khi hồ
+   * sơ đổi). Bài viết mới bật sẵn; kinh sách mới thì tắt vì thường ghi tên
+   * dịch giả. Bài đang có thì theo đúng cờ đã lưu.
+   */
+  const [theoHoSo, setTheoHoSo] = React.useState(!id && !coChuong);
+  const hoSoToi = useHoSoQuanTri();
+
+  // Kinh sách: nguồn tham khảo bắt buộc, dịch giả chọn người dùng hoặc nhập tay.
+  const laKinh = type === "sutra";
+  const [nguonTen, setNguonTen] = React.useState("");
+  const [nguonUrl, setNguonUrl] = React.useState("");
+  const [dichGia, setDichGia] = React.useState<GiaTriDichGia>({ cach: "nguoiDung", chon: null, ten: "", phapDanh: "" });
   const [bodyHtml, setBodyHtml] = React.useState("");
   const [chuong, setChuong] = React.useState<Chuong[]>([]);
 
@@ -422,6 +475,16 @@ function TrinhSoan({
         setDanhMuc(bai.categories?.[0]?.slug ?? "");
         setTenTacGia(bai.author?.name ?? "");
         setChucDanh(bai.author?.title ?? "");
+        setPhapDanh(bai.author?.dharmaName ?? "");
+        setTheoHoSo(!!bai.author?.fromProfile);
+        setNguonTen(bai.source?.name ?? "");
+        setNguonUrl(bai.source?.url ?? "");
+        const dg = bai.translator ?? {};
+        setDichGia(
+          dg.userId
+            ? { cach: "nguoiDung", chon: { id: dg.userId, name: dg.name ?? "", dharmaName: dg.dharmaName ?? "" }, ten: "", phapDanh: "" }
+            : { cach: dg.name ? "tay" : "nguoiDung", chon: null, ten: dg.name ?? "", phapDanh: dg.dharmaName ?? "" },
+        );
         setBodyHtml(bai.bodyHtml ?? "");
         setChuong(bai.chapters ?? []);
       })
@@ -441,6 +504,11 @@ function TrinhSoan({
       setLoi("Vui lòng nhập tiêu đề.");
       return;
     }
+    // Backend cũng chặn (sutraSourceRequired); báo sớm ở đây để khỏi mất một lượt gửi.
+    if (laKinh && !nguonTen.trim()) {
+      setLoi("Kinh sách bắt buộc ghi nguồn tham khảo.");
+      return;
+    }
 
     const muc = chuyenMuc.find((c) => c.slug === danhMuc);
     const than = {
@@ -449,9 +517,28 @@ function TrinhSoan({
       summary: summary.trim(),
       coverUrl: coverUrl.trim(),
       bodyHtml,
-      // Bỏ ô trống: gửi { name: "" } lên thì phần công khai coi là "có tác giả"
-      // và hiện ra một dòng trắng.
-      author: tenTacGia.trim() ? { name: tenTacGia.trim(), title: chucDanh.trim() } : {},
+      // Theo hồ sơ: backend tự điền họ tên + pháp danh, tên gửi kèm bị bỏ qua.
+      // Gõ tay: bỏ ô trống, vì gửi { name: "" } lên thì phần công khai coi là
+      // "có tác giả" và hiện ra một dòng trắng.
+      author: theoHoSo
+        ? { fromProfile: true }
+        : tenTacGia.trim()
+          ? { name: tenTacGia.trim(), title: chucDanh.trim(), dharmaName: phapDanh.trim() }
+          : {},
+      source: nguonTen.trim() ? { name: nguonTen.trim(), url: nguonUrl.trim() } : {},
+      // Chọn người dùng: chỉ gửi userId, backend tự đọc tên + pháp danh từ hồ sơ.
+      ...(laKinh
+        ? {
+            translator:
+              dichGia.cach === "nguoiDung"
+                ? dichGia.chon
+                  ? { userId: dichGia.chon.id }
+                  : {}
+                : dichGia.ten.trim()
+                  ? { name: dichGia.ten.trim(), dharmaName: dichGia.phapDanh.trim() }
+                  : {},
+          }
+        : {}),
       categories: muc ? [{ slug: muc.slug, name: muc.name }] : [],
       tags: tags
         .split(",")
@@ -485,9 +572,20 @@ function TrinhSoan({
           {goc ? `Sửa: ${goc.title}` : "Thêm bài mới"}
         </h1>
         {goc ? (
-          <Badge tone={tongMau[goc.status]} className="ml-auto">
-            {nhanTrangThai[goc.status]}
-          </Badge>
+          <div className="ml-auto flex items-center gap-2">
+            <Badge tone={tongMau[goc.status]}>{nhanTrangThai[goc.status]}</Badge>
+            {goc.status === "published" ? (
+              <Button type="button" size="sm" variant="outline" asChild>
+                <a
+                  href={localePath(locale, `${contentTypeBase[goc.type]}/${goc.slug}`)}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <ExternalLink aria-hidden /> Xem bài
+                </a>
+              </Button>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
@@ -551,17 +649,102 @@ function TrinhSoan({
           {(p) => <Input {...p} value={tags} onChange={(e) => setTags(e.target.value)} />}
         </Field>
 
-        <Field id="c-author" label="Tác giả / dịch giả">
-          {(p) => (
-            <Input {...p} value={tenTacGia} onChange={(e) => setTenTacGia(e.target.value)} maxLength={120} />
-          )}
-        </Field>
+        {laKinh ? (
+          <>
+            <p className="rounded-md bg-surface-2 px-4 py-3 text-sm text-muted sm:col-span-2">
+              Người đăng:{" "}
+              <span className="font-medium text-ink">
+                {goc?.audit?.createdByName || hoSoToi?.fullName || hoSoToi?.username || "—"}
+              </span>{" "}
+              — tự ghi theo tài khoản tạo kinh sách và hiện trên trang công khai.
+            </p>
+            <KhoiDichGia giaTri={dichGia} onDoi={setDichGia} />
+          </>
+        ) : (
+        <div className="flex flex-col gap-3 rounded-md border border-line p-4 sm:col-span-2">
+          <label className="flex w-fit cursor-pointer items-center gap-2.5 text-sm">
+            <input
+              type="checkbox"
+              checked={theoHoSo}
+              onChange={(e) => setTheoHoSo(e.target.checked)}
+              className="size-4 accent-accent"
+            />
+            <span className="font-medium text-ink">Tác giả là người đăng (lấy theo hồ sơ)</span>
+          </label>
 
-        <Field id="c-title2" label="Chức danh" hint="Hoà thượng, Thượng toạ, Cư sĩ…">
-          {(p) => (
-            <Input {...p} value={chucDanh} onChange={(e) => setChucDanh(e.target.value)} maxLength={60} />
+          {theoHoSo ? (
+            <p className="text-sm text-muted">
+              {/*
+                Bài đã có người tạo khác mình thì backend giữ hồ sơ của người đó
+                (xem chuanHoaTacGia ở Admin/ContentController) - báo đúng như vậy.
+              */}
+              {goc?.authorId && hoSoToi && goc.authorId !== hoSoToi.id ? (
+                <>Họ tên và pháp danh lấy từ hồ sơ của người đã tạo bài này</>
+              ) : (
+                <>
+                  Hiện là:{" "}
+                  <span className="font-medium text-ink">
+                    {hoSoToi?.fullName || hoSoToi?.username || "—"}
+                  </span>
+                  {hoSoToi?.dharmaName ? <> · Pháp danh: {hoSoToi.dharmaName}</> : null}
+                </>
+              )}
+              . Khi hồ sơ đổi họ tên hoặc pháp danh, bài tự cập nhật theo.
+            </p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Field id="c-author" label="Tác giả / dịch giả">
+                {(p) => (
+                  <Input
+                    {...p}
+                    value={tenTacGia}
+                    onChange={(e) => setTenTacGia(e.target.value)}
+                    maxLength={120}
+                  />
+                )}
+              </Field>
+
+              <Field id="c-dharma" label="Pháp danh">
+                {(p) => (
+                  <Input {...p} value={phapDanh} onChange={(e) => setPhapDanh(e.target.value)} maxLength={80} />
+                )}
+              </Field>
+
+              <Field id="c-title2" label="Chức danh" hint="Hoà thượng, Thượng toạ, Cư sĩ…">
+                {(p) => (
+                  <Input {...p} value={chucDanh} onChange={(e) => setChucDanh(e.target.value)} maxLength={60} />
+                )}
+              </Field>
+            </div>
           )}
-        </Field>
+        </div>
+
+        )}
+
+        <div className="grid gap-4 sm:col-span-2 sm:grid-cols-2">
+          <Field
+            id="c-source"
+            label="Nguồn tham khảo"
+            required={laKinh}
+            hint={laKinh ? "Bắt buộc với kinh sách: bản kinh, bộ Tạng, nhà xuất bản…" : "Tuỳ chọn"}
+          >
+            {(p) => (
+              <Input {...p} value={nguonTen} onChange={(e) => setNguonTen(e.target.value)} maxLength={200} />
+            )}
+          </Field>
+          <Field id="c-source-url" label="Đường dẫn nguồn" hint="Tuỳ chọn">
+            {(p) => (
+              <Input
+                {...p}
+                type="url"
+                value={nguonUrl}
+                onChange={(e) => setNguonUrl(e.target.value)}
+                maxLength={500}
+                placeholder="https://…"
+              />
+            )}
+          </Field>
+        </div>
 
         <Field id="c-cover" label="Ảnh bìa" hint="Đường dẫn ảnh; để trống thì trang tự chọn ảnh" className="sm:col-span-2">
           {(p) => <Input {...p} value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} />}
@@ -602,7 +785,309 @@ function TrinhSoan({
           </p>
         ) : null}
       </div>
+
+      {goc ? <KhoiLichSu bai={goc} /> : null}
     </form>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+
+const ngayGio = (iso?: string) =>
+  iso
+    ? new Date(iso).toLocaleString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "—";
+
+const nhanTT = (tt: string) => nhanTrangThai[tt as TrangThai] ?? tt;
+
+/** Một dòng nhật ký -> câu đọc được. */
+function moTaThaoTac(nk: NhatKyBai): string {
+  if (nk.action === "create") return "Tạo bài";
+  if (nk.action === "delete") return "Xoá bài";
+  if (nk.action === "status") {
+    if (nk.toStatus === "published") return "Duyệt đăng";
+    return `Đổi trạng thái: ${nhanTT(nk.fromStatus)} → ${nhanTT(nk.toStatus)}`;
+  }
+  const truong = nk.changedFields.map((t) => nhanTruong[t] ?? t).join(", ");
+  return truong ? `Sửa: ${truong}` : "Sửa bài";
+}
+
+/**
+ * Truy vết của một bài: tóm tắt ai tạo / sửa cuối / duyệt, và toàn bộ diễn biến.
+ * Bài tạo trước khi có tính năng nhật ký sẽ thiếu phần tóm tắt và các dòng cũ.
+ */
+function KhoiLichSu({ bai }: { bai: BaiChiTiet }) {
+  const locale = useLocale();
+  const [ds, setDs] = React.useState<NhatKyBai[] | null>(null);
+  const [loi, setLoi] = React.useState("");
+  const [moRong, setMoRong] = React.useState(false);
+  /** Các dòng nhật ký đang mở phần đối chiếu nội dung. */
+  const [dangXem, setDangXem] = React.useState<Set<string>>(new Set());
+  const batTat = (id: string) =>
+    setDangXem((cu) => {
+      const moi = new Set(cu);
+      if (moi.has(id)) moi.delete(id);
+      else moi.add(id);
+      return moi;
+    });
+
+  React.useEffect(() => {
+    let conSong = true;
+    layLichSuBai(bai.id, locale)
+      .then((kq) => conSong && setDs(kq))
+      .catch((err) => conSong && setLoi(chuLoi(err, "Không tải được lịch sử.")));
+    return () => {
+      conSong = false;
+    };
+  }, [bai.id, locale]);
+
+  const av = bai.audit;
+  const tomTat = [
+    { nhan: "Người tạo", ten: av?.createdByName, luc: bai.createdAt },
+    { nhan: "Sửa gần nhất", ten: av?.updatedByName, luc: bai.updatedAt },
+    { nhan: "Duyệt đăng", ten: av?.approvedByName, luc: av?.approvedAt },
+  ];
+  const hien = moRong ? ds ?? [] : (ds ?? []).slice(0, 8);
+
+  return (
+    <Card className="flex flex-col gap-4 p-6">
+      <div className="flex flex-col gap-1">
+        <h2 className="font-serif text-lg font-bold">Lịch sử &amp; truy vết</h2>
+        <p className="text-sm text-muted">
+          Ghi tự động mỗi lần tạo, sửa, đổi trạng thái hay xoá bài — kèm người thao tác, thời điểm
+          và địa chỉ IP. Nhật ký không sửa, không xoá được.
+        </p>
+      </div>
+
+      <dl className="grid gap-3 sm:grid-cols-3">
+        {tomTat.map((m) => (
+          <div key={m.nhan} className="flex flex-col gap-0.5 rounded-md bg-surface-2 p-3">
+            <dt className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">
+              {m.nhan}
+            </dt>
+            <dd className="text-sm font-medium text-ink">{m.ten || "—"}</dd>
+            <dd className="text-xs tabular-nums text-muted">{m.ten ? ngayGio(m.luc) : ""}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <HopLoi loi={loi} />
+
+      {ds === null ? (
+        <p className="text-sm text-muted">Đang tải…</p>
+      ) : ds.length === 0 ? (
+        <p className="text-sm text-muted">
+          Chưa có dòng nhật ký nào (bài tạo trước khi bật tính năng truy vết).
+        </p>
+      ) : (
+        <ol className="flex flex-col border-l border-line">
+          {hien.map((nk) => (
+            <li key={nk.id} className="relative flex flex-col gap-0.5 py-2 pl-5 text-sm">
+              <span
+                aria-hidden
+                className={
+                  "absolute -left-[5px] top-3.5 size-2.5 rounded-full border-2 border-surface " +
+                  (nk.action === "status" && nk.toStatus === "published"
+                    ? "bg-accent"
+                    : nk.action === "delete"
+                      ? "bg-lacquer"
+                      : "bg-line-strong")
+                }
+              />
+              <span className="text-ink">{moTaThaoTac(nk)}</span>
+              <span className="text-xs text-muted">
+                {nk.actorName || "—"}
+                {nk.actorUsername && nk.actorUsername !== nk.actorName ? ` (@${nk.actorUsername})` : ""}
+                {" · "}
+                <span className="tabular-nums">{ngayGio(nk.createdAt)}</span>
+                {nk.ip ? ` · IP ${nk.ip}` : ""}
+              </span>
+              {nk.hasRevision ? (
+                <div className="flex flex-col gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => batTat(nk.id)}
+                    aria-expanded={dangXem.has(nk.id)}
+                    className="w-fit text-xs font-medium text-accent hover:underline"
+                  >
+                    {dangXem.has(nk.id)
+                      ? "Ẩn nội dung"
+                      : nk.action === "update"
+                        ? "Xem nội dung đã sửa"
+                        : "Xem nội dung"}
+                  </button>
+                  {dangXem.has(nk.id) ? <RevisionDiff logId={nk.id} /> : null}
+                </div>
+              ) : null}
+            </li>
+          ))}
+        </ol>
+      )}
+
+      {ds && ds.length > 8 ? (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="self-start"
+          onClick={() => setMoRong((x) => !x)}
+        >
+          {moRong ? "Thu gọn" : `Xem toàn bộ (${ds.length})`}
+        </Button>
+      ) : null}
+    </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+
+type GiaTriDichGia = {
+  /** "nguoiDung" = chọn người trong hệ thống; "tay" = nhập tên tự do. */
+  cach: "nguoiDung" | "tay";
+  chon: NguoiChon | null;
+  ten: string;
+  phapDanh: string;
+};
+
+/**
+ * Dịch giả kinh sách: chọn một người dùng (tên + pháp danh lấy từ hồ sơ và tự
+ * cập nhật khi họ đổi hồ sơ) hoặc nhập tay cho dịch giả ngoài hệ thống.
+ */
+function KhoiDichGia({
+  giaTri,
+  onDoi,
+}: {
+  giaTri: GiaTriDichGia;
+  onDoi: (moi: GiaTriDichGia) => void;
+}) {
+  const locale = useLocale();
+  const [tuKhoa, setTuKhoa] = React.useState("");
+  const [ketQua, setKetQua] = React.useState<NguoiChon[] | null>(null);
+  const [dangTim, setDangTim] = React.useState(false);
+
+  // Tìm sau khi ngừng gõ 300ms, khỏi gọi API mỗi phím.
+  React.useEffect(() => {
+    if (giaTri.cach !== "nguoiDung" || giaTri.chon) return;
+    let conSong = true;
+    const hen = window.setTimeout(() => {
+      setDangTim(true);
+      timNguoi(tuKhoa.trim(), locale)
+        .then((ds) => conSong && setKetQua(ds))
+        .catch(() => conSong && setKetQua([]))
+        .finally(() => conSong && setDangTim(false));
+    }, 300);
+    return () => {
+      conSong = false;
+      window.clearTimeout(hen);
+    };
+  }, [tuKhoa, locale, giaTri.cach, giaTri.chon]);
+
+  return (
+    <div className="flex flex-col gap-3 rounded-md border border-line p-4 sm:col-span-2">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+        <span className="font-medium text-ink">Dịch giả</span>
+        {(
+          [
+            { id: "nguoiDung", nhan: "Chọn người dùng" },
+            { id: "tay", nhan: "Nhập tay" },
+          ] as const
+        ).map((c) => (
+          <label key={c.id} className="flex cursor-pointer items-center gap-2">
+            <input
+              type="radio"
+              name="cach-dich-gia"
+              checked={giaTri.cach === c.id}
+              onChange={() => onDoi({ ...giaTri, cach: c.id })}
+              className="size-4 accent-accent"
+            />
+            {c.nhan}
+          </label>
+        ))}
+      </div>
+
+      {giaTri.cach === "nguoiDung" ? (
+        giaTri.chon ? (
+          <div className="flex flex-wrap items-center gap-3 rounded-md bg-surface-2 px-3 py-2 text-sm">
+            <span>
+              <span className="font-medium text-ink">{giaTri.chon.name || "—"}</span>
+              {giaTri.chon.dharmaName ? (
+                <span className="text-accent"> · Pháp danh: {giaTri.chon.dharmaName}</span>
+              ) : null}
+            </span>
+            <span className="text-xs text-muted">Tự cập nhật khi người này đổi hồ sơ.</span>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="ml-auto"
+              onClick={() => onDoi({ ...giaTri, chon: null })}
+            >
+              Đổi người
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <Input
+              value={tuKhoa}
+              onChange={(e) => setTuKhoa(e.target.value)}
+              placeholder="Tìm theo họ tên, pháp danh hoặc tên tài khoản…"
+              aria-label="Tìm dịch giả"
+            />
+            {dangTim && !ketQua ? <p className="text-xs text-muted">Đang tìm…</p> : null}
+            {ketQua && ketQua.length === 0 ? (
+              <p className="text-xs text-muted">
+                Không có người dùng nào khớp. Dịch giả ngoài hệ thống thì chọn “Nhập tay”.
+              </p>
+            ) : null}
+            {ketQua && ketQua.length > 0 ? (
+              <ul className="flex max-h-56 flex-col divide-y divide-line overflow-y-auto rounded-md border border-line">
+                {ketQua.map((n) => (
+                  <li key={n.id}>
+                    <button
+                      type="button"
+                      onClick={() => onDoi({ ...giaTri, chon: n })}
+                      className="flex w-full items-baseline gap-2 px-3 py-2 text-left text-sm hover:bg-surface-2"
+                    >
+                      <span className="font-medium text-ink">{n.name || "—"}</span>
+                      {n.dharmaName ? <span className="text-xs text-accent">Pháp danh: {n.dharmaName}</span> : null}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        )
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field id="c-tr-name" label="Tên dịch giả">
+            {(p) => (
+              <Input
+                {...p}
+                value={giaTri.ten}
+                onChange={(e) => onDoi({ ...giaTri, ten: e.target.value })}
+                maxLength={120}
+              />
+            )}
+          </Field>
+          <Field id="c-tr-dharma" label="Pháp danh" hint="Tuỳ chọn">
+            {(p) => (
+              <Input
+                {...p}
+                value={giaTri.phapDanh}
+                onChange={(e) => onDoi({ ...giaTri, phapDanh: e.target.value })}
+                maxLength={80}
+              />
+            )}
+          </Field>
+        </div>
+      )}
+    </div>
   );
 }
 

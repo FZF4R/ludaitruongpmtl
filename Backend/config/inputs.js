@@ -105,6 +105,30 @@ module.exports.inputs = {
                 "type": "json"
             }
         },
+        "Comment": {
+            "addComment": {
+                "User": {
+                    "type": "json"
+                },
+                "slug": {
+                    "type": "string",
+                    "required": true
+                },
+                "body": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "deleteComment": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        },
         "saveProfile": {
             "User": {
                 "type": "json"
@@ -249,6 +273,10 @@ module.exports.inputs = {
                 "viewMode": {
                     "type": "string"
                 },
+                "articleLayout": {
+                    "type": "string",
+                    "isIn": ["card", "list"]
+                },
                 "theme": {
                     "type": "json"
                 },
@@ -298,6 +326,48 @@ module.exports.inputs = {
                 "reason": {
                     "type": "string",
                     "defaultsTo": ""
+                }
+            }
+        },
+        "HeroImage": {
+            "addImage": {
+                "User": {
+                    "type": "json"
+                },
+                "image": {
+                    "type": "string",
+                    "required": true,
+                    "description": "data:image/jpeg|png|webp;base64,..."
+                },
+                "width": {
+                    "type": "number",
+                    "defaultsTo": 0
+                },
+                "height": {
+                    "type": "number",
+                    "defaultsTo": 0
+                },
+                "alt": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "deleteImage": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "reorderImages": {
+                "User": {
+                    "type": "json"
+                },
+                "ids": {
+                    "type": "json",
+                    "required": true
                 }
             }
         },
@@ -542,6 +612,10 @@ module.exports.inputs = {
                 "source": {
                     "type": "json"
                 },
+                "translator": {
+                    "type": "json",
+                    "description": "Dich gia kinh sach: { userId } hoac { name, dharmaName }"
+                },
                 "categories": {
                     "type": "json"
                 },
@@ -596,6 +670,10 @@ module.exports.inputs = {
                 "source": {
                     "type": "json"
                 },
+                "translator": {
+                    "type": "json",
+                    "description": "Dich gia kinh sach: { userId } hoac { name, dharmaName }"
+                },
                 "categories": {
                     "type": "json"
                 },
@@ -621,6 +699,33 @@ module.exports.inputs = {
                     "required": true
                 },
                 "status": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "getHistory": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "searchPeople": {
+                "User": {
+                    "type": "json"
+                },
+                "q": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "getRevision": {
+                "User": {
+                    "type": "json"
+                },
+                "logId": {
                     "type": "string",
                     "required": true
                 }
@@ -659,6 +764,25 @@ module.exports.inputs = {
             }
         },
         "getSettings": {},
+        "Comment": {
+            "listComments": {
+                "slug": {
+                    "type": "string",
+                    "required": true
+                },
+                "page": {
+                    "type": "number",
+                    "defaultsTo": 1,
+                    "min": 1
+                },
+                "limit": {
+                    "type": "number",
+                    "defaultsTo": 20,
+                    "min": 1,
+                    "max": 50
+                }
+            }
+        },
         "SiteText": {
             "getTexts": {
                 "lang": {
@@ -692,6 +816,17 @@ module.exports.inputs = {
                     "defaultsTo": 12,
                     "min": 1,
                     "max": 50
+                },
+                "sort": {
+                    "type": "string",
+                    "isIn": ["newest", "popular"],
+                    "defaultsTo": "newest"
+                }
+            },
+            "addView": {
+                "slug": {
+                    "type": "string",
+                    "required": true
                 }
             },
             "search": {

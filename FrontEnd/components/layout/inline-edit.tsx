@@ -22,13 +22,22 @@ import { cn } from "@/lib/utils";
  */
 
 type TrangThaiSua = {
-  /** Người này có quyền sửa (đọc từ hồ sơ). */
+  /** Quyền của người đang xem (rỗng nếu chưa đăng nhập), đọc một lần từ hồ sơ. */
+  quyen: string[];
+  /** id người đang đăng nhập; null nếu chưa đăng nhập hoặc đang đọc hồ sơ. */
+  nguoiDungId: string | null;
+  /** Đã biết trạng thái đăng nhập chưa (tránh nháy nút "Đăng nhập" khi hồ sơ chưa về). */
+  daBiet: boolean;
+  /** Có quyền `site.text.edit`. */
   coQuyen: boolean;
   dangSua: boolean;
   doiCheDo: () => void;
 };
 
 const SuaContext = React.createContext<TrangThaiSua>({
+  quyen: [],
+  nguoiDungId: null,
+  daBiet: false,
   coQuyen: false,
   dangSua: false,
   doiCheDo: () => {},
@@ -38,25 +47,34 @@ const KHOA_CHE_DO = "sv_che_do_sua";
 
 export function InlineEditProvider({ children }: { children: React.ReactNode }) {
   const { locale } = splitLocale(usePathname());
-  const [coQuyen, setCoQuyen] = React.useState(false);
+  const [quyen, setQuyen] = React.useState<string[]>([]);
+  const [nguoiDungId, setNguoiDungId] = React.useState<string | null>(null);
+  const [daBiet, setDaBiet] = React.useState(false);
+  const coQuyen = quyen.includes("site.text.edit");
   const [dangSua, setDangSua] = React.useState(false);
 
   React.useEffect(() => {
     // Người chưa đăng nhập: không gọi API nào, trang công khai giữ nguyên chi phí.
-    if (!docToken()) return;
+    if (!docToken()) {
+      setDaBiet(true);
+      return;
+    }
 
     let conSong = true;
     layHoSo(locale)
       .then((hoSo) => {
-        if (!conSong || !hoSo.permissions?.includes("site.text.edit")) return;
-        setCoQuyen(true);
+        if (!conSong) return;
+        setQuyen(hoSo.permissions ?? []);
+        setNguoiDungId(hoSo.id || null);
+        if (!hoSo.permissions?.includes("site.text.edit")) return;
         try {
           setDangSua(window.sessionStorage.getItem(KHOA_CHE_DO) === "1");
         } catch {
           // Không đọc được sessionStorage thì mặc định tắt.
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => conSong && setDaBiet(true));
 
     return () => {
       conSong = false;
@@ -77,7 +95,7 @@ export function InlineEditProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   return (
-    <SuaContext.Provider value={{ coQuyen, dangSua, doiCheDo }}>
+    <SuaContext.Provider value={{ quyen, nguoiDungId, daBiet, coQuyen, dangSua, doiCheDo }}>
       {children}
       {coQuyen ? (
         <button
@@ -96,6 +114,15 @@ export function InlineEditProvider({ children }: { children: React.ReactNode }) 
       ) : null}
     </SuaContext.Provider>
   );
+}
+
+/**
+ * Quyền và chế độ sửa của người đang xem, cho các nút quản trị đặt trên trang
+ * công khai (thêm bài, đổi kiểu hiển thị...). Chỉ để ẩn/hiện — backend vẫn
+ * kiểm tra lại quyền ở mọi API.
+ */
+export function useCheDoSua(): TrangThaiSua {
+  return React.useContext(SuaContext);
 }
 
 /**

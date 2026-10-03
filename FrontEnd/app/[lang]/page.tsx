@@ -1,16 +1,15 @@
-import Image from "next/image";
 import { LocaleLink as Link } from "@/components/ui/locale-link";
 import { ArrowRight, CalendarDays } from "lucide-react";
-import { listContent, listCategories, getSiteSettings } from "@/lib/api";
-import { Container, SectionHeading, Card, Badge } from "@/components/ui/primitives";
+import { listContent, listCategories, getSiteSettings, getHeroImages } from "@/lib/api";
+import { Container, SectionHeading, Badge } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
-import { ContentCard, ContentGrid } from "@/components/content/content-card";
+import { ContentGrid } from "@/components/content/content-card";
+import { FeaturedSplit, boTrung } from "@/components/content/featured-split";
 import { TodayLunarBadge } from "@/components/calendar/today-marker";
-import { contentHref } from "@/lib/seo";
-import { formatDate } from "@/lib/format";
 import { getI18n } from "@/lib/dictionary";
 import { EditableText } from "@/components/layout/inline-edit";
-import { randomHeroImage } from "@/lib/hero-images";
+import { heroImages } from "@/lib/hero-images";
+import { HeroCarousel, type AnhHero } from "@/components/home/hero-carousel";
 
 /**
  * Trang chủ ISR 5 phút: nội dung đổi theo ngày nhưng vẫn phải nằm sẵn
@@ -31,27 +30,33 @@ export default async function HomePage() {
   const sua = (k: string, macDinh: string) => (
     <EditableText k={k} value={texts[k] ?? macDinh} />
   );
-  const [featured, sutras, talks, categories, settings] = await Promise.all([
-    listContent({ type: ["article", "blog"], limit: 7 }),
-    listContent({ type: "sutra", limit: 3 }),
-    listContent({ type: ["audio", "video"], limit: 4 }),
-    listCategories(),
-    getSiteSettings(),
-  ]);
+  const [popular, newest, popularSutras, newestSutras, talks, categories, settings, uploaded] =
+    await Promise.all([
+      listContent({ type: ["article", "blog"], sort: "popular", limit: 2 }),
+      listContent({ type: ["article", "blog"], limit: 6 }),
+      listContent({ type: "sutra", sort: "popular", limit: 2 }),
+      listContent({ type: "sutra", limit: 6 }),
+      listContent({ type: ["audio", "video"], limit: 4 }),
+      listCategories(),
+      getSiteSettings(),
+      getHeroImages(),
+    ]);
 
-  const [lead, ...rest] = featured.data;
-  const heroImage = randomHeroImage();
+  // Bài đã nằm ở khối nổi bật thì không lặp lại ở cột "mới".
+  const mostRead = popular.data;
+  const latest = boTrung(mostRead, newest.data);
+  const sutrasPopular = popularSutras.data;
+  const sutrasLatest = boTrung(sutrasPopular, newestSutras.data);
+  // Ảnh admin tải lên ở /admin/dashboard, theo đúng thứ tự admin xếp. Chưa có
+  // thì xoay vòng bộ ảnh sẵn có, bắt đầu từ một ảnh ngẫu nhiên mỗi lần trang
+  // được sinh lại (ISR) như trước.
+  const anhNen: AnhHero[] = uploaded.length
+    ? uploaded.map((a) => ({ src: a.src, alt: a.alt }))
+    : heroImages.map((src) => ({ src, alt: "" }));
+  const anhDau = uploaded.length ? 0 : Math.floor(Math.random() * anhNen.length);
 
   return (
     <>
-      {settings?.notify ? (
-        <div className="border-b border-line bg-brass-soft">
-          <Container className="py-2.5 text-center text-xs text-brass">
-            {settings.notify}
-          </Container>
-        </div>
-      ) : null}
-
       {/*
         Mở đầu: câu kệ trên nền ảnh phủ kín khối.
 
@@ -64,20 +69,10 @@ export default async function HomePage() {
       */}
       <section className="relative isolate overflow-hidden border-b border-line">
         {/*
-          priority: đây là ảnh lớn nhất trong khung nhìn đầu tiên, để Next tải
-          sớm thay vì lazy-load — lazy ở đây làm chậm LCP.
-          alt rỗng + aria-hidden: ảnh trang trí, mọi thông tin đã có trong chữ.
+          Ảnh nền xoay vòng. Ảnh trang trí: alt rỗng + aria-hidden, mọi thông
+          tin đã có trong chữ. Ảnh đầu được priority vì là LCP (xem HeroCarousel).
         */}
-        <Image
-          src={heroImage}
-          alt=""
-          aria-hidden
-          priority
-          placeholder="blur"
-          fill
-          sizes="100vw"
-          className="-z-10 object-cover"
-        />
+        <HeroCarousel images={anhNen} startIndex={anhDau} />
 
         {/*
           Hai lớp phủ chồng nhau: một lớp tối đều để bảo đảm tương phản tối
@@ -120,59 +115,66 @@ export default async function HomePage() {
             </Button>
           </div>
         </Container>
+
+        {/*
+          Dải thiền ngữ (cấu hình ở /admin/dashboard) nằm ở đáy ảnh bìa, vẫn
+          trong khối ảnh. Cùng lý do với câu kệ ở trên: chữ đè lên ảnh nên cố
+          định trắng trên nền tối mờ, không theo bảng màu giao diện.
+        */}
+        {settings?.notify ? (
+          <div className="border-t border-white/15 bg-black/40 backdrop-blur-sm">
+            <Container className="py-3 text-center font-serif text-sm italic leading-relaxed text-white/90">
+              {settings.notify}
+            </Container>
+          </div>
+        ) : null}
       </section>
 
       <Container className="flex flex-col gap-16 py-16">
-        {lead ? (
+        {mostRead.length > 0 ? (
           <section className="flex flex-col gap-6">
             <SectionHeading
-              eyebrow={sua("home.latest", dict.home.latest)}
+              eyebrow={sua("home.articlesEyebrow", "Pháp thoại · Tuỳ bút")}
               title={sua("nav.articles", dict.nav.articles)}
-              action={
-                <Button variant="link" asChild>
+            />
+            <FeaturedSplit
+              noiBat={mostRead}
+              moi={latest}
+              nhanNoiBat={sua("home.mostRead", "Đọc nhiều nhất")}
+              nhanMoi={sua("home.latest", dict.home.latest)}
+              hanhDongMoi={
+                <Button size="sm" asChild>
                   <Link href="/bai-viet">
                     {sua("home.allArticles", "Tất cả bài viết")} <ArrowRight />
                   </Link>
                 </Button>
               }
             />
-            <div className="grid gap-5 lg:grid-cols-3">
-              <div className="relative lg:col-span-2">
-                <ContentCard item={lead} featured />
-              </div>
-              <div className="flex flex-col gap-3">
-                {rest.slice(0, 4).map((item) => (
-                  <Card key={item.id} className="relative p-4 hover:border-line-strong hover:shadow-card-lift">
-                    <Link href={contentHref(item)} className="flex flex-col gap-1.5">
-                      <span className="font-serif font-semibold leading-snug text-ink">
-                        {item.title}
-                      </span>
-                      <span className="text-xs text-muted">
-                        {formatDate(item.publishedAt)}
-                      </span>
-                    </Link>
-                  </Card>
-                ))}
-              </div>
-            </div>
           </section>
         ) : null}
 
-        {sutras.data.length > 0 ? (
+        {sutrasPopular.length > 0 ? (
           <section className="flex flex-col gap-6">
             <SectionHeading
               eyebrow={sua("home.sutrasEyebrow", dict.home.sutrasEyebrow)}
               title={sua("nav.sutras", dict.nav.sutras)}
               description={sua("home.sutrasDesc2", dict.home.sutrasDesc2)}
               action={
-                <Button variant="link" asChild>
+                <Button size="sm" asChild>
                   <Link href="/kinh-sach">
-                    {sua("home.viewAll", dict.home.viewAll)} <ArrowRight />
+                    {sua("home.allSutras", "Tất cả kinh sách")} <ArrowRight />
                   </Link>
                 </Button>
               }
             />
-            <ContentGrid items={sutras.data} />
+            {/* Đảo cột so với Bài viết để hai khối liền nhau không lặp một nhịp. */}
+            <FeaturedSplit
+              noiBat={sutrasPopular}
+              moi={sutrasLatest}
+              nhanNoiBat={sua("home.popularSutras", "Kinh sách phổ biến")}
+              nhanMoi={sua("home.sutrasLatest", "Mới cập nhật")}
+              daoCot
+            />
           </section>
         ) : null}
 

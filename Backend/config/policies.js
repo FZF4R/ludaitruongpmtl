@@ -37,6 +37,18 @@ module.exports.policies = {
     'System/Public/SiteTextController': {
         '*': true
     },
+    'System/Public/HeroImageController': {
+        '*': true
+    },
+    'System/Public/CommentController': {
+        '*': true
+    },
+    'System/Users/CommentController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    'System/Admin/HeroImageController': {
+        '*': ['userPolices', 'requirePermission']
+    },
     'System/Admin/SiteTextController': {
         '*': ['userPolices', 'requirePermission']
     },

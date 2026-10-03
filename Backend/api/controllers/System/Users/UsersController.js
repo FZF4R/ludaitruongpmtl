@@ -6,6 +6,7 @@
  */
 const fs = require('fs')
 const path = require('path');
+const { dongBoBaiCuaTacGia } = require('../../../utils/tacGia');
 
 /**
  * Lấy IP client để gửi kèm khi verify captcha (tuỳ chọn với Google, không có cũng không sao).
@@ -32,6 +33,8 @@ function getClientIp(req) {
  */
 function dinhDangHoSo(user, profile) {
     return {
+        // Để FrontEnd nhận ra nội dung của chính mình (bình luận có nút xoá).
+        id: String(user.id || ''),
         isNewUser: !user.profileCompleted,
         profileCompleted: !!user.profileCompleted,
         username: user.username || '',
@@ -430,6 +433,9 @@ module.exports = {
                     condition: { id: userId },
                     updateObject: capNhatUser
                 });
+
+                // Bài viết lấy tác giả theo hồ sơ phải đổi theo họ tên / pháp danh mới.
+                await dongBoBaiCuaTacGia(userId);
 
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',

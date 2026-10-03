@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getDictionary } from "@/lib/dictionary";
 import { i18nAlternates } from "@/lib/seo";
 import { ContentListPage } from "@/components/content/content-list-page";
+import { ListAdminBar } from "@/components/content/list-admin-bar";
 
 export const revalidate = 3600;
 
@@ -28,6 +29,7 @@ export default async function SutraListPage() {
       filter={{ type: "sutra" }}
       page={1}
       basePath="/kinh-sach"
+      adminBar={<ListAdminBar themHref="/admin/library" themNhan="Thêm kinh sách" quyenThem="sutra.manage" />}
       eyebrow={dict.footer.categories}
       title={dict.nav.sutras}
       description={dict.list.sutrasDesc}

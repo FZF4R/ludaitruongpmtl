@@ -36,6 +36,13 @@ export function useQuyen(): string[] {
   return React.useContext(QuyenContext);
 }
 
+/** Hồ sơ người đang đăng nhập (ví dụ: xem trước tên tác giả khi soạn bài). */
+const HoSoContext = React.createContext<HoSo | null>(null);
+
+export function useHoSoQuanTri(): HoSo | null {
+  return React.useContext(HoSoContext);
+}
+
 /** Dùng chung cho mọi panel: hộp báo lỗi có nút thử lại. */
 export function HopLoi({ loi, thuLai }: { loi: string; thuLai?: () => void }) {
   if (!loi) return null;
@@ -166,6 +173,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </nav>
 
       <QuyenContext.Provider value={quyen}>
+        <HoSoContext.Provider value={hoSo}>
         {chanTab ? (
           <Card className="flex max-w-lg flex-col gap-2 p-6">
             <h1 className="font-serif text-xl font-bold">Không có quyền truy cập</h1>
@@ -176,6 +184,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         ) : (
           children
         )}
+        </HoSoContext.Provider>
       </QuyenContext.Provider>
     </div>
   );

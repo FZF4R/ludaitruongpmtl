@@ -68,11 +68,14 @@ module.exports.http = {
     *                                                                          *
     ***************************************************************************/
 
-    // bodyParser: (function _configureBodyParser(){
-    //   var skipper = require('skipper');
-    //   var middlewareFn = skipper({ strict: true });
-    //   return middlewareFn;
-    // })(),
+    // Nâng giới hạn JSON từ 1mb (mặc định của skipper) lên 8mb: ảnh trang chủ
+    // (HeroImage) và avatar gửi lên dạng base64 trong JSON. Trình duyệt đã tự
+    // thu nhỏ ảnh trước khi gửi, nên 8mb là trần an toàn chứ không phải kích
+    // thước thường gặp; controller vẫn tự chặn ảnh quá lớn.
+    bodyParser: (function _configureBodyParser(){
+      var skipper = require('skipper');
+      return skipper({ strict: true, limit: '8mb' });
+    })(),
 
   },
 

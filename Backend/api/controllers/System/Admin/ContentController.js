@@ -21,6 +21,8 @@
  * bậc Quản trị viên trở lên theo config/roles.js.
  */
 const { boDau, thoatRegex } = require('../../../utils/vietnamese')
+const { tacGiaTheoHoSo, chuanHoaDichGia, timNguoi } = require('../../../utils/tacGia')
+const { ghiNhatKy, dauVet, truongDaDoi, chupNoiDung } = require('../../../utils/nhatKyBai')
 
 const LOAI_HOP_LE = ['article', 'blog', 'sutra', 'audio', 'video']
 const TRANG_THAI_HOP_LE = ['draft', 'pending', 'published', 'archived']
@@ -53,6 +55,7 @@ const dinhDangQuanTri = (row, { rutGon = false } = {}) => {
         authorId: row.authorId || '',
         author: row.author || {},
         source: row.source || {},
+        translator: row.translator || {},
         categories: row.categories || [],
         tags: row.tags || [],
         publishedAt: row.publishedAt || '',
@@ -60,7 +63,18 @@ const dinhDangQuanTri = (row, { rutGon = false } = {}) => {
         viewCount: row.viewCount || 0,
         seo: row.seo || {},
         createdAt: sangISO(row.createdAt),
-        updatedAt: sangISO(row.updatedAt)
+        updatedAt: sangISO(row.updatedAt),
+        // Dấu vết nhanh (api/utils/nhatKyBai.js). Bài tạo trước khi có tính
+        // năng này thì các trường để trống; diễn biến đầy đủ ở /content/history.
+        audit: {
+            createdById: row.createdById || '',
+            createdByName: row.createdByName || '',
+            updatedById: row.updatedById || '',
+            updatedByName: row.updatedByName || '',
+            approvedById: row.approvedById || '',
+            approvedByName: row.approvedByName || '',
+            approvedAt: sangISO(row.approvedAt)
+        }
     }
 
     if (!rutGon) {
@@ -126,11 +140,55 @@ const gomTruong = inputs => {
     gan('media', inputs.media)
     gan('author', inputs.author)
     gan('source', inputs.source)
+    gan('translator', inputs.translator)
     gan('categories', inputs.categories)
     gan('tags', inputs.tags)
     gan('publishedAt', inputs.publishedAt)
     gan('readingMinutes', inputs.readingMinutes)
     gan('seo', inputs.seo)
+
+    return ban
+}
+
+/**
+ * Chuẩn hoá `author` client gửi lên.
+ *   - `fromProfile: true`: bỏ qua tên client gửi, lấy họ tên + pháp danh từ
+ *     hồ sơ của `chuSoHuu` (xem api/utils/tacGia.js). Client không tự đặt tên
+ *     được, nên không mạo danh người khác bằng cờ này.
+ *   - còn lại: tác giả gõ tay (bài dịch, bài nhập), giữ đúng 3 trường chữ.
+ */
+const chuanHoaTacGia = async (author, chuSoHuu) => {
+    if (author && author.fromProfile === true) return tacGiaTheoHoSo(chuSoHuu)
+    if (!author || !String(author.name || '').trim()) return {}
+
+    let ban = { name: String(author.name).trim().slice(0, 120) }
+    if (author.title) ban.title = String(author.title).trim().slice(0, 60)
+    if (author.dharmaName) ban.dharmaName = String(author.dharmaName).trim().slice(0, 80)
+
+    return ban
+}
+
+/**
+ * Luật riêng của kinh sách, dùng chung cho tạo và sửa. Trả mã lỗi hoặc ''.
+ *   - chỉ người có `sutra.manage` (mặc định Quản trị viên, Quản lý) được
+ *     thêm/sửa - kể cả đổi một bài viết thành kinh sách hay ngược lại;
+ *   - bắt buộc có nguồn tham khảo (tên nguồn; đường dẫn tuỳ chọn).
+ */
+const loiKinhSach = (user, loaiCu, loaiMoi, nguon) => {
+    let dungKinh = loaiCu === 'sutra' || loaiMoi === 'sutra'
+    if (!dungKinh) return ''
+    if (!sails.config.roles.can(user.role, 'sutra.manage')) return 'sutraForbidden'
+    if (loaiMoi === 'sutra' && !(nguon && String(nguon.name || '').trim())) return 'sutraSourceRequired'
+
+    return ''
+}
+
+/** Nguồn tham khảo: giữ đúng hai trường chữ, bỏ khoảng trắng thừa. */
+const chuanHoaNguon = nguon => {
+    if (!nguon || !String(nguon.name || '').trim()) return {}
+    let ban = { name: String(nguon.name).trim().slice(0, 200) }
+    let url = String(nguon.url || '').trim()
+    if (url) ban.url = url.slice(0, 500)
 
     return ban
 }
@@ -234,6 +292,10 @@ module.exports = {
                 let trung = await sails.dataProcess.findOne(Content, { condition: { slug: slug } })
                 if (trung) return loi(exits, 'contentSlugTaken')
 
+                if (inputs.source !== undefined) inputs.source = chuanHoaNguon(inputs.source)
+                let loiKinh = loiKinhSach(User, '', inputs.type, inputs.source)
+                if (loiKinh) return loi(exits, loiKinh)
+
                 let ban = Object.assign(gomTruong(inputs), {
                     slug: slug,
                     status: 'draft',
@@ -241,8 +303,20 @@ module.exports = {
                     // dùng gửi lên"; client không đặt được trường này.
                     authorId: String(User.id)
                 })
+                if (inputs.author !== undefined) ban.author = await chuanHoaTacGia(inputs.author, User.id)
+                if (inputs.translator !== undefined) ban.translator = await chuanHoaDichGia(inputs.translator)
+                Object.assign(ban, dauVet('created', User), dauVet('updated', User))
 
                 let moi = await sails.dataProcess.createDocument(Content, ban)
+                await ghiNhatKy({
+                    req: this.req,
+                    user: User,
+                    bai: moi,
+                    action: 'create',
+                    toStatus: 'draft',
+                    // Bản đầu tiên: lần sửa sau đối chiếu ngược về được tới đây.
+                    changes: chupNoiDung(moi, 'after')
+                })
 
                 exits.successRequest({
                     messageNode: 'Content',
@@ -271,7 +345,23 @@ module.exports = {
                 let hienCo = await sails.dataProcess.findOne(Content, { condition: { id: inputs.id } })
                 if (!hienCo) return loi(exits, 'contentNotFound')
 
+                if (inputs.source !== undefined) inputs.source = chuanHoaNguon(inputs.source)
+                let loaiMoi = inputs.type === undefined ? hienCo.type : inputs.type
+                let nguonMoi = inputs.source === undefined ? hienCo.source : inputs.source
+                let loiKinh = loiKinhSach(inputs.User, hienCo.type, loaiMoi, nguonMoi)
+                if (loiKinh) return loi(exits, loiKinh)
+
                 let ban = gomTruong(inputs)
+                if (inputs.translator !== undefined) ban.translator = await chuanHoaDichGia(inputs.translator)
+
+                if (inputs.author !== undefined) {
+                    // Bài đã có chủ thì giữ chủ đó: người biên tập sửa bài của
+                    // cộng tác viên không biến mình thành tác giả. Bài nhập tay
+                    // chưa có chủ thì nhận người đang sửa.
+                    let chuSoHuu = hienCo.authorId || String(inputs.User.id)
+                    ban.author = await chuanHoaTacGia(inputs.author, chuSoHuu)
+                    if (ban.author.fromProfile && !hienCo.authorId) ban.authorId = chuSoHuu
+                }
 
                 if (ban.type !== undefined && !LOAI_HOP_LE.includes(ban.type)) {
                     return loi(exits, 'contentTypeInvalid')
@@ -295,12 +385,35 @@ module.exports = {
                 ban.summary = ban.summary === undefined ? (hienCo.summary || '') : ban.summary
                 ban.tags = ban.tags === undefined ? (hienCo.tags || []) : ban.tags
 
+                // Tính TRƯỚC khi gắn dấu vết, để danh sách chỉ gồm trường nội dung.
+                let daDoi = truongDaDoi(hienCo, ban)
+                Object.assign(ban, dauVet('updated', inputs.User))
+
                 await sails.dataProcess.updateDocument(Content, {
                     condition: { id: hienCo.id },
                     updateObject: ban
                 })
 
                 let sau = await sails.dataProcess.findOne(Content, { condition: { id: hienCo.id } })
+
+                // Bấm lưu mà không đổi gì thì không có gì để ghi.
+                if (daDoi.length) {
+                    await ghiNhatKy({
+                        req: this.req,
+                        user: inputs.User,
+                        bai: sau,
+                        action: 'update',
+                        fromStatus: hienCo.status,
+                        toStatus: sau.status,
+                        changedFields: daDoi,
+                        // Giá trị trước và sau của đúng những trường đã đổi.
+                        changes: daDoi.map(ten => ({
+                            field: ten,
+                            before: hienCo[ten] === undefined ? null : hienCo[ten],
+                            after: ban[ten] === undefined ? null : ban[ten]
+                        }))
+                    })
+                }
 
                 exits.successRequest({
                     messageNode: 'Content',
@@ -340,10 +453,29 @@ module.exports = {
                     ban.publishedAt = new Date().toISOString()
                 }
 
+                // Duyệt đăng: ghi người duyệt và thời điểm duyệt lên bản ghi. Mỗi
+                // lần đăng lại (sau khi trả về nháp / lưu trữ) ghi đè thành lần
+                // gần nhất; các lần trước vẫn nằm trong nhật ký.
+                if (inputs.status === 'published' && hienCo.status !== 'published') {
+                    Object.assign(ban, dauVet('approved', inputs.User), { approvedAt: Date.now() })
+                }
+                Object.assign(ban, dauVet('updated', inputs.User))
+
                 await sails.dataProcess.updateDocument(Content, {
                     condition: { id: hienCo.id },
                     updateObject: ban
                 })
+
+                if (hienCo.status !== inputs.status) {
+                    await ghiNhatKy({
+                        req: this.req,
+                        user: inputs.User,
+                        bai: hienCo,
+                        action: 'status',
+                        fromStatus: hienCo.status || 'draft',
+                        toStatus: inputs.status
+                    })
+                }
 
                 exits.successRequest({
                     messageNode: 'Content',
@@ -371,11 +503,116 @@ module.exports = {
                 if (!hienCo) return loi(exits, 'contentNotFound')
 
                 await sails.dataProcess.removeDocument(Content, { id: hienCo.id })
+                // Nhật ký giữ tiêu đề + slug lúc xoá: bài không còn để tra ngược nữa.
+                await ghiNhatKy({
+                    req: this.req,
+                    user: inputs.User,
+                    bai: hienCo,
+                    action: 'delete',
+                    fromStatus: hienCo.status || '',
+                    // Bài không còn: chụp toàn bộ nội dung để đọc lại được.
+                    changes: chupNoiDung(hienCo, 'before')
+                })
 
                 exits.successRequest({
                     messageNode: 'Content',
                     message: 'contentDeleted',
                     data: { id: String(hienCo.id), slug: hienCo.slug }
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    /**
+     * Toàn bộ nhật ký thao tác của một bài, mới nhất trước. Vẫn trả được sau
+     * khi bài đã bị xoá (nhật ký không xoá theo bài).
+     */
+    getHistory: ({
+        inputs: sails.config.inputs.Admin.Content.getHistory,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let ds = await ContentAuditLog.find({
+                    where: { contentId: String(inputs.id) },
+                    sort: 'createdAt DESC',
+                    limit: 200
+                })
+
+                // Lần nào có lưu nội dung để đối chiếu. Truy vấn Mongo trực tiếp
+                // với projection: app để schema:false nên Waterline không cho
+                // `select`, mà lấy cả `changes` là kéo về toàn bộ thân bài.
+                let coBanSua = new Set((await ContentRevision.getDatastore().manager
+                    .collection(ContentRevision.tableName)
+                    .find({ contentId: String(inputs.id) }, { projection: { logId: 1 } })
+                    .toArray()).map(row => row.logId))
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: ds.map(row => ({
+                        id: String(row.id),
+                        action: row.action,
+                        fromStatus: row.fromStatus || '',
+                        toStatus: row.toStatus || '',
+                        changedFields: row.changedFields || [],
+                        actorId: row.actorId,
+                        actorName: row.actorName || row.actorUsername || '',
+                        actorUsername: row.actorUsername || '',
+                        ip: row.ip || '',
+                        contentTitle: row.contentTitle || '',
+                        hasRevision: coBanSua.has(String(row.id)),
+                        createdAt: sangISO(row.createdAt)
+                    }))
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    /**
+     * Nội dung trước/sau của MỘT lần thao tác, để đối chiếu. Tách khỏi
+     * getHistory vì có thể mang cả thân bài - chỉ tải khi người xem mở ra.
+     */
+    getRevision: ({
+        inputs: sails.config.inputs.Admin.Content.getRevision,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let banSua = await ContentRevision.findOne({ logId: String(inputs.logId) })
+                if (!banSua) return loi(exits, 'contentNotFound')
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: {
+                        logId: banSua.logId,
+                        contentId: banSua.contentId,
+                        action: banSua.action,
+                        changes: banSua.changes || []
+                    }
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    /**
+     * Tìm người dùng để chọn làm dịch giả kinh sách. Chỉ trả id + họ tên +
+     * pháp danh (không email), quyền `sutra.manage` - không cần `user.list`.
+     */
+    searchPeople: ({
+        inputs: sails.config.inputs.Admin.Content.searchPeople,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: await timNguoi(inputs.q)
                 });
             } catch (err) {
                 sails.checkErrorOutput(err, exits);

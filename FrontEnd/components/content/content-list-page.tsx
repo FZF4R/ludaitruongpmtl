@@ -6,7 +6,7 @@ import {
   EmptyState,
   JsonLd,
 } from "@/components/ui/primitives";
-import { ContentGrid } from "@/components/content/content-card";
+import { ContentGrid, ContentList } from "@/components/content/content-card";
 import { Breadcrumbs, Pagination, type Crumb } from "@/components/content/navigation";
 import { breadcrumbJsonLd } from "@/lib/seo";
 
@@ -27,6 +27,9 @@ export async function ContentListPage({
   description,
   trail,
   columns = 3,
+  layout = "card",
+  thumbnail = false,
+  adminBar,
   emptyTitle = "Chưa có nội dung nào",
   emptyDescription = "Nội dung đang được biên tập. Xin quay lại sau.",
 }: {
@@ -38,6 +41,12 @@ export async function ContentListPage({
   description?: string;
   trail: Crumb[];
   columns?: 2 | 3;
+  /** "list" = mỗi bài một hàng có ảnh nhỏ (luôn có ảnh); "card" = lưới thẻ. */
+  layout?: "card" | "list";
+  /** Dạng thẻ có hiện ảnh bìa hay không. */
+  thumbnail?: boolean;
+  /** Nút quản trị (client) đặt cạnh tiêu đề; tự ẩn với người đọc thường. */
+  adminBar?: React.ReactNode;
   emptyTitle?: string;
   emptyDescription?: string;
 }) {
@@ -50,13 +59,22 @@ export async function ContentListPage({
   return (
     <Container className="flex flex-col gap-8 py-12">
       <Breadcrumbs trail={trail} />
-      <SectionHeading eyebrow={eyebrow} title={title} description={description} />
+      <SectionHeading
+        eyebrow={eyebrow}
+        title={title}
+        description={description}
+        action={adminBar}
+      />
 
       {result.data.length === 0 ? (
         <EmptyState title={emptyTitle} description={emptyDescription} />
       ) : (
         <>
-          <ContentGrid items={result.data} columns={columns} />
+          {layout === "list" ? (
+            <ContentList items={result.data} />
+          ) : (
+            <ContentGrid items={result.data} columns={columns} thumbnail={thumbnail} />
+          )}
           <Pagination
             basePath={basePath}
             page={result.page}

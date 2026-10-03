@@ -271,5 +271,21 @@
   "comingSoon": {
     "title": "Coming soon",
     "body": "This section is not open yet. We are preparing the content and will launch it soon."
+  },
+  "comments": {
+    "title": "Comments",
+    "count": "{n} comments",
+    "empty": "No comments yet. Be the first to share your thoughts.",
+    "placeholder": "Share your thoughts on this article…",
+    "submit": "Post comment",
+    "sending": "Posting…",
+    "signInPrompt": "Sign in to comment",
+    "noPermission": "Your account is not allowed to comment yet.",
+    "delete": "Delete",
+    "confirmDelete": "Delete this comment?",
+    "loadMore": "Load more comments",
+    "loadError": "Could not load comments.",
+    "sendError": "Could not post your comment, please try again.",
+    "dharmaName": "Dharma name"
   }
 }

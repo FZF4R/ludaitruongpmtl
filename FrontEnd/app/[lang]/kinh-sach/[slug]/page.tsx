@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/components/content/navigation";
 import { ProseBody } from "@/components/content/prose-body";
 import { formatDualDate } from "@/lib/format";
+import { ViewTracker } from "@/components/content/view-tracker";
 
 export const revalidate = 3600;
 
@@ -66,24 +67,61 @@ export default async function SutraPage(props: {
             </p>
           ) : null}
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
-            {content.author ? (
-              <span>
-                Bản dịch: {content.author.title ? `${content.author.title} ` : ""}
-                {content.author.name}
-              </span>
+          {/*
+            Thông tin xuất xứ: dịch giả, nguồn tham khảo (bắt buộc với kinh sách
+            mới) và người đăng. Kinh nhập trước khi có các trường này thì rơi
+            về dòng "Bản dịch" cũ đọc từ author.
+          */}
+          <dl className="grid gap-x-6 gap-y-1.5 rounded-card border border-line bg-surface-2 px-4 py-3 text-sm sm:grid-cols-[auto_1fr]">
+            {content.translator ? (
+              <>
+                <dt className="text-muted">Dịch giả</dt>
+                <dd className="text-ink">
+                  {content.translator.name}
+                  {content.translator.dharmaName ? (
+                    <span className="text-accent"> · Pháp danh: {content.translator.dharmaName}</span>
+                  ) : null}
+                </dd>
+              </>
+            ) : content.author ? (
+              <>
+                <dt className="text-muted">Bản dịch</dt>
+                <dd className="text-ink">
+                  {content.author.title ? `${content.author.title} ` : ""}
+                  {content.author.name}
+                </dd>
+              </>
             ) : null}
             {content.source ? (
               <>
-                <span aria-hidden>·</span>
-                <span>{content.source.name}</span>
+                <dt className="text-muted">Nguồn tham khảo</dt>
+                <dd className="min-w-0 break-words text-ink">
+                  {content.source.url ? (
+                    <a
+                      href={content.source.url}
+                      rel="noopener noreferrer nofollow"
+                      target="_blank"
+                      className="text-accent hover:underline"
+                    >
+                      {content.source.name}
+                    </a>
+                  ) : (
+                    content.source.name
+                  )}
+                </dd>
               </>
             ) : null}
-            <span aria-hidden>·</span>
-            <time dateTime={content.publishedAt}>
-              {formatDualDate(content.publishedAt)}
-            </time>
-          </div>
+            {content.postedBy ? (
+              <>
+                <dt className="text-muted">Người đăng</dt>
+                <dd className="text-ink">{content.postedBy.name}</dd>
+              </>
+            ) : null}
+            <dt className="text-muted">Ngày đăng</dt>
+            <dd className="text-ink">
+              <time dateTime={content.publishedAt}>{formatDualDate(content.publishedAt)}</time>
+            </dd>
+          </dl>
 
           {first ? (
             <div>
@@ -126,6 +164,7 @@ export default async function SutraPage(props: {
         ) : null}
       </div>
 
+      <ViewTracker slug={content.slug} />
       <JsonLd data={contentJsonLd(content)} />
       <JsonLd data={breadcrumbJsonLd(trail)} />
     </Container>

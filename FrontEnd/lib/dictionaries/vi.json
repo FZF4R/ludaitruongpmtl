@@ -271,5 +271,21 @@
   "comingSoon": {
     "title": "Đang xây dựng",
     "body": "Phần này chưa mở. Chúng tôi đang chuẩn bị nội dung và sẽ ra mắt trong thời gian tới."
+  },
+  "comments": {
+    "title": "Bình luận",
+    "count": "{n} bình luận",
+    "empty": "Chưa có bình luận nào. Hãy là người đầu tiên chia sẻ cảm nhận.",
+    "placeholder": "Chia sẻ cảm nhận của bạn về bài viết…",
+    "submit": "Gửi bình luận",
+    "sending": "Đang gửi…",
+    "signInPrompt": "Đăng nhập để bình luận",
+    "noPermission": "Tài khoản của bạn chưa được phép bình luận.",
+    "delete": "Xoá",
+    "confirmDelete": "Xoá bình luận này?",
+    "loadMore": "Xem thêm bình luận",
+    "loadError": "Không tải được bình luận.",
+    "sendError": "Không gửi được bình luận, vui lòng thử lại.",
+    "dharmaName": "Pháp danh"
   }
 }

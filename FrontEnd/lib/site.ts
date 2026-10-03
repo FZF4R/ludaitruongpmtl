@@ -50,10 +50,10 @@ export const practiceNav: { href: string; key: PracticeKey }[] = [
 
 export const mainNav: NavItem[] = [
   { href: "/kinh-sach", key: "sutras" },
-  { href: "/tu-tap", key: "practice", children: practiceNav },
   { href: "/bai-viet", key: "articles" },
-  { href: "/phat-lich", key: "calendar" },
+  { href: "/tu-tap", key: "practice", children: practiceNav },
   { href: "/thu-vien", key: "library" },
+  { href: "/phat-lich", key: "calendar" },
   { href: "/qua-trinh-tu-tap", key: "journey" },
   { href: "/ve-chung-toi", key: "about" },
 ];

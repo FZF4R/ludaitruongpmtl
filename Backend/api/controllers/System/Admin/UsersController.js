@@ -4,6 +4,8 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+const { dongBoBaiCuaTacGia } = require('../../../utils/tacGia')
+
 /**
  * IP client để ghi vào nhật ký đổi vai trò.
  * Ưu tiên X-Forwarded-For vì API chạy sau nginx.
@@ -243,6 +245,14 @@ module.exports = {
                     condition: { id: muc.id },
                     updateObject: ban
                 })
+
+                // Admin sửa họ tên: ghi cả vào hồ sơ Phật tử (nơi tên được ưu tiên
+                // đọc - saveProfile cũng giữ hai chỗ này trùng nhau), rồi cho các
+                // bài lấy tác giả theo hồ sơ đổi theo.
+                if (ban.fullName !== undefined) {
+                    await UserProfile.updateOne({ userId: String(muc.id) }).set({ fullName: ban.fullName })
+                    await dongBoBaiCuaTacGia(muc.id)
+                }
 
                 // Luật 4. Ghi SAU khi ghi thành công: nhật ký nói "đã đổi", nên
                 // một dòng nhật ký cho lần đổi bị lỗi còn tệ hơn là không có.

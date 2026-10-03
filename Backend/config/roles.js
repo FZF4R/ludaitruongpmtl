@@ -55,6 +55,9 @@ const GRANTS = {
   ],
   Manager: [
     'content.editAny',
+    // Kinh sách là nội dung chuẩn mực của site: chỉ Quản trị viên trở lên được
+    // thêm/sửa, tách khỏi content.editAny để có thể giao bài viết mà không giao kinh.
+    'sutra.manage',
     'content.publish',
     'content.delete',
     'category.manage',
@@ -93,6 +96,7 @@ const CATALOG = [
   { key: 'content.editAny', group: 'Nội dung', label: 'Soạn và sửa mọi bài viết, kinh sách' },
   { key: 'content.publish', group: 'Nội dung', label: 'Đăng, ẩn, lưu trữ bài' },
   { key: 'content.delete', group: 'Nội dung', label: 'Xoá bài' },
+  { key: 'sutra.manage', group: 'Nội dung', label: 'Thêm, sửa kinh sách (kèm chọn dịch giả)' },
   { key: 'category.manage', group: 'Nội dung', label: 'Quản lý chuyên mục' },
   { key: 'calendar.manage', group: 'Nội dung', label: 'Quản lý Phật lịch' },
   { key: 'comment.write', group: 'Bình luận', label: 'Viết bình luận' },

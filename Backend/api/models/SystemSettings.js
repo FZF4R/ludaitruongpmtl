@@ -49,6 +49,12 @@ module.exports = {
             defaultsTo: {},
             description: 'Mau giao dien sang, ghi de bang mac dinh cua FrontEnd. Dang { accent: "#8a6414", paper: "#ffffff", ... }. Chi nhan ma hex; FrontEnd bo qua khoa la va gia tri sai dinh dang.'
         },
+        articleLayout: {
+            type: 'string',
+            isIn: ['card', 'list'],
+            defaultsTo: 'card',
+            description: 'Kieu hien thi danh sach /bai-viet: card (luoi the) hoac list (danh sach doc).'
+        },
         themeDark: {
             type: 'json',
             defaultsTo: {},

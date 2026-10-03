@@ -271,5 +271,21 @@
   "comingSoon": {
     "title": "建设中",
     "body": "此栏目尚未开放。内容正在整理，稍后上线。"
+  },
+  "comments": {
+    "title": "评论",
+    "count": "{n} 条评论",
+    "empty": "暂无评论，欢迎分享您的感想。",
+    "placeholder": "分享您对本文的感想…",
+    "submit": "发表评论",
+    "sending": "发送中…",
+    "signInPrompt": "登录后发表评论",
+    "noPermission": "您的账户暂无评论权限。",
+    "delete": "删除",
+    "confirmDelete": "删除这条评论？",
+    "loadMore": "查看更多评论",
+    "loadError": "无法加载评论。",
+    "sendError": "评论发送失败，请重试。",
+    "dharmaName": "法名"
   }
 }

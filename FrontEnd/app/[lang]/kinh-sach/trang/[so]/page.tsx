@@ -4,6 +4,7 @@ import {
   pageParams,
   parsePageNumber,
 } from "@/components/content/content-list-page";
+import { ListAdminBar } from "@/components/content/list-admin-bar";
 import { i18nAlternates } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -34,6 +35,7 @@ export default async function SutraListPagedPage(props: {
       filter={{ type: "sutra" }}
       page={page}
       basePath="/kinh-sach"
+      adminBar={<ListAdminBar themHref="/admin/library" themNhan="Thêm kinh sách" quyenThem="sutra.manage" />}
       eyebrow="Kinh, luật, luận"
       title="Kinh sách"
       description={`Trang ${page}`}

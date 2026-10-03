@@ -8,7 +8,8 @@ import anh5 from "@/lib/img/d556bd176c70d7bc17a0c78b7bf97c83.jpg";
 import anh6 from "@/lib/img/f2e0a8061973b1d64dfd46a201a8995f.jpg";
 
 /**
- * Ảnh bìa trang chủ.
+ * Bộ ảnh có sẵn: ảnh xoay vòng trang chủ khi admin chưa tải ảnh nào lên
+ * (/admin/dashboard), và ảnh thumbnail mặc định cho bài không có ảnh bìa.
  *
  * Ảnh nằm trong lib/img chứ không phải public/, nên chúng KHÔNG được phục vụ
  * thẳng qua URL — phải import để Next đưa qua bộ tối ưu ảnh. Đổi lại được
@@ -27,15 +28,3 @@ export const heroImages: StaticImageData[] = [
   anh5,
   anh6,
 ];
-
-/**
- * Chọn ngẫu nhiên một ảnh.
- *
- * Trang chủ dùng ISR (revalidate 5 phút) nên ảnh đổi mỗi lần trang được sinh
- * lại, không phải mỗi lượt xem — mọi người vào trong cùng một chu kỳ sẽ thấy
- * cùng một ảnh. Muốn đổi theo từng lượt thì trang chủ phải chuyển sang render
- * động, đánh đổi bằng tốc độ.
- */
-export function randomHeroImage(): StaticImageData {
-  return heroImages[Math.floor(Math.random() * heroImages.length)];
-}

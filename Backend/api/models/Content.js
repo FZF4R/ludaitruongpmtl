@@ -103,6 +103,16 @@ module.exports = {
             defaultsTo: '',
             description: 'Users.id của người tạo bài. Trống với dữ liệu seed và bài do ban biên tập nhập thẳng.'
         },
+        // ---- Dấu vết thao tác (api/utils/nhatKyBai.js). Diễn biến đầy đủ ở
+        // ContentAuditLog; đây chỉ là bản tóm tắt để đọc nhanh. Máy ghi, client
+        // không đặt được (gomTruong của Admin/ContentController không nhận).
+        createdById: { type: 'string', defaultsTo: '' },
+        createdByName: { type: 'string', defaultsTo: '' },
+        updatedById: { type: 'string', defaultsTo: '', description: 'Người sửa gần nhất' },
+        updatedByName: { type: 'string', defaultsTo: '' },
+        approvedById: { type: 'string', defaultsTo: '', description: 'Người duyệt đăng gần nhất' },
+        approvedByName: { type: 'string', defaultsTo: '' },
+        approvedAt: { type: 'number', defaultsTo: 0, description: 'Thời điểm duyệt đăng gần nhất (ms)' },
         status: {
             type: 'string',
             isIn: ['draft', 'pending', 'published', 'archived'],

@@ -271,5 +271,21 @@
   "comingSoon": {
     "title": "준비 중",
     "body": "이 항목은 아직 열리지 않았습니다. 내용을 준비하여 곧 공개하겠습니다."
+  },
+  "comments": {
+    "title": "댓글",
+    "count": "댓글 {n}개",
+    "empty": "아직 댓글이 없습니다. 첫 감상을 나눠 주세요.",
+    "placeholder": "이 글에 대한 감상을 나눠 주세요…",
+    "submit": "댓글 등록",
+    "sending": "등록 중…",
+    "signInPrompt": "로그인하고 댓글 달기",
+    "noPermission": "계정에 댓글 권한이 없습니다.",
+    "delete": "삭제",
+    "confirmDelete": "이 댓글을 삭제할까요?",
+    "loadMore": "댓글 더 보기",
+    "loadError": "댓글을 불러오지 못했습니다.",
+    "sendError": "댓글을 등록하지 못했습니다. 다시 시도해 주세요.",
+    "dharmaName": "법명"
   }
 }

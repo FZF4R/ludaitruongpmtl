@@ -39,6 +39,12 @@ module.exports.notificationVi = {
         contentSlugTaken: {
             message: "Đường dẫn này đã có bài khác dùng"
         },
+        sutraForbidden: {
+            message: "Chỉ Quản trị viên và Quản lý được thêm, sửa kinh sách"
+        },
+        sutraSourceRequired: {
+            message: "Kinh sách bắt buộc ghi nguồn tham khảo"
+        },
         contentStatusInvalid: {
             message: "Trạng thái không hợp lệ"
         },
@@ -182,6 +188,24 @@ module.exports.notificationVi = {
         },
         permissionNotGrantable: {
             message: "Không thể cấp quyền mà chính bạn không có"
+        },
+        commentInvalid: {
+            message: "Bình luận phải dài từ 2 đến 2000 ký tự"
+        },
+        commentTooFast: {
+            message: "Bạn vừa bình luận, vui lòng đợi giây lát rồi gửi tiếp"
+        },
+        commentNotFound: {
+            message: "Không tìm thấy bài viết hoặc bình luận"
+        },
+        commentForbidden: {
+            message: "Bạn chỉ xoá được bình luận của chính mình"
+        },
+        heroImageInvalid: {
+            message: "Ảnh không hợp lệ (chỉ nhận JPG, PNG, WebP dưới 5MB)"
+        },
+        heroImageTooMany: {
+            message: "Đã đủ 12 ảnh, hãy xoá bớt trước khi thêm"
         },
         siteTextInvalid: {
             message: "Nội dung không hợp lệ hoặc quá dài (tối đa 2000 ký tự)"

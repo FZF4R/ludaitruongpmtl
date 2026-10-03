@@ -57,6 +57,18 @@ module.exports.notification = {
                 messageVNI: "Đường dẫn chỉ gồm chữ thường, số và dấu gạch ngang"
             }
         },
+        sutraForbidden: {
+            message: {
+                messageEN: "Only Managers and Admins can add or edit sutras",
+                messageVNI: "Chỉ Quản trị viên và Quản lý được thêm, sửa kinh sách"
+            }
+        },
+        sutraSourceRequired: {
+            message: {
+                messageEN: "A reference source is required for sutras",
+                messageVNI: "Kinh sách bắt buộc ghi nguồn tham khảo"
+            }
+        },
         contentSlugTaken: {
             message: {
                 messageEN: "This slug is already in use",
@@ -350,6 +362,42 @@ module.exports.notification = {
             message: {
                 messageEN: "You cannot grant a permission you do not have",
                 messageVNI: "Không thể cấp quyền mà chính bạn không có"
+            }
+        },
+        commentInvalid: {
+            message: {
+                messageEN: "Comments must be 2 to 2000 characters long",
+                messageVNI: "Bình luận phải dài từ 2 đến 2000 ký tự"
+            }
+        },
+        commentTooFast: {
+            message: {
+                messageEN: "You just commented, please wait a moment before posting again",
+                messageVNI: "Bạn vừa bình luận, vui lòng đợi giây lát rồi gửi tiếp"
+            }
+        },
+        commentNotFound: {
+            message: {
+                messageEN: "Article or comment not found",
+                messageVNI: "Không tìm thấy bài viết hoặc bình luận"
+            }
+        },
+        commentForbidden: {
+            message: {
+                messageEN: "You can only delete your own comments",
+                messageVNI: "Bạn chỉ xoá được bình luận của chính mình"
+            }
+        },
+        heroImageInvalid: {
+            message: {
+                messageEN: "Invalid image (JPG, PNG or WebP under 5MB only)",
+                messageVNI: "Ảnh không hợp lệ (chỉ nhận JPG, PNG, WebP dưới 5MB)"
+            }
+        },
+        heroImageTooMany: {
+            message: {
+                messageEN: "Maximum of 12 images reached, delete some first",
+                messageVNI: "Đã đủ 12 ảnh, hãy xoá bớt trước khi thêm"
             }
         },
         siteTextInvalid: {

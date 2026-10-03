@@ -9,6 +9,7 @@ import { AudioPlayer } from "@/components/media/audio-player";
 import { VideoEmbed } from "@/components/media/video-embed";
 import { formatDualDate, formatDuration } from "@/lib/format";
 import { getDictionary } from "@/lib/dictionary";
+import { ViewTracker } from "@/components/content/view-tracker";
 
 export const revalidate = 3600;
 
@@ -129,6 +130,7 @@ export default async function TalkPage(props: {
         ) : null}
       </article>
 
+      <ViewTracker slug={content.slug} />
       <JsonLd data={contentJsonLd(content)} />
       <JsonLd data={breadcrumbJsonLd(trail)} />
     </Container>

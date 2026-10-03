@@ -36,6 +36,12 @@ module.exports.notificationEn = {
         contentSlugInvalid: {
             message: "Invalid slug: use lowercase letters, digits and hyphens"
         },
+        sutraForbidden: {
+            message: "Only Managers and Admins can add or edit sutras"
+        },
+        sutraSourceRequired: {
+            message: "A reference source is required for sutras"
+        },
         contentSlugTaken: {
             message: "This slug is already in use"
         },
@@ -182,6 +188,24 @@ module.exports.notificationEn = {
         },
         permissionNotGrantable: {
             message: "You cannot grant a permission you do not have"
+        },
+        commentInvalid: {
+            message: "Comments must be 2 to 2000 characters long"
+        },
+        commentTooFast: {
+            message: "You just commented, please wait a moment before posting again"
+        },
+        commentNotFound: {
+            message: "Article or comment not found"
+        },
+        commentForbidden: {
+            message: "You can only delete your own comments"
+        },
+        heroImageInvalid: {
+            message: "Invalid image (JPG, PNG or WebP under 5MB only)"
+        },
+        heroImageTooMany: {
+            message: "Maximum of 12 images reached, delete some first"
         },
         siteTextInvalid: {
             message: "Invalid or too long text (max 2000 characters)"

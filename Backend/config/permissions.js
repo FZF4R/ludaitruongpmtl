@@ -21,6 +21,17 @@ const actionPermissions = {
   'POST /v1/admin/user/update': 'user.manage',
   'POST /v1/admin/user/changepass': 'user.password.reset',
 
+  //==== Bình luận =====
+  // Xoá bình luận của người khác cần thêm `comment.moderate`, kiểm tra trong
+  // action (System/Users/CommentController) vì phụ thuộc ai là chủ bình luận.
+  'POST /v1/user/comments': 'comment.write',
+  'POST /v1/user/comments/delete': 'comment.write',
+
+  //==== Ảnh xoay vòng trang chủ =====
+  'POST /v1/admin/hero-images/add': 'system.settings',
+  'POST /v1/admin/hero-images/delete': 'system.settings',
+  'POST /v1/admin/hero-images/reorder': 'system.settings',
+
   //==== Sửa chữ giao diện trực tiếp =====
   'POST /v1/admin/texts/update': 'site.text.edit',
 
@@ -45,6 +56,11 @@ const actionPermissions = {
   'GET /v1/admin/content/list': 'content.editAny',
   'GET /v1/admin/content/detail': 'content.editAny',
   'GET /v1/admin/content/categories': 'content.editAny',
+  // Ai đã mở được bài để sửa thì xem được lịch sử của bài đó.
+  'GET /v1/admin/content/history': 'content.editAny',
+  // Chọn dịch giả kinh sách: chỉ trả id + tên + pháp danh, không cần user.list.
+  'GET /v1/admin/content/people': 'sutra.manage',
+  'GET /v1/admin/content/revision': 'content.editAny',
   'POST /v1/admin/content/create': 'content.editAny',
   'POST /v1/admin/content/update': 'content.editAny',
   'POST /v1/admin/content/status': 'content.publish',
