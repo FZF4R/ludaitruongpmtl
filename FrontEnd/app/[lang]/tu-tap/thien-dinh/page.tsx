@@ -1,12 +1,24 @@
-import type { Metadata } from "next";
-import { ComingSoonPage, comingSoonMetadata } from "@/components/content/coming-soon";
+import { Container } from "@/components/ui/primitives";
+import { PracticeHeader, practiceMetadata } from "@/components/practice/practice-page";
+import { MeditationTimer } from "@/components/practice/meditation-timer";
+import { HuongDan } from "@/components/practice/common";
+import { getDictionary } from "@/lib/dictionary";
+
+export const revalidate = 3600;
 
 const HREF = "/tu-tap/thien-dinh";
 
-export function generateMetadata(): Promise<Metadata> {
-  return comingSoonMetadata("meditation", HREF);
+export function generateMetadata() {
+  return practiceMetadata("meditation", HREF);
 }
 
-export default function Page() {
-  return <ComingSoonPage navKey="meditation" href={HREF} />;
+export default async function Page() {
+  const dict = await getDictionary();
+  return (
+    <Container className="flex flex-col gap-8 py-12">
+      <PracticeHeader navKey="meditation" href={HREF} />
+      <MeditationTimer nhan={dict.practiceTools} />
+      <HuongDan tieuDe={dict.practiceTools.guideTitle} muc={dict.practiceTools.guides.meditation} />
+    </Container>
+  );
 }

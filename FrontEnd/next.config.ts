@@ -29,6 +29,23 @@ const nextConfig: NextConfig = {
   // Loại bỏ header tiết lộ framework.
   poweredByHeader: false,
 
+  /**
+   * Bốn mục tu tập cũ đã gộp thành hai trang (Tụng kinh / Niệm Phật, Gõ mõ /
+   * Chuỗi hạt). 308 ở đây thay vì redirect trong trang: trang đã stream thì
+   * Next chỉ chuyển hướng phía trình duyệt, Google không thấy mã chuyển hướng.
+   */
+  async redirects() {
+    const doiTen: [string, string][] = [
+      ["tung-kinh", "tung-kinh-niem-phat"],
+      ["niem-phat", "tung-kinh-niem-phat"],
+      ["go-mo", "go-mo-chuoi-hat"],
+      ["lan-chuoi-hat", "go-mo-chuoi-hat"],
+    ];
+    return doiTen.flatMap(([cu, moi]) => [
+      { source: `/tu-tap/${cu}`, destination: `/tu-tap/${moi}`, permanent: true },
+      { source: `/:lang(en|zh|ko)/tu-tap/${cu}`, destination: `/:lang/tu-tap/${moi}`, permanent: true },
+    ]);
+  },
   async headers() {
     return [
       {

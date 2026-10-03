@@ -22,4 +22,9 @@ module.exports.custom = {
   supportedLocales: ['en', 'zh', 'ru', 'vi', 'th', 'fil'],
   defaultLocale: 'en',
 
+  // Tài khoản DUY NHẤT được đọc / sửa danh sách từ cấm mặc định
+  // (data/tu-cam-mac-dinh.txt, API /v1/admin/banned-words/default). Phải là
+  // vai trò Admin VÀ đúng email này. Đổi qua biến môi trường nếu cần.
+  chuTuCamEmail: String(process.env.TU_CAM_OWNER_EMAIL || 's2nhocvip98@gmail.com').trim().toLowerCase(),
+
 };

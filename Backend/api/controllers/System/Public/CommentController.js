@@ -28,7 +28,10 @@ module.exports = {
                     });
                 }
 
-                let cuaBai = { contentId: String(bai.id), status: 'visible' }
+                // Bình luận đã xoá vẫn nằm đúng chỗ dưới dạng "đã xoá" (giữ mạch trả lời);
+                // tổng số chỉ đếm bình luận đang hiện.
+                let cuaBai = { contentId: String(bai.id), status: { $in: ['visible', 'hidden'] } }
+                let dangHien = { contentId: String(bai.id), status: 'visible' }
                 let dieuKienGoc = Object.assign({}, cuaBai, LA_GOC)
 
                 let [goc, total, totalAll] = await Promise.all([
@@ -38,7 +41,7 @@ module.exports = {
                         .limit(inputs.limit)
                         .toArray(),
                     bangBinhLuan().countDocuments(dieuKienGoc),
-                    bangBinhLuan().countDocuments(cuaBai)
+                    bangBinhLuan().countDocuments(dangHien)
                 ])
 
                 let idGoc = goc.map(b => String(b._id))

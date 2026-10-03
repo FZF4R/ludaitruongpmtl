@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { useCheDoSua } from "@/components/layout/inline-edit";
 import { LoiApi } from "@/lib/auth";
-import { guiBinhLuan, layBinhLuan, xoaBinhLuan, type BinhLuan } from "@/lib/comments";
+import { guiBinhLuan, layBinhLuan, layBinhLuanDaXoa, xoaBinhLuan, type BinhLuan } from "@/lib/comments";
 import { layBinhLuanViPham, xoaHanBinhLuan, type BinhLuanViPham } from "@/lib/admin-api";
 import { localePath, splitLocale, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -51,13 +51,18 @@ export type NhanBinhLuan = {
   suggestions: string[];
   suggestionsLabel: string;
   flaggedNotice: string;
+  deletedBySelf: string;
+  deletedByModerator: string;
+  viewDeleted: string;
+  hideDeleted: string;
+  deletedBy: string;
 };
 
 const DAI_TOI_DA = 2000;
 
 export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLuan }) {
   const { locale } = splitLocale(usePathname());
-  const { quyen, nguoiDungId, daBiet } = useCheDoSua();
+  const { quyen, nguoiDungId, nguoiDung, daBiet } = useCheDoSua();
 
   const [ds, setDs] = React.useState<BinhLuan[]>([]);
   const [tongGoc, setTongGoc] = React.useState(0);
@@ -159,25 +164,18 @@ export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLua
     if (!window.confirm(nhan.confirmDelete)) return;
     try {
       await xoaBinhLuan(bl.id, locale);
-      if (bl.parentId) {
-        setDs((cu) =>
-          cu.map((g) =>
-            g.id === bl.parentId ? { ...g, replies: (g.replies ?? []).filter((r) => r.id !== bl.id) } : g,
-          ),
-        );
-        setTongTatCa((t) => Math.max(0, t - 1));
-      } else {
-        // Ẩn bình luận gốc thì mạch trả lời của nó cũng không còn hiện.
-        setDs((cu) => cu.filter((x) => x.id !== bl.id));
-        setTongGoc((t) => Math.max(0, t - 1));
-        setTongTatCa((t) => Math.max(0, t - 1 - (bl.replies?.length ?? 0)));
-      }
+      // Xoá mềm: bình luận ở nguyên chỗ, thành dòng "đã xoá" (mạch trả lời giữ nguyên).
+      const chinhChu = bl.userId === nguoiDungId;
+      const daXoa = { byModerator: !chinhChu, byName: chinhChu ? nguoiDung?.name || bl.author.name : "" };
+      const danDau = (x: BinhLuan): BinhLuan => (x.id === bl.id ? { ...x, body: "", deleted: daXoa } : x);
+      setDs((cu) => cu.map((g) => ({ ...danDau(g), replies: g.replies?.map(danDau) })));
+      setTongTatCa((t) => Math.max(0, t - 1));
     } catch (err) {
       window.alert((err instanceof LoiApi && err.thongDiep) || nhan.sendError);
     }
   }
 
-  const coTheXoa = (bl: BinhLuan) => bl.userId === nguoiDungId || duocKiemDuyet;
+  const coTheXoa = (bl: BinhLuan) => !bl.deleted && (bl.userId === nguoiDungId || duocKiemDuyet);
   const coTheTraLoi = !!nguoiDungId && duocViet;
 
   return (
@@ -222,7 +220,8 @@ export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLua
                 locale={locale}
                 noiBat={noiBat === goc.id}
                 coTheXoa={coTheXoa(goc)}
-                coTheTraLoi={coTheTraLoi}
+                coTheTraLoi={coTheTraLoi && !goc.deleted}
+                xemLai={duocKiemDuyet}
                 onTraLoi={() => setDangTraLoi(dangTraLoi === goc.id ? null : goc.id)}
                 onXoa={() => xoa(goc)}
               />
@@ -238,7 +237,8 @@ export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLua
                         nho
                         noiBat={noiBat === r.id}
                         coTheXoa={coTheXoa(r)}
-                        coTheTraLoi={coTheTraLoi}
+                        coTheTraLoi={coTheTraLoi && !r.deleted}
+                        xemLai={duocKiemDuyet}
                         onTraLoi={() => setDangTraLoi(dangTraLoi === r.id ? null : r.id)}
                         onXoa={() => xoa(r)}
                       />
@@ -311,10 +311,13 @@ function MotBinhLuan({
   noiBat,
   coTheXoa,
   coTheTraLoi,
+  xemLai = false,
   onTraLoi,
   onXoa,
 }: {
   bl: BinhLuan;
+  /** Kiểm duyệt viên: xem lại nội dung bình luận đã xoá. */
+  xemLai?: boolean;
   nhan: NhanBinhLuan;
   locale: string;
   /** Câu trả lời: avatar nhỏ hơn. */
@@ -325,6 +328,8 @@ function MotBinhLuan({
   onTraLoi: () => void;
   onXoa: () => void;
 }) {
+  if (bl.deleted) return <BinhLuanDaXoa bl={bl} nhan={nhan} locale={locale} nho={nho} xemLai={xemLai} />;
+
   return (
     <div
       id={`binh-luan-${bl.id}`}
@@ -381,6 +386,69 @@ function MotBinhLuan({
             </button>
           ) : null}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Dòng thay cho bình luận đã xoá: ai xoá; kiểm duyệt viên bấm xem lại được nội dung gốc. */
+function BinhLuanDaXoa({
+  bl,
+  nhan,
+  locale,
+  nho,
+  xemLai,
+}: {
+  bl: BinhLuan;
+  nhan: NhanBinhLuan;
+  locale: string;
+  nho: boolean;
+  xemLai: boolean;
+}) {
+  const [goc, setGoc] = React.useState<{ body: string; deletedBy: string } | null>(null);
+  const [mo, setMo] = React.useState(false);
+  const cau = bl.deleted?.byModerator
+    ? nhan.deletedByModerator
+    : nhan.deletedBySelf.replace("{name}", bl.deleted?.byName || bl.author.name || "—");
+
+  async function xem() {
+    if (mo) return setMo(false);
+    setMo(true);
+    if (goc) return;
+    try {
+      const kq = await layBinhLuanDaXoa(bl.id, locale as Parameters<typeof layBinhLuanDaXoa>[1]);
+      setGoc({ body: kq.body, deletedBy: kq.deletedBy });
+    } catch (err) {
+      setGoc({ body: (err instanceof LoiApi && err.thongDiep) || nhan.loadError, deletedBy: "" });
+    }
+  }
+
+  return (
+    <div id={`binh-luan-${bl.id}`} className="flex scroll-mt-24 gap-3">
+      <span
+        className={cn("mt-0.5 flex shrink-0 items-center justify-center rounded-full bg-surface-2 text-muted", nho ? "size-[30px]" : "size-10")}
+        aria-hidden
+      >
+        <Trash2 className="size-3.5" />
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 rounded-md border border-dashed border-line px-3 py-2">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+          <span className="italic text-muted">{cau}</span>
+          {xemLai ? (
+            <button type="button" onClick={xem} className="text-xs font-medium text-accent hover:underline">
+              {mo ? nhan.hideDeleted : nhan.viewDeleted}
+            </button>
+          ) : null}
+        </div>
+        {mo && goc ? (
+          <div className="flex flex-col gap-1 border-t border-line pt-1.5">
+            <span className="text-xs text-muted">
+              {bl.author.name}
+              {goc.deletedBy ? ` · ${nhan.deletedBy.replace("{name}", goc.deletedBy)}` : ""}
+            </span>
+            <p className="whitespace-pre-line text-sm text-body">{goc.body}</p>
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -24,6 +24,48 @@ module.exports.notificationVi = {
         }
     },
     Content: {
+        contentForbidden: {
+            message: "Bạn không có quyền thao tác với nội dung này"
+        },
+        libraryKindRequired: {
+            message: "Chọn danh mục thư viện"
+        },
+        contentNoChanges: {
+            message: "Không có gì thay đổi"
+        },
+        contentEditProposed: {
+            message: "Đã gửi đề xuất sửa cho tác giả, chờ tác giả đồng ý"
+        },
+        contentHasProposal: {
+            message: "Bài đang có đề xuất sửa của ban biên tập - hãy đồng ý hoặc từ chối trước khi sửa tiếp"
+        },
+        contentTooMany: {
+            message: "Bạn đã tạo quá nhiều bài hôm nay, vui lòng quay lại ngày mai"
+        },
+        contentInvalid: {
+            message: "Nội dung không hợp lệ"
+        },
+        contentSubmitted: {
+            message: "Đã gửi bài, chờ ban kiểm duyệt duyệt"
+        },
+        contentSaved: {
+            message: "Đã lưu"
+        },
+        contentProposalAccepted: {
+            message: "Đã đồng ý bản sửa"
+        },
+        contentProposalRejected: {
+            message: "Đã từ chối bản sửa"
+        },
+        mediaInvalid: {
+            message: "Tệp không hợp lệ (ảnh JPG, PNG, WEBP, GIF hoặc âm thanh MP3, WAV, OGG, M4A)"
+        },
+        mediaTooLarge: {
+            message: "Tệp quá lớn (ảnh tối đa 4 MB, âm thanh tối đa 10 MB)"
+        },
+        mediaTooMany: {
+            message: "Bạn đã tải lên quá nhiều tệp hôm nay"
+        },
         contentNotFound: {
             message: "Không tìm thấy bài"
         },
@@ -227,6 +269,48 @@ module.exports.notificationVi = {
         },
         feedbackNotFound: {
             message: "Không tìm thấy góp ý"
+        },
+        soundInvalid: {
+            message: "Thông tin âm thanh không hợp lệ"
+        },
+        soundFileInvalid: {
+            message: "Tệp âm thanh không hợp lệ (MP3, WAV, OGG, M4A dưới 5,5MB) hoặc link không đúng"
+        },
+        soundTooMany: {
+            message: "Mục này đã có quá nhiều âm thanh (tối đa 50)"
+        },
+        soundNotFound: {
+            message: "Không tìm thấy âm thanh"
+        },
+        practiceSessionInvalid: {
+            message: "Phiên tu tập không hợp lệ hoặc đã lưu, hãy bắt đầu lại"
+        },
+        practicePresetTooMany: {
+            message: "Bạn đã lưu quá nhiều bộ cấu hình (tối đa 30)"
+        },
+        practiceLogInvalid: {
+            message: "Số liệu tu tập không hợp lệ"
+        },
+        commentLimitPost: {
+            message: "Bạn đã bình luận tối đa 5 lần ở bài này"
+        },
+        commentLimitDay: {
+            message: "Bạn đã đạt giới hạn bình luận trong ngày, vui lòng quay lại ngày mai"
+        },
+        meritInvalid: {
+            message: "Thông tin không hợp lệ"
+        },
+        broadcastInvalid: {
+            message: "Thông báo cần tiêu đề; đường dẫn phải bắt đầu bằng / hoặc http(s)://"
+        },
+        dayEventInvalid: {
+            message: "Sự kiện không hợp lệ (cần ngày, tiêu đề tối đa 80 ký tự; tối đa 10 sự kiện mỗi ngày)"
+        },
+        moderationNoWarning: {
+            message: "Tài khoản này không còn cảnh cáo nào"
+        },
+        prayerFlagged: {
+            message: "Lời nguyện chứa từ ngữ chưa phù hợp, đang chờ ban quản trị duyệt"
         },
         commentInvalid: {
             message: "Bình luận phải dài từ 2 đến 2000 ký tự"

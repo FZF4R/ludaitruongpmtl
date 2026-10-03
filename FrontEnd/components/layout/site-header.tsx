@@ -12,6 +12,8 @@ import { ThemeToggle } from "@/components/layout/theme";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { localePath, splitLocale } from "@/lib/i18n";
 import { NotificationBell, type NhanThongBao } from "@/components/layout/notification-bell";
+import { useCheDoSua } from "@/components/layout/inline-edit";
+import { Avatar } from "@/components/ui/avatar";
 
 /**
  * Header là Client Component (menu mobile và menu thả xuống đều có state) nên
@@ -140,6 +142,7 @@ export function SiteHeader({
   language: { label: string; choose: string };
   thongBao: NhanThongBao;
 }) {
+  const { nguoiDung } = useCheDoSua();
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
 
@@ -208,9 +211,7 @@ export function SiteHeader({
           <NotificationBell nhan={thongBao} />
           <ThemeToggle />
           <LanguageSwitcher label={language.label} chooseLabel={language.choose} />
-          <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
-            <Link href={lp("/tai-khoan")}>{dict.account}</Link>
-          </Button>
+          <NutTaiKhoan href={lp("/tai-khoan")} nhan={dict.account} />
           <Button
             variant="ghost"
             size="icon"
@@ -264,13 +265,39 @@ export function SiteHeader({
 
             <Link
               href={lp("/tai-khoan")}
-              className="rounded-md px-3 py-3 font-medium text-ink hover:bg-surface-2 sm:hidden"
+              className="flex items-center gap-2.5 rounded-md px-3 py-3 font-medium text-ink hover:bg-surface-2 sm:hidden"
             >
-              {dict.account}
+              {nguoiDung ? <Avatar src={nguoiDung.avatarUrl} name={nguoiDung.name} size={28} /> : null}
+              {nguoiDung?.name || dict.account}
             </Link>
           </Container>
         </div>
       ) : null}
     </header>
+  );
+}
+
+/**
+ * Đã đăng nhập: ảnh đại diện + tên tài khoản thay cho chữ "Tài khoản". Lúc
+ * chưa biết (đang đọc token) và chưa đăng nhập thì giữ nút chữ như cũ.
+ */
+function NutTaiKhoan({ href, nhan }: { href: string; nhan: string }) {
+  const { nguoiDung } = useCheDoSua();
+  if (!nguoiDung) {
+    return (
+      <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
+        <Link href={href}>{nhan}</Link>
+      </Button>
+    );
+  }
+  return (
+    <Link
+      href={href}
+      title={nguoiDung.name || nhan}
+      className="hidden items-center gap-2 rounded-full border border-line py-0.5 pl-0.5 pr-3 text-sm font-medium text-ink transition-colors hover:border-line-strong hover:bg-surface-2 sm:inline-flex"
+    >
+      <Avatar src={nguoiDung.avatarUrl} name={nguoiDung.name} size={28} />
+      <span className="max-w-[9rem] truncate">{nguoiDung.name || nhan}</span>
+    </Link>
   );
 }

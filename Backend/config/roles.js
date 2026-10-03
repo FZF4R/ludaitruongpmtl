@@ -43,22 +43,30 @@ const GRANTS = {
     'content.read',
     'content.bookmark',
     'comment.write',
-    'prayer.write'
-  ],
-  Partner: [
+    'prayer.write',
+    // Mọi tài khoản viết và gửi bài được; bài vào hàng chờ duyệt (/tai-khoan/bai-viet).
     'content.draft',
     'content.submit',
     'content.editOwn'
   ],
+  Partner: [
+    // Gửi nội dung thư viện (ảnh, review chùa, Phật - Bồ Tát, nhạc thiền,
+    // audio kinh) - cần duyệt trước khi hiện.
+    'library.write'
+  ],
   Moderator: [
     'content.review',
-    'comment.moderate'
+    'comment.moderate',
+    // Thêm nội dung thư viện hiện ngay, duyệt nội dung thư viện cộng tác viên gửi.
+    'library.manage',
+    // Kinh sách tách khỏi content.editAny để có thể giao kinh mà không giao
+    // quyền sửa mọi bài viết. Kiểm duyệt viên trở lên thêm/sửa được kinh.
+    'sutra.manage'
   ],
   Manager: [
     'content.editAny',
-    // Kinh sách là nội dung chuẩn mực của site: chỉ Quản trị viên trở lên được
-    // thêm/sửa, tách khỏi content.editAny để có thể giao bài viết mà không giao kinh.
-    'sutra.manage',
+    'practice.manage',
+    'merit.manage',
     'content.publish',
     'content.delete',
     'category.manage',
@@ -96,14 +104,18 @@ const GRANTS = {
 const CATALOG = [
   { key: 'content.read', group: 'Nội dung', label: 'Đọc nội dung dành cho thành viên' },
   { key: 'content.bookmark', group: 'Nội dung', label: 'Lưu và đánh dấu bài' },
-  { key: 'content.draft', group: 'Nội dung', label: 'Soạn bài nháp' },
-  { key: 'content.submit', group: 'Nội dung', label: 'Gửi bài chờ duyệt' },
-  { key: 'content.editOwn', group: 'Nội dung', label: 'Sửa bài của chính mình' },
-  { key: 'content.review', group: 'Nội dung', label: 'Duyệt bài người khác gửi' },
+  { key: 'content.draft', group: 'Nội dung', label: 'Soạn bài nháp', since: '2026-10-04T04:00:00+07:00' },
+  { key: 'content.submit', group: 'Nội dung', label: 'Gửi bài chờ duyệt', since: '2026-10-04T04:00:00+07:00' },
+  { key: 'content.editOwn', group: 'Nội dung', label: 'Sửa bài của chính mình', since: '2026-10-04T04:00:00+07:00' },
+  { key: 'content.review', group: 'Nội dung', label: 'Duyệt / trả lại bài người dùng gửi, đề xuất sửa bài của họ', since: '2026-10-04T04:00:00+07:00' },
+  { key: 'library.write', group: 'Thư viện', label: 'Gửi nội dung thư viện (chờ duyệt)', since: '2026-10-04T04:00:00+07:00' },
+  { key: 'library.manage', group: 'Thư viện', label: 'Thêm nội dung thư viện hiện ngay, duyệt nội dung thư viện', since: '2026-10-04T04:00:00+07:00' },
+  { key: 'merit.manage', group: 'Hệ thống', label: 'Chỉnh bảng điểm công đức, mã QR ủng hộ', since: '2026-10-04T04:00:00+07:00' },
   { key: 'content.editAny', group: 'Nội dung', label: 'Soạn và sửa mọi bài viết, kinh sách' },
   { key: 'content.publish', group: 'Nội dung', label: 'Đăng, ẩn, lưu trữ bài' },
   { key: 'content.delete', group: 'Nội dung', label: 'Xoá bài' },
-  { key: 'sutra.manage', group: 'Nội dung', label: 'Thêm, sửa kinh sách (kèm chọn dịch giả)', since: '2026-10-04T00:35:00+07:00' },
+  { key: 'practice.manage', group: 'Nội dung', label: 'Quản lý âm thanh tu tập (chuông, mõ, âm nền...)', since: '2026-10-04T03:20:00+07:00' },
+  { key: 'sutra.manage', group: 'Nội dung', label: 'Thêm, sửa, đăng kinh sách (kèm chọn dịch giả)', since: '2026-10-04T04:00:00+07:00' },
   { key: 'category.manage', group: 'Nội dung', label: 'Quản lý chuyên mục' },
   { key: 'calendar.manage', group: 'Nội dung', label: 'Quản lý Phật lịch' },
   { key: 'comment.write', group: 'Bình luận', label: 'Viết bình luận' },

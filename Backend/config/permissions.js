@@ -12,6 +12,11 @@
  * phát hiện ngay lúc thử, thay vì để hở một cửa quản trị không ai biết.
  */
 
+/** Mở được khu soạn nội dung: biên tập bài viết, duyệt bài, kinh sách hoặc thư viện. */
+const CUA_NOI_DUNG = ['content.editAny', 'content.review', 'sutra.manage', 'library.manage']
+/** Viết bài / gửi nội dung thư viện ở trang Bài viết của tôi. */
+const VIET_BAI = ['content.draft', 'library.write', 'library.manage']
+
 const actionPermissions = {
   //==== Người dùng =====
   'GET /v1/admin/user/list': 'user.list',
@@ -26,12 +31,34 @@ const actionPermissions = {
   // action (System/Users/CommentController) vì phụ thuộc ai là chủ bình luận.
   'POST /v1/user/comments': 'comment.write',
   'POST /v1/user/comments/delete': 'comment.write',
+  'GET /v1/user/comments/deleted': 'comment.moderate',
+
+  //==== Bài viết của tôi + tải tệp (quyền theo loại kiểm tiếp trong action) =====
+  'GET /v1/user/content/mine': VIET_BAI,
+  'GET /v1/user/content/detail': VIET_BAI,
+  'POST /v1/user/content/save': VIET_BAI,
+  'POST /v1/user/content/delete': VIET_BAI,
+  'POST /v1/user/content/proposal/accept': VIET_BAI,
+  'POST /v1/user/content/proposal/reject': VIET_BAI,
+  'POST /v1/user/media/upload': [...VIET_BAI, 'content.editAny', 'sutra.manage', 'calendar.manage'],
+
+  //==== Công đức =====
+  'GET /v1/admin/merit': 'merit.manage',
+  'POST /v1/admin/merit/rules': 'merit.manage',
+  'POST /v1/admin/merit/donate': 'merit.manage',
 
   //==== Cầu an / cầu siêu =====
   // Xoá lời của người khác cần thêm `comment.moderate` (kiểm tra trong action).
   'GET /v1/user/prayers/list': 'prayer.write',
   'POST /v1/user/prayers': 'prayer.write',
   'POST /v1/user/prayers/delete': 'prayer.write',
+
+  //==== Âm thanh cho các công cụ tu tập =====
+  'GET /v1/admin/sounds': 'practice.manage',
+  'POST /v1/admin/sounds/add': 'practice.manage',
+  'POST /v1/admin/sounds/update': 'practice.manage',
+  'POST /v1/admin/sounds/delete': 'practice.manage',
+  'POST /v1/admin/sounds/reorder': 'practice.manage',
 
   //==== Lời nguyện nổi bật: người kiểm duyệt chọn hiện trong slideshow trang chủ =====
   'POST /v1/admin/prayers/feature': 'comment.moderate',
@@ -46,6 +73,20 @@ const actionPermissions = {
   'GET /v1/admin/moderation/user': 'moderation.manage',
   'POST /v1/admin/moderation/warn': 'moderation.manage',
   'POST /v1/admin/moderation/ban': 'moderation.manage',
+  'POST /v1/admin/moderation/unwarn': 'moderation.manage',
+
+  //==== Phê duyệt bình luận / lời nguyện chứa từ cấm (Kiểm duyệt viên trở lên) =====
+  'GET /v1/admin/approval': 'comment.moderate',
+  'POST /v1/admin/approval/approve': 'comment.moderate',
+  'POST /v1/admin/approval/reject': 'comment.moderate',
+
+  //==== Thông báo tới toàn bộ người dùng =====
+  'GET /v1/admin/broadcast': 'notify.manage',
+  'POST /v1/admin/broadcast/send': 'notify.manage',
+
+  //==== Sự kiện theo ngày trên lịch =====
+  'POST /v1/admin/day-events/save': 'calendar.manage',
+  'POST /v1/admin/day-events/delete': 'calendar.manage',
   'POST /v1/admin/moderation/unban': 'moderation.manage',
 
   //==== Ảnh xoay vòng trang chủ =====
@@ -72,19 +113,22 @@ const actionPermissions = {
   'POST /v1/admin/systemsetting/supportinfo/update': 'system.settings',
 
   //==== Nội dung =====
+  // Mảng = có MỘT trong các quyền là qua cửa; quyền theo từng loại nội dung
+  // (bài viết / kinh sách / thư viện) kiểm tiếp trong action - xem
+  // `quyenTheoLoai` ở System/Admin/ContentController.
   // Đổi trạng thái và xoá tách khỏi việc sửa: một người được giao soạn bài
   // không nghiễm nhiên được tự đẩy bài mình lên trang, hay xoá bài người khác.
-  'GET /v1/admin/content/list': 'content.editAny',
-  'GET /v1/admin/content/detail': 'content.editAny',
-  'GET /v1/admin/content/categories': 'content.editAny',
+  'GET /v1/admin/content/list': CUA_NOI_DUNG,
+  'GET /v1/admin/content/detail': CUA_NOI_DUNG,
+  'GET /v1/admin/content/categories': CUA_NOI_DUNG,
   // Ai đã mở được bài để sửa thì xem được lịch sử của bài đó.
-  'GET /v1/admin/content/history': 'content.editAny',
+  'GET /v1/admin/content/history': CUA_NOI_DUNG,
   // Chọn dịch giả kinh sách: chỉ trả id + tên + pháp danh, không cần user.list.
   'GET /v1/admin/content/people': 'sutra.manage',
-  'GET /v1/admin/content/revision': 'content.editAny',
-  'POST /v1/admin/content/create': 'content.editAny',
-  'POST /v1/admin/content/update': 'content.editAny',
-  'POST /v1/admin/content/status': 'content.publish',
+  'GET /v1/admin/content/revision': CUA_NOI_DUNG,
+  'POST /v1/admin/content/create': ['content.editAny', 'sutra.manage', 'library.manage'],
+  'POST /v1/admin/content/update': CUA_NOI_DUNG,
+  'POST /v1/admin/content/status': ['content.publish', 'content.review', 'sutra.manage', 'library.manage'],
   'POST /v1/admin/content/delete': 'content.delete',
 
   //==== Thông báo =====

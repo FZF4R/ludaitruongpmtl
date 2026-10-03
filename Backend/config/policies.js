@@ -56,6 +56,51 @@ module.exports.policies = {
     'System/Users/PrayerController': {
         '*': ['userPolices', 'requirePermission']
     },
+    'System/Public/SoundController': {
+        '*': true
+    },
+    'System/Admin/SoundController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    // Nhật ký tu tập: chỉ cần đăng nhập, ai cũng ghi / xem được nhật ký của mình.
+    'System/Users/PracticeController': {
+        '*': ['userPolices']
+    },
+    'System/Users/ContentController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    'System/Users/MediaController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    // Điểm danh, thống kê cá nhân: chỉ cần đăng nhập.
+    'System/Users/MeritController': {
+        '*': ['userPolices']
+    },
+    // Không qua requirePermission: controller tự chỉ cho đúng một tài khoản (email chủ).
+    'System/Admin/BannedWordsController': {
+        '*': ['userPolices']
+    },
+    'System/Admin/MeritController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    'System/Public/MediaController': {
+        '*': true
+    },
+    'System/Public/DonateController': {
+        '*': true
+    },
+    'System/Public/DayEventController': {
+        '*': true
+    },
+    'System/Admin/ApprovalController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    'System/Admin/BroadcastController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    'System/Admin/DayEventController': {
+        '*': ['userPolices', 'requirePermission']
+    },
     'System/Admin/PrayerController': {
         '*': ['userPolices', 'requirePermission']
     },

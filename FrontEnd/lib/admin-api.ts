@@ -35,16 +35,20 @@ export const nhanVaiTro: Record<string, string> = {
  */
 
 /** Các tab khu quản trị và quyền cần để thấy từng tab, theo thứ tự hiện. */
-export const tabQuanTri = [
+/** `quyen` là mảng = có một trong các quyền là thấy tab. */
+export const tabQuanTri: { href: string; nhan: string; quyen: string | readonly string[] }[] = [
   { href: "/admin/dashboard", nhan: "Tổng quan", quyen: "system.settings" },
   { href: "/admin/user", nhan: "Người dùng", quyen: "user.list" },
-  { href: "/admin/blog", nhan: "Bài viết", quyen: "content.editAny" },
+  { href: "/admin/blog", nhan: "Bài viết", quyen: ["content.editAny", "content.review"] },
   { href: "/admin/library", nhan: "Kinh sách", quyen: "sutra.manage" },
+  { href: "/admin/thu-vien", nhan: "Thư viện", quyen: "library.manage" },
+  { href: "/admin/merit", nhan: "Công đức", quyen: "merit.manage" },
+  { href: "/admin/practice", nhan: "Âm thanh tu tập", quyen: "practice.manage" },
   { href: "/admin/roles", nhan: "Phân quyền", quyen: "role.permissions.manage" },
-] as const;
+];
 
-export function coQuyen(permissions: string[] | undefined, quyen: string): boolean {
-  return !!permissions?.includes(quyen);
+export function coQuyen(permissions: string[] | undefined, quyen: string | readonly string[]): boolean {
+  return typeof quyen === "string" ? !!permissions?.includes(quyen) : quyen.some((q) => !!permissions?.includes(q));
 }
 
 /** Tab đầu tiên người này mở được, hoặc null nếu không vào được khu quản trị. */
@@ -321,10 +325,10 @@ export function suaThongBao(index: number, text: string, locale: Locale) {
   });
 }
 
-export function xoaThongBao(index: number, locale: Locale) {
+export function xoaThongBao(index: number | number[], locale: Locale) {
   return goiApi<{ notify: string[] }>("/v1/admin/settings/notify/delete", {
     method: "POST",
-    body: { index },
+    body: Array.isArray(index) ? { indexes: index } : { index },
     locale,
   });
 }
@@ -411,7 +415,7 @@ export function luuNguoiDung(
 /* Nội dung (bài viết + kinh sách, chung một bảng)                     */
 /* ------------------------------------------------------------------ */
 
-export const loaiNoiDung = ["article", "blog", "sutra", "audio", "video"] as const;
+export const loaiNoiDung = ["article", "blog", "sutra", "audio", "video", "library"] as const;
 export type LoaiNoiDung = (typeof loaiNoiDung)[number];
 
 export const nhanLoai: Record<string, string> = {
@@ -420,6 +424,16 @@ export const nhanLoai: Record<string, string> = {
   sutra: "Kinh sách",
   audio: "Bài giảng audio",
   video: "Bài giảng video",
+  library: "Thư viện",
+};
+
+/** Danh mục thư viện (Content.libraryKind). */
+export const nhanDanhMucThuVien: Record<string, string> = {
+  anh: "Ảnh",
+  review: "Review chùa, đền",
+  "bo-tat": "Phật - Bồ Tát",
+  "nhac-thien": "Nhạc thiền",
+  "audio-kinh": "Audio kinh",
 };
 
 export const trangThai = ["draft", "pending", "published", "archived"] as const;
@@ -470,6 +484,12 @@ export type BaiTomTat = {
   updatedAt: string;
   /** Dấu vết nhanh trên bản ghi; bài tạo trước khi có tính năng này để trống. */
   audit: DauVetBai;
+  libraryKind: string;
+  gallery: { url: string; caption: string }[];
+  /** Lý do lần trả bài gần nhất. */
+  reviewNote: string;
+  /** Đề xuất sửa đang chờ tác giả (bài do người dùng viết). */
+  pendingEdit: { byName: string; at: string; note: string; changedFields: string[] } | null;
 };
 
 export type DauVetBai = {
@@ -539,6 +559,10 @@ export type BaiChiTiet = Omit<BaiTomTat, "chapterCount"> & {
   translator: DichGia;
   seo: Record<string, unknown>;
   readingMinutes: number;
+  /** Bài do người dùng viết: lưu sẽ thành đề xuất sửa, chờ tác giả đồng ý. */
+  ownerIsUser?: boolean;
+  /** Nội dung đề xuất đang chờ (nếu có) - trình soạn nạp đè lên để sửa tiếp. */
+  pendingEditFields?: Record<string, unknown>;
 };
 
 export type DanhSachBai = {
@@ -583,6 +607,11 @@ export type BaiGui = {
   categories?: { slug: string; name: string }[];
   tags?: string[];
   publishedAt?: string;
+  libraryKind?: string;
+  gallery?: { url: string; caption: string }[];
+  media?: Record<string, unknown>;
+  /** Lời nhắn kèm đề xuất sửa bài của người dùng. */
+  editNote?: string;
 };
 
 export function taoBai(than: BaiGui, locale: Locale) {
@@ -601,10 +630,11 @@ export function luuBai(than: BaiGui & { id: string }, locale: Locale) {
   });
 }
 
-export function doiTrangThai(id: string, status: TrangThai, locale: Locale) {
+/** `note`: lý do khi trả bài người dùng gửi về nháp (gửi kèm thông báo cho tác giả). */
+export function doiTrangThai(id: string, status: TrangThai, locale: Locale, note = "") {
   return goiApi<BaiTomTat>("/v1/admin/content/status", {
     method: "POST",
-    body: { id, status },
+    body: { id, status, note },
     locale,
   });
 }
@@ -621,4 +651,93 @@ export type ChuyenMuc = { id: string; slug: string; name: string; kind: string }
 
 export function layChuyenMuc(locale: Locale) {
   return goiApi<ChuyenMuc[]>("/v1/admin/content/categories", { locale });
+}
+
+/* ------------------------------------------------------------------ */
+/* Âm thanh tu tập (/admin/practice)                                   */
+/* ------------------------------------------------------------------ */
+
+export type AmThanhQuanTri = {
+  id: string;
+  category: "tung-kinh" | "thien-dinh" | "go-mo" | "cau-an";
+  kind: "chuong" | "mo" | "am-nen" | "tung-mau" | "huong-dan" | "hat";
+  title: string;
+  /** Đường dẫn phát (tương đối trên API nếu là tệp tải lên). */
+  src: string;
+  loop: boolean;
+  source: "upload" | "url";
+  url: string;
+  mime: string;
+  sizeBytes: number;
+  active: boolean;
+  order: number;
+};
+
+export function layAmThanhQuanTri(locale: Locale) {
+  return goiApi<AmThanhQuanTri[]>("/v1/admin/sounds", { locale });
+}
+
+export function themAmThanh(
+  than: { category: string; kind: string; title: string; file?: string; url?: string; loop?: boolean },
+  locale: Locale,
+) {
+  return goiApi<AmThanhQuanTri>("/v1/admin/sounds/add", { method: "POST", body: than, locale });
+}
+
+export function suaAmThanh(
+  than: { id: string } & Partial<Pick<AmThanhQuanTri, "category" | "kind" | "title" | "url" | "active" | "loop">>,
+  locale: Locale,
+) {
+  return goiApi<AmThanhQuanTri>("/v1/admin/sounds/update", { method: "POST", body: than, locale });
+}
+
+export function xoaAmThanh(id: string, locale: Locale) {
+  return goiApi<{ id: string }>("/v1/admin/sounds/delete", { method: "POST", body: { id }, locale });
+}
+
+export function sapXepAmThanh(ids: string[], locale: Locale) {
+  return goiApi<{ ids: string[] }>("/v1/admin/sounds/reorder", { method: "POST", body: { ids }, locale });
+}
+
+/* ------------------------------------------------------------------ */
+/* Công đức + ủng hộ (/admin/merit)                                    */
+/* ------------------------------------------------------------------ */
+
+export type QuyTacCongDucQT = {
+  action: string;
+  label: string;
+  points: number;
+  dailyCap: number;
+  enabled: boolean;
+  defaultPoints: number;
+  defaultDailyCap: number;
+};
+
+export type UngHoQT = {
+  title: string;
+  description: string;
+  accountName: string;
+  accountNumber: string;
+  bank: string;
+  link: string;
+  qrUrl: string;
+};
+
+export type CongDucQT = {
+  rules: QuyTacCongDucQT[];
+  donate: UngHoQT;
+  top: { userId: string; name: string; role: string; points: number; avatarUrl: string }[];
+};
+
+export function layCongDucQT(locale: Locale) {
+  return goiApi<CongDucQT>("/v1/admin/merit", { locale });
+}
+
+export function luuQuyTacCongDuc(rules: Record<string, { points: number; dailyCap: number; enabled: boolean }>, locale: Locale) {
+  return goiApi<{ rules: QuyTacCongDucQT[] }>("/v1/admin/merit/rules", { method: "POST", body: { rules }, locale });
+}
+
+/** `qr`: data URL ảnh mới, "" = giữ ảnh cũ, "remove" = bỏ ảnh. */
+export function luuUngHo(than: Omit<UngHoQT, "qrUrl"> & { qr: string }, locale: Locale) {
+  return goiApi<{ donate: UngHoQT }>("/v1/admin/merit/donate", { method: "POST", body: than, locale });
 }

@@ -829,6 +829,18 @@ function KhoiThongBao({
   const [dangSua, setDangSua] = React.useState<number | null>(null);
   const [banNhap, setBanNhap] = React.useState("");
   const [ban, setBan] = React.useState(false);
+  /** Chỉ số các câu đang chọn để xoá hàng loạt. Danh sách đổi thì bỏ chọn (chỉ số đã lệch). */
+  const [chon, setChon] = React.useState<Set<number>>(new Set());
+  React.useEffect(() => setChon(new Set()), [danhSach]);
+  const doiChon = (i: number) =>
+    setChon((cu) => {
+      const moi = new Set(cu);
+      if (moi.has(i)) moi.delete(i);
+      else moi.add(i);
+      return moi;
+    });
+  const hienRa = moRong ? danhSach : danhSach.slice(0, HIEN_THONG_BAO);
+  const chonHet = hienRa.length > 0 && hienRa.every((_, i) => chon.has(i));
 
   const chay = async (viec: () => Promise<{ notify: string[] }>) => {
     setBan(true);
@@ -878,9 +890,40 @@ function KhoiThongBao({
           Chưa có câu nào — dải thông báo sẽ không hiện trên trang chủ.
         </p>
       ) : (
+        <>
+        <div className="flex flex-wrap items-center gap-3 rounded-md bg-surface-2 px-3 py-2">
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={chonHet}
+              onChange={() => setChon(chonHet ? new Set() : new Set(hienRa.map((_, i) => i)))}
+              className="size-4 accent-accent"
+            />
+            Chọn tất cả{moRong ? "" : " (đang hiện)"}
+          </label>
+          <span className="text-sm text-muted">Đã chọn {chon.size}</span>
+          <Button
+            size="sm"
+            variant="outline"
+            className="ml-auto hover:text-lacquer"
+            disabled={ban || chon.size === 0}
+            onClick={() => {
+              if (confirm(`Xoá ${chon.size} câu đã chọn?`)) void chay(() => xoaThongBao([...chon], locale));
+            }}
+          >
+            <Trash2 aria-hidden /> Xoá đã chọn
+          </Button>
+        </div>
         <ol className="flex flex-col divide-y divide-line">
-          {(moRong ? danhSach : danhSach.slice(0, HIEN_THONG_BAO)).map((cau, i) => (
+          {hienRa.map((cau, i) => (
             <li key={`${i}-${cau.slice(0, 24)}`} className="flex items-start gap-3 py-3">
+              <input
+                type="checkbox"
+                checked={chon.has(i)}
+                onChange={() => doiChon(i)}
+                aria-label={`Chọn câu ${i + 1}`}
+                className="mt-2 size-4 shrink-0 accent-accent"
+              />
               <span className="w-6 shrink-0 pt-1.5 text-right text-xs tabular-nums text-muted">
                 {i + 1}
               </span>
@@ -936,6 +979,7 @@ function KhoiThongBao({
             </li>
           ))}
         </ol>
+        </>
       )}
 
       <NutXemThem

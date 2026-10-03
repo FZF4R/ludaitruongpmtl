@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { listSlugs, listCategories } from "@/lib/api";
 import { contentTypeBase, site } from "@/lib/site";
 import { localePath, localeTags, locales } from "@/lib/i18n";
+import { practiceNav } from "@/lib/site";
 
 export const revalidate = 3600;
 
@@ -42,10 +43,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...nhanNgonNgu("/bai-giang", { lastModified: now, changeFrequency: "daily", priority: 0.8 }),
     ...nhanNgonNgu("/phat-lich", { lastModified: now, changeFrequency: "monthly", priority: 0.6 }),
     ...nhanNgonNgu("/tu-tap", { lastModified: now, changeFrequency: "monthly", priority: 0.7 }),
+    ...nhanNgonNgu("/thu-vien", { lastModified: now, changeFrequency: "daily", priority: 0.7 }),
+    ...practiceNav.flatMap((m) =>
+      nhanNgonNgu(m.href, { lastModified: now, changeFrequency: "monthly", priority: 0.7 }),
+    ),
   ];
 
   /*
-   * Sáu trang pháp tu con, /thu-vien, /qua-trinh-tu-tap và /ve-chung-toi CỐ Ý
+   * /qua-trinh-tu-tap và /ve-chung-toi CỐ Ý
    * không có ở đây: chúng đang là trang giữ chỗ và đã đặt noindex. Đưa trang
    * rỗng vào sitemap là mời Google lập chỉ mục thứ sau này phải gỡ ra.
    * Thêm vào đây khi từng trang có nội dung thật.

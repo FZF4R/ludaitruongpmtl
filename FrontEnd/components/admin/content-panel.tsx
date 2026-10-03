@@ -7,7 +7,7 @@ import { Plus, Search, Trash2, Check, ArrowLeft, ExternalLink } from "lucide-rea
 import { Badge, Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/form";
-import { HopLoi, chuLoi, useHoSoQuanTri, useLocale } from "@/components/admin/admin-shell";
+import { HopLoi, chuLoi, useHoSoQuanTri, useLocale, useQuyen } from "@/components/admin/admin-shell";
 import { RevisionDiff, nhanTruong } from "@/components/admin/revision-diff";
 import {
   doiTrangThai,
@@ -17,6 +17,7 @@ import {
   layChuyenMuc,
   layDanhSachBai,
   luuBai,
+  nhanDanhMucThuVien,
   nhanLoai,
   nhanTrangThai,
   taoBai,
@@ -78,6 +79,12 @@ export function ContentPanel({
   coChuong?: boolean;
 }) {
   const locale = useLocale();
+  const quyen = useQuyen();
+  const duocXoa = quyen.includes("content.delete");
+  // Kiểm duyệt viên chỉ có content.review: duyệt / đề xuất sửa bài người dùng, không tạo bài mới.
+  const duocTao = loaiChon.some((l) =>
+    quyen.includes(l === "sutra" ? "sutra.manage" : l === "library" ? "library.manage" : "content.editAny"),
+  );
 
   const [locTrangThai, setLocTrangThai] = React.useState<TrangThai | "">("");
   const [tuKhoa, setTuKhoa] = React.useState("");
@@ -162,9 +169,11 @@ export function ContentPanel({
           <h1 className="font-serif text-2xl font-bold tracking-tight">{tieuDe}</h1>
           <p className="text-sm text-muted">{moTa}</p>
         </div>
-        <Button onClick={() => setDangSoan("moi")}>
-          <Plus aria-hidden /> Thêm mới
-        </Button>
+        {duocTao ? (
+          <Button onClick={() => setDangSoan("moi")}>
+            <Plus aria-hidden /> Thêm mới
+          </Button>
+        ) : null}
       </div>
 
       <HopLoi loi={loi} thuLai={nap} />
@@ -257,9 +266,21 @@ export function ContentPanel({
                           {bai.title}
                         </Link>
                         <span className="text-xs text-muted">
-                          {nhanLoai[bai.type] ?? bai.type} · /{bai.slug}
+                          {bai.type === "library" && bai.libraryKind
+                            ? `Thư viện: ${nhanDanhMucThuVien[bai.libraryKind] ?? bai.libraryKind}`
+                            : nhanLoai[bai.type] ?? bai.type}{" "}
+                          · /{bai.slug}
                           {bai.chapterCount ? ` · ${bai.chapterCount} chương` : ""}
+                          {bai.author?.name ? ` · ${bai.author.name}` : ""}
                         </span>
+                        {bai.pendingEdit ? (
+                          <span className="text-xs text-brass">
+                            Chờ tác giả đồng ý bản sửa của {bai.pendingEdit.byName || "ban biên tập"}
+                          </span>
+                        ) : null}
+                        {bai.status === "draft" && bai.reviewNote ? (
+                          <span className="text-xs text-lacquer">Đã trả lại: {bai.reviewNote}</span>
+                        ) : null}
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -295,7 +316,22 @@ export function ContentPanel({
                           </Button>
                         ) : null}
 
-                        {bai.status !== "archived" ? (
+                        {bai.status === "pending" ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={ban}
+                            onClick={() => {
+                              const lyDo = window.prompt(
+                                "Lý do trả lại (gửi kèm thông báo cho tác giả):",
+                                "",
+                              );
+                              if (lyDo !== null) void chay(() => doiTrangThai(bai.id, "draft", locale, lyDo));
+                            }}
+                          >
+                            Trả lại
+                          </Button>
+                        ) : bai.status !== "archived" ? (
                           <Button
                             size="sm"
                             variant="outline"
@@ -315,6 +351,7 @@ export function ContentPanel({
                           </Button>
                         )}
 
+                        {duocXoa ? (
                         <Button
                           size="sm"
                           variant="ghost"
@@ -332,6 +369,7 @@ export function ContentPanel({
                         >
                           <Trash2 aria-hidden />
                         </Button>
+                        ) : null}
                       </div>
                     </td>
                   </tr>
@@ -452,6 +490,12 @@ function TrinhSoan({
   const [dichGia, setDichGia] = React.useState<GiaTriDichGia>({ cach: "nguoiDung", chon: null, ten: "", phapDanh: "" });
   const [bodyHtml, setBodyHtml] = React.useState("");
   const [chuong, setChuong] = React.useState<Chuong[]>([]);
+  // Thư viện: danh mục, album ảnh (mỗi dòng "url | chú thích"), tệp âm thanh.
+  const [libraryKind, setLibraryKind] = React.useState("");
+  const [album, setAlbum] = React.useState("");
+  const [amThanh, setAmThanh] = React.useState("");
+  // Bài của người dùng: lưu thành đề xuất sửa, kèm lời nhắn cho tác giả.
+  const [loiNhan, setLoiNhan] = React.useState("");
 
   React.useEffect(() => {
     layChuyenMuc(locale).then(setChuyenMuc).catch(() => setChuyenMuc([]));
@@ -463,9 +507,14 @@ function TrinhSoan({
     let conSong = true;
     setDangTai(true);
     layBai(id, locale)
-      .then((bai) => {
+      .then((goc0) => {
         if (!conSong) return;
-        setGoc(bai);
+        // Đang có đề xuất sửa chờ tác giả: mở bản đề xuất để sửa tiếp (lưu lại = cập nhật đề xuất).
+        const bai = { ...goc0, ...(goc0.pendingEditFields ?? {}) } as BaiChiTiet;
+        setGoc(goc0);
+        setLibraryKind(bai.libraryKind ?? "");
+        setAlbum((bai.gallery ?? []).map((a) => (a.caption ? `${a.url} | ${a.caption}` : a.url)).join("\n"));
+        setAmThanh(typeof bai.media?.url === "string" ? bai.media.url : "");
         setType(bai.type);
         setTitle(bai.title);
         setSlug(bai.slug);
@@ -509,6 +558,10 @@ function TrinhSoan({
       setLoi("Kinh sách bắt buộc ghi nguồn tham khảo.");
       return;
     }
+    if (type === "library" && !libraryKind) {
+      setLoi("Chọn danh mục thư viện.");
+      return;
+    }
 
     const muc = chuyenMuc.find((c) => c.slug === danhMuc);
     const than = {
@@ -545,6 +598,21 @@ function TrinhSoan({
         .map((t) => t.trim())
         .filter(Boolean),
       ...(coChuong ? { chapters: chuong } : {}),
+      ...(type === "library"
+        ? {
+            libraryKind,
+            gallery: album
+              .split("\n")
+              .map((d) => d.trim())
+              .filter(Boolean)
+              .map((d) => {
+                const [url, ...chu] = d.split("|");
+                return { url: url.trim(), caption: chu.join("|").trim() };
+              }),
+            media: amThanh.trim() ? { provider: "self", url: amThanh.trim() } : {},
+          }
+        : {}),
+      ...(goc?.ownerIsUser ? { editNote: loiNhan.trim() } : {}),
       // Slug chỉ gửi khi người dùng thật sự nhập; để trống lúc tạo thì backend
       // tự sinh từ tiêu đề.
       ...(slug.trim() ? { slug: slug.trim() } : {}),
@@ -590,6 +658,25 @@ function TrinhSoan({
       </div>
 
       <HopLoi loi={loi} />
+
+      {goc?.ownerIsUser ? (
+        <Card className="flex flex-col gap-3 border-brass/50 p-5">
+          <p className="text-sm text-body">
+            <span className="font-semibold text-ink">Bài do người dùng viết.</span> Lưu thay đổi sẽ{" "}
+            <span className="font-medium">không ghi đè</span> mà gửi thành đề xuất sửa cho tác giả. Trang công khai
+            vẫn hiện bản hiện tại cho tới khi tác giả đồng ý; đồng ý xong bài được đăng.
+          </p>
+          {goc.pendingEdit ? (
+            <p className="text-sm text-brass">
+              Đang có đề xuất của {goc.pendingEdit.byName || "ban biên tập"} chờ tác giả (form dưới đây là bản đề
+              xuất). Lưu lại sẽ thay đề xuất cũ.
+            </p>
+          ) : null}
+          <Field id="c-note" label="Lời nhắn cho tác giả" hint="Tuỳ chọn — giải thích vì sao sửa">
+            {(p) => <Input {...p} value={loiNhan} onChange={(e) => setLoiNhan(e.target.value)} maxLength={500} />}
+          </Field>
+        </Card>
+      ) : null}
 
       <Card className="grid gap-5 p-6 sm:grid-cols-2">
         <Field id="c-title" label="Tiêu đề" required className="sm:col-span-2">
@@ -746,6 +833,43 @@ function TrinhSoan({
           </Field>
         </div>
 
+        {type === "library" ? (
+          <>
+            <Field id="c-libkind" label="Danh mục thư viện" required>
+              {(p) => (
+                <Select {...p} value={libraryKind} onChange={(e) => setLibraryKind(e.target.value)}>
+                  <option value="">— Chọn —</option>
+                  {Object.entries(nhanDanhMucThuVien).map(([k, ten]) => (
+                    <option key={k} value={k}>
+                      {ten}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            </Field>
+            <Field id="c-audio" label="Tệp âm thanh" hint="Nhạc thiền / audio kinh: đường dẫn MP3">
+              {(p) => <Input {...p} value={amThanh} onChange={(e) => setAmThanh(e.target.value)} placeholder="https://…" />}
+            </Field>
+            <Field
+              id="c-album"
+              label="Album ảnh"
+              hint="Mỗi dòng một ảnh: đường dẫn | chú thích (chú thích tuỳ chọn)"
+              className="sm:col-span-2"
+            >
+              {(p) => (
+                <textarea
+                  id={p.id}
+                  value={album}
+                  onChange={(e) => setAlbum(e.target.value)}
+                  rows={5}
+                  className={oVanBan}
+                  placeholder="https://…/anh-1.jpg | Chánh điện"
+                />
+              )}
+            </Field>
+          </>
+        ) : null}
+
         <Field id="c-cover" label="Ảnh bìa" hint="Đường dẫn ảnh; để trống thì trang tự chọn ảnh" className="sm:col-span-2">
           {(p) => <Input {...p} value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} />}
         </Field>
@@ -774,7 +898,7 @@ function TrinhSoan({
 
       <div className="flex flex-wrap items-center gap-3">
         <Button type="submit" size="lg" disabled={dangLuu}>
-          {dangLuu ? "Đang lưu…" : goc ? "Lưu thay đổi" : "Tạo bài (ở dạng nháp)"}
+          {dangLuu ? "Đang lưu…" : goc?.ownerIsUser ? "Gửi đề xuất sửa cho tác giả" : goc ? "Lưu thay đổi" : "Tạo bài (ở dạng nháp)"}
         </Button>
         <Button type="button" variant="ghost" onClick={onThoat}>
           Huỷ

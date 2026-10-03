@@ -105,6 +105,208 @@ module.exports.inputs = {
                 "type": "json"
             }
         },
+        "Content": {
+            "listMine": {
+                "User": {
+                    "type": "json"
+                },
+                "status": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "page": {
+                    "type": "number",
+                    "defaultsTo": 1,
+                    "min": 1
+                },
+                "limit": {
+                    "type": "number",
+                    "defaultsTo": 20,
+                    "min": 1,
+                    "max": 50
+                }
+            },
+            "getMine": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "saveMine": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "defaultsTo": "article"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "coverUrl": {
+                    "type": "string"
+                },
+                "bodyHtml": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "json"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "libraryKind": {
+                    "type": "string"
+                },
+                "gallery": {
+                    "type": "json"
+                },
+                "media": {
+                    "type": "json"
+                },
+                "submit": {
+                    "type": "boolean",
+                    "defaultsTo": false
+                }
+            },
+            "deleteMine": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "acceptProposal": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "rejectProposal": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "reason": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            }
+        },
+        "Media": {
+            "upload": {
+                "User": {
+                    "type": "json"
+                },
+                "file": {
+                    "type": "string",
+                    "required": true
+                },
+                "name": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            }
+        },
+        "Merit": {
+            "checkin": {
+                "User": {
+                    "type": "json"
+                }
+            },
+            "getStats": {
+                "User": {
+                    "type": "json"
+                }
+            }
+        },
+        "Practice": {
+            "startSession": {
+                "User": {
+                    "type": "json"
+                },
+                "type": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "listPresets": {
+                "User": {
+                    "type": "json"
+                }
+            },
+            "savePreset": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "config": {
+                    "type": "json"
+                },
+                "used": {
+                    "type": "boolean",
+                    "defaultsTo": false
+                }
+            },
+            "deletePreset": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "addLog": {
+                "User": {
+                    "type": "json"
+                },
+                "sessionId": {
+                    "type": "string",
+                    "defaultsTo": "",
+                    "description": "Phien do may chu mo (bat buoc voi thien, go-mo, chuoi-hat)"
+                },
+                "type": {
+                    "type": "string",
+                    "required": true
+                },
+                "amount": {
+                    "type": "number",
+                    "required": true
+                },
+                "note": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "getStats": {
+                "User": {
+                    "type": "json"
+                }
+            }
+        },
         "Prayer": {
             "listMine": {
                 "User": {
@@ -203,6 +405,15 @@ module.exports.inputs = {
                 }
             },
             "deleteComment": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "getDeleted": {
                 "User": {
                     "type": "json"
                 },
@@ -418,6 +629,249 @@ module.exports.inputs = {
                 }
             }
         },
+        "Approval": {
+            "listPending": {
+                "User": {
+                    "type": "json"
+                },
+                "type": {
+                    "type": "string",
+                    "defaultsTo": "comment"
+                },
+                "page": {
+                    "type": "number",
+                    "defaultsTo": 1,
+                    "min": 1
+                }
+            },
+            "approve": {
+                "User": {
+                    "type": "json"
+                },
+                "type": {
+                    "type": "string",
+                    "required": true
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "reject": {
+                "User": {
+                    "type": "json"
+                },
+                "type": {
+                    "type": "string",
+                    "required": true
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        },
+        "Broadcast": {
+            "send": {
+                "User": {
+                    "type": "json"
+                },
+                "title": {
+                    "type": "string",
+                    "required": true
+                },
+                "body": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "link": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "list": {
+                "User": {
+                    "type": "json"
+                }
+            }
+        },
+        "DayEvent": {
+            "saveEvent": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string",
+                    "required": true
+                },
+                "title": {
+                    "type": "string",
+                    "required": true
+                },
+                "imageUrl": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "body": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "deleteEvent": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        },
+        "BannedWords": {
+            "getDefault": {
+                "User": {
+                    "type": "json"
+                }
+            },
+            "saveDefault": {
+                "User": {
+                    "type": "json"
+                },
+                "content": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        },
+        "Merit": {
+            "getMerit": {
+                "User": {
+                    "type": "json"
+                }
+            },
+            "saveRules": {
+                "User": {
+                    "type": "json"
+                },
+                "rules": {
+                    "type": "json",
+                    "required": true
+                }
+            },
+            "saveDonate": {
+                "User": {
+                    "type": "json"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "accountName": {
+                    "type": "string"
+                },
+                "accountNumber": {
+                    "type": "string"
+                },
+                "bank": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "qr": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            }
+        },
+        "Sound": {
+            "listAll": {
+                "User": {
+                    "type": "json"
+                }
+            },
+            "addSound": {
+                "User": {
+                    "type": "json"
+                },
+                "category": {
+                    "type": "string",
+                    "required": true
+                },
+                "kind": {
+                    "type": "string",
+                    "required": true
+                },
+                "title": {
+                    "type": "string",
+                    "required": true
+                },
+                "file": {
+                    "type": "string",
+                    "defaultsTo": "",
+                    "description": "data:audio/...;base64,... (tai tep len)"
+                },
+                "url": {
+                    "type": "string",
+                    "defaultsTo": "",
+                    "description": "Link ngoai (neu khong tai tep)"
+                },
+                "loop": {
+                    "type": "boolean",
+                    "defaultsTo": false
+                }
+            },
+            "updateSound": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "category": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "loop": {
+                    "type": "boolean"
+                }
+            },
+            "deleteSound": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "reorderSounds": {
+                "User": {
+                    "type": "json"
+                },
+                "ids": {
+                    "type": "json",
+                    "required": true
+                }
+            }
+        },
         "Prayer": {
             "setFeatured": {
                 "User": {
@@ -497,6 +951,19 @@ module.exports.inputs = {
                 }
             },
             "warnUser": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "reason": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "unwarnUser": {
                 "User": {
                     "type": "json"
                 },
@@ -746,7 +1213,11 @@ module.exports.inputs = {
                 },
                 "index": {
                     "type": "number",
-                    "required": true
+                    "description": "Xoa mot cau (giu cho tuong thich)"
+                },
+                "indexes": {
+                    "type": "json",
+                    "description": "Xoa nhieu cau mot lan: mang chi so"
                 }
             }
         },
@@ -754,6 +1225,11 @@ module.exports.inputs = {
             "listContent": {
                 "User": {
                     "type": "json"
+                },
+                "pendingEdit": {
+                    "type": "boolean",
+                    "defaultsTo": false,
+                    "description": "Chi bai dang co de xuat sua cho tac gia"
                 },
                 "type": {
                     "type": "string"
@@ -842,11 +1318,21 @@ module.exports.inputs = {
                 },
                 "seo": {
                     "type": "json"
+                },
+                "libraryKind": {
+                    "type": "string"
+                },
+                "gallery": {
+                    "type": "json"
                 }
             },
             "updateContent": {
                 "User": {
                     "type": "json"
+                },
+                "editNote": {
+                    "type": "string",
+                    "description": "Loi nhan kem de xuat sua bai cua nguoi dung"
                 },
                 "id": {
                     "type": "string",
@@ -900,6 +1386,12 @@ module.exports.inputs = {
                 },
                 "seo": {
                     "type": "json"
+                },
+                "libraryKind": {
+                    "type": "string"
+                },
+                "gallery": {
+                    "type": "json"
                 }
             },
             "setStatus": {
@@ -913,6 +1405,11 @@ module.exports.inputs = {
                 "status": {
                     "type": "string",
                     "required": true
+                },
+                "note": {
+                    "type": "string",
+                    "defaultsTo": "",
+                    "description": "Ly do khi tra bai ve nhap (gui cho tac gia)"
                 }
             },
             "getHistory": {
@@ -976,6 +1473,26 @@ module.exports.inputs = {
             }
         },
         "getSettings": {},
+        "DayEvent": {
+            "listEvents": {
+                "from": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "to": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            }
+        },
+        "Sound": {
+            "listSounds": {
+                "category": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            }
+        },
         "Feedback": {
             "sendFeedback": {
                 "kind": {
@@ -1058,6 +1575,11 @@ module.exports.inputs = {
                     "type": "string",
                     "defaultsTo": "",
                     "description": "Mot hoac nhieu loai, ngan cach bang dau phay: article,blog"
+                },
+                "libraryKind": {
+                    "type": "string",
+                    "defaultsTo": "",
+                    "description": "Loc danh muc thu vien: anh | review | bo-tat | nhac-thien | audio-kinh"
                 },
                 "category": {
                     "type": "string",

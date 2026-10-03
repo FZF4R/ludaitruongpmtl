@@ -16,15 +16,22 @@
  *   - trả kèm `status`, `authorId`, `bodyHtml`, `chapters`
  *   - có đường ghi
  *
- * Quyền: xem/sửa cần `content.editAny`, đổi trạng thái cần `content.publish`,
- * xoá cần `content.delete` - tra trong config/permissions.js. Cả ba đều thuộc
- * bậc Quản trị viên trở lên theo config/roles.js.
+ * Quyền: config/permissions.js chỉ mở cửa; quyền theo từng loại (bài viết /
+ * kinh sách / thư viện) quyết ở api/utils/quyenNoiDung.js. Xoá cần
+ * `content.delete`.
+ *
+ * Bài do NGƯỜI DÙNG viết (User / Cộng tác viên): ban biên tập sửa thì không
+ * ghi đè mà thành đề xuất sửa (`pendingEdit`), tác giả đồng ý ở trang Bài viết
+ * của tôi thì mới áp vào và đăng. Mỗi lần bài lên trang, tác giả nhận thông báo.
  */
 const { boDau, thoatRegex } = require('../../../utils/vietnamese')
 const { tacGiaTheoHoSo, chuanHoaDichGia, timNguoi } = require('../../../utils/tacGia')
 const { ghiNhatKy, dauVet, truongDaDoi, chupNoiDung } = require('../../../utils/nhatKyBai')
-
-const LOAI_HOP_LE = ['article', 'blog', 'sutra', 'audio', 'video']
+const {
+    LOAI_HOP_LE, LOAI_THU_VIEN, co, loaiQuanTri, duocXem, duocSuaTrucTiep, duocDoiTrangThai, laBaiNguoiDung, duongDanBai
+} = require('../../../utils/quyenNoiDung')
+const { guiThongBaoBai } = require('../../../utils/thongBao')
+const { baoDaDang } = require('../../../utils/dangBai')
 const TRANG_THAI_HOP_LE = ['draft', 'pending', 'published', 'archived']
 
 /** Truy cập thẳng collection để dùng $or, $in và đếm trong một lượt. */
@@ -62,6 +69,18 @@ const dinhDangQuanTri = (row, { rutGon = false } = {}) => {
         readingMinutes: row.readingMinutes || 0,
         viewCount: row.viewCount || 0,
         seo: row.seo || {},
+        libraryKind: row.libraryKind || '',
+        gallery: Array.isArray(row.gallery) ? row.gallery : [],
+        reviewNote: row.reviewNote || '',
+        // Đề xuất sửa đang chờ tác giả: chỉ tóm tắt ở danh sách.
+        pendingEdit: row.pendingEdit && row.pendingEdit.at
+            ? {
+                byName: row.pendingEdit.byName || '',
+                at: sangISO(row.pendingEdit.at),
+                note: row.pendingEdit.note || '',
+                changedFields: (row.pendingEdit.changes || []).map(c => c.field)
+            }
+            : null,
         createdAt: sangISO(row.createdAt),
         updatedAt: sangISO(row.updatedAt),
         // Dấu vết nhanh (api/utils/nhatKyBai.js). Bài tạo trước khi có tính
@@ -146,9 +165,18 @@ const gomTruong = inputs => {
     gan('publishedAt', inputs.publishedAt)
     gan('readingMinutes', inputs.readingMinutes)
     gan('seo', inputs.seo)
+    if (inputs.libraryKind !== undefined) ban.libraryKind = LOAI_THU_VIEN.includes(inputs.libraryKind) ? inputs.libraryKind : ''
+    if (inputs.gallery !== undefined) ban.gallery = chuanHoaAnhKem(inputs.gallery)
 
     return ban
 }
+
+/** Ảnh kèm: tối đa 60 ảnh, mỗi ảnh { url, caption } - url là link http(s) hoặc /v1/public/media/... */
+const chuanHoaAnhKem = ds => (Array.isArray(ds) ? ds : [])
+    .map(a => (typeof a === 'string' ? { url: a } : a || {}))
+    .map(a => ({ url: String(a.url || '').trim().slice(0, 500), caption: String(a.caption || '').trim().slice(0, 300) }))
+    .filter(a => /^(https?:\/\/|\/v1\/public\/media\/)/i.test(a.url))
+    .slice(0, 60)
 
 /**
  * Chuẩn hoá `author` client gửi lên.
@@ -197,6 +225,9 @@ const loi = (exits, message, messageNode = 'Content') => {
     sails.checkErrorOutput({ messageNode, message }, exits)
 }
 
+/** Thư viện bắt buộc chọn danh mục. Trả mã lỗi hoặc ''. */
+const loiThuVien = (loai, kind) => (loai === 'library' && !LOAI_THU_VIEN.includes(kind) ? 'libraryKindRequired' : '')
+
 module.exports = {
 
     /**
@@ -211,7 +242,12 @@ module.exports = {
         exits: sails.config.responseType,
         fn: async function (inputs, exits) {
             try {
-                let dieuKien = dungDieuKien(inputs)
+                // Chỉ những loại người này được mở: hỏi loại khác thì coi như hỏi tất cả loại được phép.
+                let duocPhep = loaiQuanTri(inputs.User)
+                let hoi = String(inputs.type || '').split(',').map(t => t.trim()).filter(t => duocPhep.includes(t))
+                let loaiLoc = (hoi.length ? hoi : duocPhep).join(',') || '__khong__'
+                let dieuKien = Object.assign(dungDieuKien(Object.assign({}, inputs, { type: loaiLoc })), { type: { $in: loaiLoc.split(',') } })
+                if (inputs.pendingEdit) dieuKien['pendingEdit.at'] = { $gt: 0 }
                 let bang = bangNoiDung()
                 let { page, limit } = inputs
 
@@ -225,7 +261,7 @@ module.exports = {
                 // Đếm theo trạng thái để giao diện hiện số trên từng tab lọc mà
                 // không phải gọi thêm bốn lượt.
                 let demTheoTrangThai = await bang.aggregate([
-                    { $match: dungDieuKien({ type: inputs.type }) },
+                    { $match: { type: { $in: loaiLoc.split(',') } } },
                     { $group: { _id: '$status', n: { $sum: 1 } } }
                 ]).toArray()
 
@@ -260,11 +296,18 @@ module.exports = {
             try {
                 let row = await sails.dataProcess.findOne(Content, { condition: { id: inputs.id } })
                 if (!row) return loi(exits, 'contentNotFound')
+                if (!duocXem(inputs.User, row.type)) return loi(exits, 'contentForbidden')
+
+                let kq = dinhDangQuanTri(row)
+                // Trình soạn của người đề xuất cần cả nội dung đề xuất để sửa tiếp.
+                if (row.pendingEdit && row.pendingEdit.at) kq.pendingEditFields = row.pendingEdit.fields || {}
+                // Bài của người dùng: lưu sẽ thành đề xuất sửa (giao diện báo trước).
+                kq.ownerIsUser = await laBaiNguoiDung(row, inputs.User.id)
 
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',
                     message: 'success',
-                    data: dinhDangQuanTri(row)
+                    data: kq
                 });
             } catch (err) {
                 sails.checkErrorOutput(err, exits);
@@ -295,6 +338,9 @@ module.exports = {
                 if (inputs.source !== undefined) inputs.source = chuanHoaNguon(inputs.source)
                 let loiKinh = loiKinhSach(User, '', inputs.type, inputs.source)
                 if (loiKinh) return loi(exits, loiKinh)
+                if (!duocSuaTrucTiep(User, inputs.type)) return loi(exits, 'contentForbidden')
+                let loiTV = loiThuVien(inputs.type, inputs.libraryKind)
+                if (loiTV) return loi(exits, loiTV)
 
                 let ban = Object.assign(gomTruong(inputs), {
                     slug: slug,
@@ -350,6 +396,13 @@ module.exports = {
                 let nguonMoi = inputs.source === undefined ? hienCo.source : inputs.source
                 let loiKinh = loiKinhSach(inputs.User, hienCo.type, loaiMoi, nguonMoi)
                 if (loiKinh) return loi(exits, loiKinh)
+                if (!duocXem(inputs.User, hienCo.type) || !duocXem(inputs.User, loaiMoi)) return loi(exits, 'contentForbidden')
+                let loiTV = loiThuVien(loaiMoi, inputs.libraryKind === undefined ? hienCo.libraryKind : inputs.libraryKind)
+                if (loiTV) return loi(exits, loiTV)
+
+                // Bài của người dùng: thành đề xuất sửa, không ghi đè.
+                let deXuat = await laBaiNguoiDung(hienCo, inputs.User.id)
+                if (!deXuat && !duocSuaTrucTiep(inputs.User, hienCo.type)) return loi(exits, 'contentForbidden')
 
                 let ban = gomTruong(inputs)
                 if (inputs.translator !== undefined) ban.translator = await chuanHoaDichGia(inputs.translator)
@@ -387,6 +440,42 @@ module.exports = {
 
                 // Tính TRƯỚC khi gắn dấu vết, để danh sách chỉ gồm trường nội dung.
                 let daDoi = truongDaDoi(hienCo, ban)
+
+                if (deXuat) {
+                    if (!daDoi.length) return loi(exits, 'contentNoChanges')
+                    // Đổi slug / loại bài của người khác qua đề xuất: không cho - chỉ sửa nội dung.
+                    delete ban.slug
+                    delete ban.type
+                    let truong = daDoi.filter(t => t !== 'slug' && t !== 'type')
+                    let deXuatMoi = {
+                        fields: Object.assign({}, ...truong.map(t => ({ [t]: ban[t] }))),
+                        changes: truong.map(ten => ({
+                            field: ten,
+                            before: hienCo[ten] === undefined ? null : hienCo[ten],
+                            after: ban[ten] === undefined ? null : ban[ten]
+                        })),
+                        byId: String(inputs.User.id),
+                        byName: inputs.User.fullName || inputs.User.username || '',
+                        at: Date.now(),
+                        note: String(inputs.editNote || '').trim().slice(0, 500)
+                    }
+                    await Content.updateOne({ id: hienCo.id }).set({ pendingEdit: deXuatMoi })
+                    await guiThongBaoBai({
+                        userId: hienCo.authorId,
+                        type: 'edit-proposal',
+                        actorId: inputs.User.id,
+                        bai: hienCo,
+                        excerpt: deXuatMoi.note,
+                        link: `/tai-khoan/bai-viet?id=${hienCo.id}`
+                    })
+                    let sauDeXuat = await sails.dataProcess.findOne(Content, { condition: { id: hienCo.id } })
+                    return exits.successRequest({
+                        messageNode: 'Content',
+                        message: 'contentEditProposed',
+                        data: dinhDangQuanTri(sauDeXuat)
+                    });
+                }
+
                 Object.assign(ban, dauVet('updated', inputs.User))
 
                 await sails.dataProcess.updateDocument(Content, {
@@ -444,8 +533,14 @@ module.exports = {
 
                 let hienCo = await sails.dataProcess.findOne(Content, { condition: { id: inputs.id } })
                 if (!hienCo) return loi(exits, 'contentNotFound')
+                if (!duocDoiTrangThai(inputs.User, hienCo.type, hienCo.status || 'draft', inputs.status)) {
+                    return loi(exits, 'contentForbidden')
+                }
 
                 let ban = { status: inputs.status }
+                let traLai = hienCo.status === 'pending' && inputs.status === 'draft'
+                if (traLai) ban.reviewNote = String(inputs.note || '').trim().slice(0, 500)
+                if (inputs.status === 'published') ban.reviewNote = ''
 
                 // Bài lên trang mà thiếu ngày đăng thì sitemap và phần sắp xếp
                 // theo thời gian đều không có mốc nào để bám.
@@ -475,6 +570,17 @@ module.exports = {
                         fromStatus: hienCo.status || 'draft',
                         toStatus: inputs.status
                     })
+                    if (inputs.status === 'published') await baoDaDang(hienCo, inputs.User)
+                    if (traLai && hienCo.authorId) {
+                        await guiThongBaoBai({
+                            userId: hienCo.authorId,
+                            type: 'rejected',
+                            actorId: inputs.User.id,
+                            bai: hienCo,
+                            excerpt: ban.reviewNote,
+                            link: `/tai-khoan/bai-viet?id=${hienCo.id}`
+                        })
+                    }
                 }
 
                 exits.successRequest({

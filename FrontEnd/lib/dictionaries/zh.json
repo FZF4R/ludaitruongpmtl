@@ -33,7 +33,13 @@
     "recitation": "念佛",
     "woodenFish": "木鱼",
     "mala": "念珠",
-    "prayers": "祈福 / 超度"
+    "prayers": "祈福 / 超度",
+    "chantingRecitation": "诵经 / 念佛",
+    "woodenFishMala": "木鱼 / 念珠",
+    "meditationHint": "禅修计时、钟声、背景音",
+    "chantingRecitationHint": "念佛计数与读经模式",
+    "woodenFishMalaHint": "电子木鱼与108颗念珠",
+    "prayersHint": "写下心愿，祈福与超度指南"
   },
   "footer": {
     "content": "内容",
@@ -47,7 +53,8 @@
     "blog": "随笔",
     "sutra": "经书",
     "audio": "音频开示",
-    "video": "视频开示"
+    "video": "视频开示",
+    "library": "图书馆"
   },
   "language": {
     "label": "语言",
@@ -102,7 +109,9 @@
     "eyebrow": "个人专区",
     "title": "账户",
     "description": "登录后可收藏文章、记录收听进度，并在多台设备间同步。",
-    "signIn": "登录"
+    "signIn": "登录",
+    "myContent": "我的文章",
+    "stats": "统计与功德"
   },
   "auth": {
     "eyebrow": "个人中心",
@@ -305,7 +314,12 @@
       "文章很有意义"
     ],
     "suggestionsLabel": "快捷评论",
-    "flaggedNotice": "您的评论含有不当用语，暂未显示。"
+    "flaggedNotice": "您的评论含有不当用语，暂未显示。",
+    "deletedBySelf": "评论已被 {name} 删除",
+    "deletedByModerator": "评论已被管理员删除",
+    "viewDeleted": "查看内容",
+    "hideDeleted": "隐藏",
+    "deletedBy": "删除者：{name}"
   },
   "homeCalendar": {
     "eyebrow": "佛历",
@@ -379,7 +393,12 @@
     "reply": "{name} 在《{title}》中回复了您的评论",
     "someone": "有人",
     "warning": "您收到警告（{n}）：{reason}",
-    "warningNoReason": "您因违反评论规定收到警告（{n}）"
+    "warningNoReason": "您因违反评论规定收到警告（{n}）",
+    "published": "您的文章《{title}》已发布",
+    "rejected": "您的文章《{title}》已退回修改",
+    "editProposal": "{name} 建议修改《{title}》——等待您同意",
+    "editAccepted": "{name} 已同意您对《{title}》的修改",
+    "editRejected": "{name} 已拒绝您对《{title}》的修改"
   },
   "banned": {
     "title": "账户已被封禁",
@@ -412,5 +431,349 @@
     "footerTitle": "向管理员提出建议",
     "anonymousNote": "匿名发送",
     "footerPlaceholder": "您的建议或意见..."
+  },
+  "practiceTools": {
+    "saveLog": "保存到日志",
+    "saved": "已保存到日志",
+    "signInToSave": "登录后保存修行日志",
+    "saveError": "保存失败，请重试。",
+    "sound": "声音",
+    "soundOff": "不使用",
+    "noSounds": "暂无声音",
+    "reset": "重置",
+    "start": "开始",
+    "pause": "暂停",
+    "resume": "继续",
+    "stop": "结束",
+    "guideTitle": "指南",
+    "viewJourney": "查看修行历程",
+    "woodenFish": {
+      "title": "敲木鱼",
+      "tapHint": "点击木鱼或按空格键",
+      "strikes": "{n} 声",
+      "auto": "自动节拍",
+      "bpm": "每分钟 {n} 拍",
+      "moSound": "木鱼声"
+    },
+    "mala": {
+      "title": "数念珠",
+      "beads": "念珠类型",
+      "beadsOf": "{n} 颗",
+      "progress": "第 {i}/{t} 颗",
+      "rounds": "{n} 圈",
+      "tap": "点击拨一颗珠",
+      "lapBell": "一圈结束时鸣钟",
+      "total": "共 {n} 颗"
+    },
+    "recitation": {
+      "title": "念佛",
+      "phrase": "佛号",
+      "phrases": [
+        "南无阿弥陀佛",
+        "南无本师释迦牟尼佛",
+        "南无大慈大悲观世音菩萨",
+        "南无药师琉璃光如来",
+        "南无地藏王菩萨"
+      ],
+      "goal": "目标",
+      "count": "{n} 声",
+      "tap": "点击计数（或按空格键）",
+      "moEach": "每次计数敲木鱼",
+      "goalReached": "已满 {n} 声"
+    },
+    "reader": {
+      "title": "诵经",
+      "choose": "选择经典",
+      "noSutra": "暂无已发布的经典。",
+      "fontSize": "字号",
+      "autoScroll": "自动滚动",
+      "speed": "速度",
+      "openBell": "开经钟声",
+      "sampleAudio": "诵经示范",
+      "noSample": "暂无诵经示范",
+      "finished": "诵经完毕",
+      "loading": "正在加载经文…"
+    },
+    "meditation": {
+      "title": "禅修计时",
+      "duration": "时长",
+      "minutes": "{n} 分钟",
+      "custom": "自定义",
+      "bell": "开始 / 结束钟声",
+      "interval": "间隔钟声",
+      "intervalNone": "无",
+      "intervalEvery": "每 {n} 分钟",
+      "ambient": "背景音",
+      "volume": "音量",
+      "guided": "引导禅修",
+      "noGuided": "暂无引导禅修",
+      "remaining": "剩余",
+      "done": "已完成 {n} 分钟禅修",
+      "breathe": "吸气……呼气……"
+    },
+    "prayersPage": {
+      "cta": "写下您的心愿",
+      "ambient": "阅读心愿时的背景音",
+      "calendarLink": "查看即将到来的佛教节日"
+    },
+    "journey": {
+      "title": "修行历程",
+      "signIn": "登录查看您的修行日志",
+      "empty": "暂无记录。使用“修行”中的工具后点击“保存到日志”。",
+      "today": "今天",
+      "week": "7 天",
+      "all": "全部",
+      "streak": "连续 {n} 天",
+      "activeDays": "已修行 {n} 天",
+      "chart": "最近 30 天",
+      "recent": "最近记录",
+      "types": {
+        "tung-kinh": "诵经",
+        "niem-phat": "念佛",
+        "thien": "禅修",
+        "go-mo": "敲木鱼",
+        "chuoi-hat": "数念珠"
+      },
+      "units": {
+        "tung-kinh": "次",
+        "niem-phat": "声",
+        "thien": "分钟",
+        "go-mo": "声",
+        "chuoi-hat": "颗"
+      }
+    },
+    "guides": {
+      "chanting": [
+        {
+          "title": "诵经前",
+          "body": "洗手漱口，上香，端身站立，合掌念“南无本师释迦牟尼佛”三遍。"
+        },
+        {
+          "title": "诵经时",
+          "body": "字字清楚，随木鱼节拍，心专注于经文。不求快，但求匀与专注。"
+        },
+        {
+          "title": "念佛",
+          "body": "出声念、默念或金刚持皆可。一句一呼吸，耳朵听清自己念的每一句。"
+        },
+        {
+          "title": "回向",
+          "body": "诵念完毕，将功德回向父母、亲人及一切众生。"
+        }
+      ],
+      "meditation": [
+        {
+          "title": "调身",
+          "body": "双盘、单盘或坐椅子皆可；腰背自然挺直，肩放松，双手置于腿上。"
+        },
+        {
+          "title": "调息",
+          "body": "用鼻呼吸，缓慢轻柔。观照呼吸出入，可从一数到十再重新开始。"
+        },
+        {
+          "title": "调心",
+          "body": "妄念生起，知道即可，不随不拒，轻轻把心带回呼吸。"
+        },
+        {
+          "title": "出定",
+          "body": "听到结束钟声后，搓手、搓脸、按摩双腿，再慢慢起身。"
+        }
+      ],
+      "woodenFish": [
+        {
+          "title": "木鱼",
+          "body": "木鱼为诵经定节拍：一声一字或一句，帮助大众诵得齐整、心不散乱。"
+        },
+        {
+          "title": "念珠",
+          "body": "108 颗念珠象征 108 种烦恼。每念一句拨一颗；一圈满后回转，不越过母珠。"
+        },
+        {
+          "title": "在此练习",
+          "body": "点击木鱼或念珠，或按空格键。开启“自动节拍”可在诵经时保持节奏。"
+        }
+      ],
+      "prayers": [
+        {
+          "title": "祈福",
+          "body": "为在世者祈求平安健康、消灾免难。常在新年、初一十五或亲人生病时进行。"
+        },
+        {
+          "title": "超度",
+          "body": "为往生者祈求超脱，往生善处。常在往生后 49 天内、忌日及盂兰盆节进行。"
+        },
+        {
+          "title": "祈愿之心",
+          "body": "心愿贵在真诚，不在辞藻。同时行善、吃素、放生回向，功德更大。"
+        }
+      ]
+    },
+    "tooFast": "请放慢一点…",
+    "savedAdjusted": "已保存 {n}——已按实际时间校正",
+    "counters": "计数器",
+    "beadSound": "念珠声",
+    "presets": {
+      "title": "我的配置",
+      "hint": "将时长、禅修音乐、木鱼、念珠、诵经音频保存为一组配置，每天一键选用。",
+      "save": "保存当前设置",
+      "update": "更新「{name}」",
+      "namePrompt": "配置名称（如：晨间禅修）",
+      "delete": "删除",
+      "confirmDelete": "删除配置「{name}」？",
+      "signIn": "登录后保存配置",
+      "empty": "暂无配置。",
+      "using": "正在使用：{name}"
+    },
+    "medExtra": {
+      "music": "禅修音乐 / 背景音",
+      "mo": "禅修时敲木鱼",
+      "mala": "禅修时数念珠",
+      "sutra": "诵经音频",
+      "none": "不播放",
+      "tapBead": "点击拨一颗珠",
+      "beads": "{n} 颗"
+    }
+  },
+  "myContent": {
+    "title": "我的文章",
+    "description": "撰写文章、投稿图书馆内容并查看审核状态。",
+    "newArticle": "写新文章",
+    "newLibrary": "投稿图书馆",
+    "all": "全部",
+    "statuses": {
+      "draft": "草稿",
+      "pending": "待审核",
+      "published": "已发布",
+      "archived": "已下架"
+    },
+    "empty": "您还没有文章。",
+    "edit": "编辑",
+    "delete": "删除",
+    "confirmDelete": "删除《{title}》？",
+    "view": "查看",
+    "views": "{n} 次阅读",
+    "reviewNote": "退回原因",
+    "proposalBadge": "有修改建议",
+    "type": "类型",
+    "typeArticle": "文章",
+    "typeLibrary": "图书馆内容",
+    "libraryKind": "图书馆分类",
+    "fTitle": "标题",
+    "fSummary": "摘要",
+    "fCover": "封面图",
+    "coverHint": "上传图片或粘贴图片链接",
+    "upload": "上传",
+    "uploading": "上传中…",
+    "uploadError": "文件上传失败。",
+    "fBody": "内容",
+    "bodyHint": "段落之间空一行。可使用基本 HTML 标签。",
+    "fTags": "标签",
+    "tagsHint": "用逗号分隔",
+    "fCategory": "栏目",
+    "noCategory": "— 不选 —",
+    "fGallery": "附图",
+    "galleryHint": "最多 60 张，每张 4 MB",
+    "addImages": "添加图片",
+    "caption": "说明",
+    "remove": "移除",
+    "fAudio": "音频文件",
+    "audioHint": "上传 MP3（最大 10 MB）或粘贴链接",
+    "saveDraft": "保存草稿",
+    "submit": "提交审核",
+    "publish": "发布",
+    "saving": "保存中…",
+    "back": "列表",
+    "editPublishedNote": "本文正在显示。保存修改后将重新提交审核。",
+    "directPublishNote": "您可以直接发布此类内容，无需审核。",
+    "proposal": {
+      "title": "编辑部的修改建议",
+      "by": "{name} 于 {date} 提出",
+      "note": "留言",
+      "before": "当前",
+      "after": "建议",
+      "accept": "同意并发布",
+      "reject": "拒绝",
+      "rejectReason": "拒绝原因（可选）",
+      "info": "在您同意之前，公开页面仍显示当前版本。"
+    },
+    "fields": {
+      "title": "标题",
+      "summary": "摘要",
+      "bodyHtml": "内容",
+      "coverUrl": "封面图",
+      "tags": "标签",
+      "categories": "栏目",
+      "gallery": "附图",
+      "libraryKind": "分类",
+      "media": "音频",
+      "author": "作者",
+      "source": "来源"
+    },
+    "signIn": "登录后撰写文章",
+    "noPermission": "您的账号暂无撰写文章权限。",
+    "loadError": "无法加载数据。"
+  },
+  "stats": {
+    "title": "统计与功德",
+    "description": "您的功德、修行、文章与贡献。",
+    "merit": "功德",
+    "total": "总功德",
+    "today": "今天",
+    "checkin": "今日签到",
+    "checkedIn": "今日已签到",
+    "streak": "连续 {n} 天",
+    "earned": "+{n} 功德",
+    "rulesTitle": "如何积累功德",
+    "perTime": "每次 +{p}",
+    "capDay": "每天最多 {c}",
+    "actions": {
+      "checkin": "每日签到",
+      "comment": "发表评论",
+      "reply-received": "评论获得回复",
+      "content-approved": "文章 / 图书馆内容通过审核",
+      "views-100": "文章每增加 100 次阅读",
+      "practice": "保存一次修行记录",
+      "prayer": "写下心愿"
+    },
+    "recent": "最近功德",
+    "practice": "修行",
+    "practiceSessions": "{n} 次",
+    "content": "文章与贡献",
+    "articles": "文章",
+    "library": "图书馆内容",
+    "published": "已发布",
+    "pending": "待审核",
+    "draft": "草稿",
+    "views": "文章阅读量",
+    "comments": "评论",
+    "commentsDeleted": "已删除 {n}",
+    "prayers": "心愿",
+    "joined": "加入时间",
+    "donate": "捐助",
+    "donateDefault": "支持慈善基金",
+    "scan": "扫描二维码捐助",
+    "accountName": "账户名",
+    "accountNumber": "账号",
+    "bank": "银行",
+    "donateLink": "查看官方信息",
+    "noDonate": "暂无捐助信息。",
+    "signIn": "登录查看您的统计"
+  },
+  "library": {
+    "title": "图书馆",
+    "description": "社区分享的图片、寺庙点评、佛菩萨、禅修音乐与诵经音频。",
+    "all": "全部",
+    "kinds": {
+      "anh": "图片",
+      "review": "寺庙点评",
+      "bo-tat": "佛菩萨",
+      "nhac-thien": "禅修音乐",
+      "audio-kinh": "诵经音频"
+    },
+    "empty": "此栏目暂无内容。",
+    "contribute": "投稿",
+    "photos": "{n} 张图片",
+    "listen": "收听",
+    "contributor": "投稿者"
   }
 }

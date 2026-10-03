@@ -23,13 +23,7 @@ export type NavKey =
   | "talks";
 
 /** Các mục con của "Tu tập". */
-export type PracticeKey =
-  | "meditation"
-  | "chanting"
-  | "recitation"
-  | "woodenFish"
-  | "mala"
-  | "prayers";
+export type PracticeKey = "chantingRecitation" | "meditation" | "woodenFishMala" | "prayers";
 
 export type NavItem = {
   href: string;
@@ -40,11 +34,9 @@ export type NavItem = {
 };
 
 export const practiceNav: { href: string; key: PracticeKey }[] = [
+  { href: "/tu-tap/tung-kinh-niem-phat", key: "chantingRecitation" },
   { href: "/tu-tap/thien-dinh", key: "meditation" },
-  { href: "/tu-tap/tung-kinh", key: "chanting" },
-  { href: "/tu-tap/niem-phat", key: "recitation" },
-  { href: "/tu-tap/go-mo", key: "woodenFish" },
-  { href: "/tu-tap/lan-chuoi-hat", key: "mala" },
+  { href: "/tu-tap/go-mo-chuoi-hat", key: "woodenFishMala" },
   { href: "/tu-tap/cau-an-cau-sieu", key: "prayers" },
 ];
 
@@ -68,38 +60,38 @@ export const mainNav: NavItem[] = [
  * `key` tra trong dict.nav, còn `label` là chuỗi giữ nguyên không dịch — tên
  * chuyên mục là nội dung do ban biên tập đặt, không phải chữ giao diện.
  */
-export type FooterKey = NavKey | "search" | "account";
+export type FooterKey = NavKey | PracticeKey | "search" | "account";
 
 export type FooterItem = { href: string; key?: FooterKey; label?: string };
 
 export const footerNav: {
-  titleKey: "content" | "categories" | "about";
+  /** "practice" lấy tiêu đề từ dict.nav, các nhóm khác từ dict.footer. */
+  titleKey: "content" | "practice" | "about";
+  /** Có thì tiêu đề nhóm là link (trang tổng quan). */
+  titleHref?: string;
   items: FooterItem[];
 }[] = [
   {
+    // Cùng thứ tự với menu chính.
     titleKey: "content",
     items: [
-      { href: "/bai-viet", key: "articles" },
       { href: "/kinh-sach", key: "sutras" },
+      { href: "/bai-viet", key: "articles" },
       { href: "/bai-giang", key: "talks" },
+      { href: "/thu-vien", key: "library" },
       { href: "/phat-lich", key: "calendar" },
-      { href: "/tu-tap", key: "practice" },
     ],
   },
   {
-    titleKey: "categories",
-    items: [
-      { href: "/danh-muc/kinh-dien", label: "Kinh điển" },
-      { href: "/danh-muc/thien-tap", label: "Thiền tập" },
-      { href: "/danh-muc/nghi-le", label: "Nghi lễ" },
-      { href: "/danh-muc/phat-phap-ung-dung", label: "Phật pháp ứng dụng" },
-    ],
+    // Đọc thẳng từ practiceNav nên footer luôn khớp menu thả xuống "Tu tập".
+    titleKey: "practice",
+    titleHref: "/tu-tap",
+    items: [...practiceNav, { href: "/qua-trinh-tu-tap", key: "journey" }],
   },
   {
     titleKey: "about",
     items: [
       { href: "/ve-chung-toi", key: "about" },
-      { href: "/thu-vien", key: "library" },
       { href: "/tim-kiem", key: "search" },
       { href: "/tai-khoan", key: "account" },
       { href: "/rss.xml", label: "RSS" },
@@ -114,4 +106,5 @@ export const contentTypeBase = {
   sutra: "/kinh-sach",
   audio: "/bai-giang",
   video: "/bai-giang",
+  library: "/thu-vien",
 } as const;

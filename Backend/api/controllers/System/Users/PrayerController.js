@@ -6,6 +6,8 @@
  * - dùng chung quyền kiểm duyệt với bình luận.
  */
 const { ngayVN, dinhDangLoiNguyen } = require('../../../utils/loiNguyen')
+const { ghiCongDuc } = require('../../../utils/congDuc')
+const { timTuCam } = require('../../../utils/tuCam')
 
 const DAI_TOI_THIEU = 2
 const DAI_TOI_DA = 500
@@ -76,14 +78,27 @@ module.exports = {
                     return baoLoi(exits, 'prayerOncePerDay')
                 }
 
+                let forName = String(inputs.forName || '').trim().slice(0, 120)
+                // Chứa từ cấm: vẫn lưu nhưng giữ lại (flagged) chờ duyệt ở tab Phê duyệt.
+                let tuCam = await timTuCam(`${forName}\n${body}`)
                 let moi = await Prayer.create({
                     userId: String(User.id),
                     kind: inputs.kind,
-                    forName: String(inputs.forName || '').trim().slice(0, 120),
+                    forName: forName,
                     body: body,
                     anonymous: !!inputs.anonymous,
-                    dayKey: homNay
+                    dayKey: homNay,
+                    status: tuCam.length ? 'flagged' : 'visible',
+                    flaggedWords: tuCam
                 }).fetch()
+                if (tuCam.length) {
+                    return exits.successRequest({
+                        messageNode: 'Users',
+                        message: 'prayerFlagged',
+                        data: Object.assign((await dinhDangLoiNguyen([moi], User.id))[0], { flagged: true })
+                    });
+                }
+                await ghiCongDuc(User.id, 'prayer', { refId: String(moi.id) })
 
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',

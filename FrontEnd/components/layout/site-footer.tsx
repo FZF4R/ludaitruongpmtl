@@ -32,12 +32,19 @@ export async function SiteFooter() {
           </div>
 
           {footerNav.map((group) => {
-            const tieuDe = dict.footer[group.titleKey];
+            const tieuDe =
+              group.titleKey === "practice" ? dict.nav.practice : dict.footer[group.titleKey];
 
             return (
               <nav key={group.titleKey} className="flex flex-col gap-3" aria-label={tieuDe}>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
-                  {tieuDe}
+                  {group.titleHref ? (
+                    <LocaleLink href={group.titleHref} className="transition-colors hover:text-accent">
+                      {tieuDe}
+                    </LocaleLink>
+                  ) : (
+                    tieuDe
+                  )}
                 </p>
                 <ul className="flex flex-col gap-2">
                   {group.items.map((item) => (

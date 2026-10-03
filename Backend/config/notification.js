@@ -33,6 +33,90 @@ module.exports.notification = {
         }
     },
     Content: {
+        contentForbidden: {
+            message: {
+                messageEN: "You do not have permission for this content",
+                messageVNI: "Bạn không có quyền thao tác với nội dung này"
+            }
+        },
+        libraryKindRequired: {
+            message: {
+                messageEN: "Please choose a library category",
+                messageVNI: "Chọn danh mục thư viện"
+            }
+        },
+        contentNoChanges: {
+            message: {
+                messageEN: "Nothing changed",
+                messageVNI: "Không có gì thay đổi"
+            }
+        },
+        contentEditProposed: {
+            message: {
+                messageEN: "Edit proposal sent to the author for approval",
+                messageVNI: "Đã gửi đề xuất sửa cho tác giả, chờ tác giả đồng ý"
+            }
+        },
+        contentHasProposal: {
+            message: {
+                messageEN: "This post has an editor proposal - accept or decline it before editing",
+                messageVNI: "Bài đang có đề xuất sửa của ban biên tập - hãy đồng ý hoặc từ chối trước khi sửa tiếp"
+            }
+        },
+        contentTooMany: {
+            message: {
+                messageEN: "You have created too many posts today, please come back tomorrow",
+                messageVNI: "Bạn đã tạo quá nhiều bài hôm nay, vui lòng quay lại ngày mai"
+            }
+        },
+        contentInvalid: {
+            message: {
+                messageEN: "Invalid content",
+                messageVNI: "Nội dung không hợp lệ"
+            }
+        },
+        contentSubmitted: {
+            message: {
+                messageEN: "Submitted for review",
+                messageVNI: "Đã gửi bài, chờ ban kiểm duyệt duyệt"
+            }
+        },
+        contentSaved: {
+            message: {
+                messageEN: "Saved",
+                messageVNI: "Đã lưu"
+            }
+        },
+        contentProposalAccepted: {
+            message: {
+                messageEN: "Edit accepted",
+                messageVNI: "Đã đồng ý bản sửa"
+            }
+        },
+        contentProposalRejected: {
+            message: {
+                messageEN: "Edit declined",
+                messageVNI: "Đã từ chối bản sửa"
+            }
+        },
+        mediaInvalid: {
+            message: {
+                messageEN: "Invalid file (JPG, PNG, WEBP, GIF image or MP3, WAV, OGG, M4A audio)",
+                messageVNI: "Tệp không hợp lệ (ảnh JPG, PNG, WEBP, GIF hoặc âm thanh MP3, WAV, OGG, M4A)"
+            }
+        },
+        mediaTooLarge: {
+            message: {
+                messageEN: "File too large (images up to 4 MB, audio up to 10 MB)",
+                messageVNI: "Tệp quá lớn (ảnh tối đa 4 MB, âm thanh tối đa 10 MB)"
+            }
+        },
+        mediaTooMany: {
+            message: {
+                messageEN: "You have uploaded too many files today",
+                messageVNI: "Bạn đã tải lên quá nhiều tệp hôm nay"
+            }
+        },
         contentNotFound: {
             message: {
                 messageEN: "Content not found",
@@ -440,6 +524,90 @@ module.exports.notification = {
             message: {
                 messageEN: "Feedback not found",
                 messageVNI: "Không tìm thấy góp ý"
+            }
+        },
+        soundInvalid: {
+            message: {
+                messageEN: "Invalid sound information",
+                messageVNI: "Thông tin âm thanh không hợp lệ"
+            }
+        },
+        soundFileInvalid: {
+            message: {
+                messageEN: "Invalid audio file (MP3, WAV, OGG, M4A under 5.5MB) or invalid link",
+                messageVNI: "Tệp âm thanh không hợp lệ (MP3, WAV, OGG, M4A dưới 5,5MB) hoặc link không đúng"
+            }
+        },
+        soundTooMany: {
+            message: {
+                messageEN: "This section already has too many sounds (max 50)",
+                messageVNI: "Mục này đã có quá nhiều âm thanh (tối đa 50)"
+            }
+        },
+        soundNotFound: {
+            message: {
+                messageEN: "Sound not found",
+                messageVNI: "Không tìm thấy âm thanh"
+            }
+        },
+        practiceSessionInvalid: {
+            message: {
+                messageEN: "Invalid or already saved practice session, please start again",
+                messageVNI: "Phiên tu tập không hợp lệ hoặc đã lưu, hãy bắt đầu lại"
+            }
+        },
+        practicePresetTooMany: {
+            message: {
+                messageEN: "You have saved too many presets (max 30)",
+                messageVNI: "Bạn đã lưu quá nhiều bộ cấu hình (tối đa 30)"
+            }
+        },
+        practiceLogInvalid: {
+            message: {
+                messageEN: "Invalid practice record",
+                messageVNI: "Số liệu tu tập không hợp lệ"
+            }
+        },
+        commentLimitPost: {
+            message: {
+                messageEN: "You have reached the limit of 5 comments on this post",
+                messageVNI: "Bạn đã bình luận tối đa 5 lần ở bài này"
+            }
+        },
+        commentLimitDay: {
+            message: {
+                messageEN: "You have reached your daily comment limit, please come back tomorrow",
+                messageVNI: "Bạn đã đạt giới hạn bình luận trong ngày, vui lòng quay lại ngày mai"
+            }
+        },
+        meritInvalid: {
+            message: {
+                messageEN: "Invalid information",
+                messageVNI: "Thông tin không hợp lệ"
+            }
+        },
+        broadcastInvalid: {
+            message: {
+                messageEN: "A title is required; the link must start with / or http(s)://",
+                messageVNI: "Thông báo cần tiêu đề; đường dẫn phải bắt đầu bằng / hoặc http(s)://"
+            }
+        },
+        dayEventInvalid: {
+            message: {
+                messageEN: "Invalid event (date and a title up to 80 characters required; at most 10 events per day)",
+                messageVNI: "Sự kiện không hợp lệ (cần ngày, tiêu đề tối đa 80 ký tự; tối đa 10 sự kiện mỗi ngày)"
+            }
+        },
+        moderationNoWarning: {
+            message: {
+                messageEN: "This account has no warnings left",
+                messageVNI: "Tài khoản này không còn cảnh cáo nào"
+            }
+        },
+        prayerFlagged: {
+            message: {
+                messageEN: "Your prayer contains inappropriate words and is awaiting review",
+                messageVNI: "Lời nguyện chứa từ ngữ chưa phù hợp, đang chờ ban quản trị duyệt"
             }
         },
         commentInvalid: {

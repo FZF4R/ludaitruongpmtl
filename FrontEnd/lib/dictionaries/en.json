@@ -33,7 +33,13 @@
     "recitation": "Buddha recitation",
     "woodenFish": "Wooden fish",
     "mala": "Prayer beads",
-    "prayers": "Blessing & memorial"
+    "prayers": "Blessing & memorial",
+    "chantingRecitation": "Chanting / Recitation",
+    "woodenFishMala": "Wooden fish / Mala",
+    "meditationHint": "Meditation timer, bells, ambient sounds",
+    "chantingRecitationHint": "Recitation counter and sutra reading mode",
+    "woodenFishMalaHint": "Virtual wooden fish and 108-bead mala",
+    "prayersHint": "Write prayers, guides for peace and the departed"
   },
   "footer": {
     "content": "Content",
@@ -47,7 +53,8 @@
     "blog": "Essay",
     "sutra": "Sutra",
     "audio": "Audio talk",
-    "video": "Video talk"
+    "video": "Video talk",
+    "library": "Library"
   },
   "language": {
     "label": "Language",
@@ -102,7 +109,9 @@
     "eyebrow": "Your space",
     "title": "Account",
     "description": "Sign in to save readings, keep your listening progress, and sync across devices.",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "myContent": "My posts",
+    "stats": "Stats & merit"
   },
   "auth": {
     "eyebrow": "Your account",
@@ -305,7 +314,12 @@
       "A truly meaningful article"
     ],
     "suggestionsLabel": "Suggestions",
-    "flaggedNotice": "Your comment contains inappropriate words and has not been displayed."
+    "flaggedNotice": "Your comment contains inappropriate words and has not been displayed.",
+    "deletedBySelf": "Comment deleted by {name}",
+    "deletedByModerator": "Comment removed by a moderator",
+    "viewDeleted": "View content",
+    "hideDeleted": "Hide",
+    "deletedBy": "Deleted by: {name}"
   },
   "homeCalendar": {
     "eyebrow": "Buddhist calendar",
@@ -379,7 +393,12 @@
     "reply": "{name} replied to your comment on “{title}”",
     "someone": "Someone",
     "warning": "You received a warning ({n}): {reason}",
-    "warningNoReason": "You received a warning ({n}) for breaking the comment rules"
+    "warningNoReason": "You received a warning ({n}) for breaking the comment rules",
+    "published": "Your post “{title}” has been published",
+    "rejected": "Your post “{title}” was returned for revision",
+    "editProposal": "{name} proposed edits to “{title}” — awaiting your approval",
+    "editAccepted": "{name} accepted your edits to “{title}”",
+    "editRejected": "{name} declined your edits to “{title}”"
   },
   "banned": {
     "title": "Account suspended",
@@ -412,5 +431,349 @@
     "footerTitle": "Suggestions to the administrators",
     "anonymousNote": "Sent anonymously",
     "footerPlaceholder": "Your suggestion or feedback..."
+  },
+  "practiceTools": {
+    "saveLog": "Save to journal",
+    "saved": "Saved to journal",
+    "signInToSave": "Sign in to save your practice journal",
+    "saveError": "Could not save, please try again.",
+    "sound": "Sound",
+    "soundOff": "None",
+    "noSounds": "No sounds yet",
+    "reset": "Reset",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Finish",
+    "guideTitle": "Guide",
+    "viewJourney": "View your practice journey",
+    "woodenFish": {
+      "title": "Wooden fish",
+      "tapHint": "Tap the wooden fish or press Space",
+      "strikes": "{n} strikes",
+      "auto": "Auto rhythm",
+      "bpm": "{n} beats/min",
+      "moSound": "Wooden fish sound"
+    },
+    "mala": {
+      "title": "Mala beads",
+      "beads": "Mala type",
+      "beadsOf": "{n} beads",
+      "progress": "Bead {i}/{t}",
+      "rounds": "{n} rounds",
+      "tap": "Tap to move a bead",
+      "lapBell": "Bell at end of round",
+      "total": "{n} beads in total"
+    },
+    "recitation": {
+      "title": "Buddha recitation",
+      "phrase": "Phrase",
+      "phrases": [
+        "Namo Amitabha Buddha",
+        "Namo Shakyamuni Buddha",
+        "Namo Great Compassionate Avalokiteshvara Bodhisattva",
+        "Namo Medicine Master Buddha",
+        "Namo Ksitigarbha Bodhisattva"
+      ],
+      "goal": "Goal",
+      "count": "{n} recitations",
+      "tap": "Tap to count (or press Space)",
+      "moEach": "Wooden fish on each count",
+      "goalReached": "Reached {n} recitations"
+    },
+    "reader": {
+      "title": "Sutra chanting",
+      "choose": "Choose a sutra",
+      "noSutra": "No sutras published yet.",
+      "fontSize": "Font size",
+      "autoScroll": "Auto scroll",
+      "speed": "Speed",
+      "openBell": "Opening bell",
+      "sampleAudio": "Sample chanting",
+      "noSample": "No sample chanting yet",
+      "finished": "Finished chanting",
+      "loading": "Loading sutra…"
+    },
+    "meditation": {
+      "title": "Meditation timer",
+      "duration": "Duration",
+      "minutes": "{n} min",
+      "custom": "Custom",
+      "bell": "Start / end bell",
+      "interval": "Interval bell",
+      "intervalNone": "None",
+      "intervalEvery": "Every {n} min",
+      "ambient": "Ambient sound",
+      "volume": "Volume",
+      "guided": "Guided meditation",
+      "noGuided": "No guided meditations yet",
+      "remaining": "Remaining",
+      "done": "Completed {n} minutes of meditation",
+      "breathe": "Breathe in… breathe out…"
+    },
+    "prayersPage": {
+      "cta": "Write your prayer",
+      "ambient": "Ambient sound while reading prayers",
+      "calendarLink": "See upcoming holy days"
+    },
+    "journey": {
+      "title": "Practice journey",
+      "signIn": "Sign in to see your practice journal",
+      "empty": "No records yet. Use the tools under Practice and press “Save to journal”.",
+      "today": "Today",
+      "week": "7 days",
+      "all": "All time",
+      "streak": "{n}-day streak",
+      "activeDays": "{n} days of practice",
+      "chart": "Last 30 days",
+      "recent": "Recent records",
+      "types": {
+        "tung-kinh": "Sutra chanting",
+        "niem-phat": "Recitation",
+        "thien": "Meditation",
+        "go-mo": "Wooden fish",
+        "chuoi-hat": "Mala beads"
+      },
+      "units": {
+        "tung-kinh": "times",
+        "niem-phat": "recitations",
+        "thien": "min",
+        "go-mo": "strikes",
+        "chuoi-hat": "beads"
+      }
+    },
+    "guides": {
+      "chanting": [
+        {
+          "title": "Before chanting",
+          "body": "Wash your hands and rinse your mouth. Light incense, stand upright, join your palms and recite “Namo Shakyamuni Buddha” three times."
+        },
+        {
+          "title": "While chanting",
+          "body": "Pronounce each word clearly and keep pace with the wooden fish, with your mind fully on the words. Steadiness matters more than speed."
+        },
+        {
+          "title": "Recitation",
+          "body": "Recite aloud, silently, or with moving lips. One phrase per breath, listening clearly to each phrase."
+        },
+        {
+          "title": "Dedication",
+          "body": "When finished, dedicate the merit to your parents, loved ones and all beings."
+        }
+      ],
+      "meditation": [
+        {
+          "title": "Posture",
+          "body": "Sit cross-legged or on a chair, back naturally straight, shoulders relaxed, hands resting in your lap."
+        },
+        {
+          "title": "Breathing",
+          "body": "Breathe through the nose, slowly and gently. Follow each breath; you may count from one to ten and start again."
+        },
+        {
+          "title": "Mind",
+          "body": "When thoughts arise, notice them without following or resisting, and gently return to the breath."
+        },
+        {
+          "title": "Ending",
+          "body": "At the closing bell, rub your palms, face and legs before slowly standing up."
+        }
+      ],
+      "woodenFish": [
+        {
+          "title": "The wooden fish",
+          "body": "It keeps the rhythm of chanting: one strike per word or phrase, helping everyone chant together with a settled mind."
+        },
+        {
+          "title": "The mala",
+          "body": "108 beads stand for 108 afflictions. Move one bead per recitation; at the end of a round, turn back rather than passing the guru bead."
+        },
+        {
+          "title": "Try it here",
+          "body": "Tap the wooden fish or a bead, or press Space. Turn on auto rhythm to keep time while chanting."
+        }
+      ],
+      "prayers": [
+        {
+          "title": "Prayers for peace",
+          "body": "For the living to be safe, healthy and free from misfortune — often at the new year, on full and new moon days, or when loved ones are ill."
+        },
+        {
+          "title": "Prayers for the departed",
+          "body": "For the departed to be liberated and reborn in a peaceful realm — often during the 49 days after death, on anniversaries and during Ullambana."
+        },
+        {
+          "title": "The heart of prayer",
+          "body": "A prayer is precious for its sincerity, not its words. Doing good deeds, eating vegetarian and releasing life in dedication make the merit greater."
+        }
+      ]
+    },
+    "tooFast": "Slow down a little…",
+    "savedAdjusted": "Saved {n} — adjusted to the actual elapsed time",
+    "counters": "Counter",
+    "beadSound": "Bead sound",
+    "presets": {
+      "title": "My presets",
+      "hint": "Save duration, meditation music, wooden fish, mala and sutra audio as a preset to pick again each day with one tap.",
+      "save": "Save current settings",
+      "update": "Update “{name}”",
+      "namePrompt": "Preset name (e.g. Morning meditation)",
+      "delete": "Delete",
+      "confirmDelete": "Delete preset “{name}”?",
+      "signIn": "Sign in to save presets",
+      "empty": "No presets yet.",
+      "using": "Using: {name}"
+    },
+    "medExtra": {
+      "music": "Meditation music / ambience",
+      "mo": "Wooden fish during meditation",
+      "mala": "Mala during meditation",
+      "sutra": "Sutra audio",
+      "none": "None",
+      "tapBead": "Tap to move a bead",
+      "beads": "{n} beads"
+    }
+  },
+  "myContent": {
+    "title": "My posts",
+    "description": "Write posts, contribute to the library and track review status.",
+    "newArticle": "Write a post",
+    "newLibrary": "Contribute to library",
+    "all": "All",
+    "statuses": {
+      "draft": "Draft",
+      "pending": "Pending review",
+      "published": "Published",
+      "archived": "Unpublished"
+    },
+    "empty": "You have no posts yet.",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Delete “{title}”?",
+    "view": "View",
+    "views": "{n} views",
+    "reviewNote": "Reason returned",
+    "proposalBadge": "Edit proposed",
+    "type": "Type",
+    "typeArticle": "Post",
+    "typeLibrary": "Library item",
+    "libraryKind": "Library category",
+    "fTitle": "Title",
+    "fSummary": "Summary",
+    "fCover": "Cover image",
+    "coverHint": "Upload an image or paste an image link",
+    "upload": "Upload",
+    "uploading": "Uploading…",
+    "uploadError": "Could not upload the file.",
+    "fBody": "Content",
+    "bodyHint": "Separate paragraphs with a blank line. Basic HTML tags are allowed.",
+    "fTags": "Tags",
+    "tagsHint": "Separated by commas",
+    "fCategory": "Category",
+    "noCategory": "— None —",
+    "fGallery": "Photos",
+    "galleryHint": "Up to 60 photos, 4 MB each",
+    "addImages": "Add photos",
+    "caption": "Caption",
+    "remove": "Remove",
+    "fAudio": "Audio file",
+    "audioHint": "Upload an MP3 (up to 10 MB) or paste a link",
+    "saveDraft": "Save draft",
+    "submit": "Submit for review",
+    "publish": "Publish",
+    "saving": "Saving…",
+    "back": "List",
+    "editPublishedNote": "This post is live. Saving changes will send it for review again.",
+    "directPublishNote": "You can publish this type of content directly without review.",
+    "proposal": {
+      "title": "Edit proposed by the editors",
+      "by": "Proposed by {name} on {date}",
+      "note": "Message",
+      "before": "Current",
+      "after": "Proposed",
+      "accept": "Accept and publish",
+      "reject": "Decline",
+      "rejectReason": "Reason for declining (optional)",
+      "info": "The public page keeps showing the current version until you accept."
+    },
+    "fields": {
+      "title": "Title",
+      "summary": "Summary",
+      "bodyHtml": "Content",
+      "coverUrl": "Cover image",
+      "tags": "Tags",
+      "categories": "Category",
+      "gallery": "Photos",
+      "libraryKind": "Category",
+      "media": "Audio",
+      "author": "Author",
+      "source": "Source"
+    },
+    "signIn": "Sign in to write posts",
+    "noPermission": "Your account is not allowed to write posts yet.",
+    "loadError": "Could not load data."
+  },
+  "stats": {
+    "title": "Stats & merit",
+    "description": "Your merit, practice, posts and contributions.",
+    "merit": "Merit",
+    "total": "Total merit",
+    "today": "Today",
+    "checkin": "Check in today",
+    "checkedIn": "Checked in today",
+    "streak": "{n}-day streak",
+    "earned": "+{n} merit",
+    "rulesTitle": "How to earn merit",
+    "perTime": "+{p} each",
+    "capDay": "up to {c}/day",
+    "actions": {
+      "checkin": "Daily check-in",
+      "comment": "Write a comment",
+      "reply-received": "Your comment gets a reply",
+      "content-approved": "Post / library item approved",
+      "views-100": "Your post reaches another 100 views",
+      "practice": "Save a practice session",
+      "prayer": "Write a prayer"
+    },
+    "recent": "Recent merit",
+    "practice": "Practice",
+    "practiceSessions": "{n} sessions",
+    "content": "Posts & contributions",
+    "articles": "Posts",
+    "library": "Library items",
+    "published": "Published",
+    "pending": "Pending",
+    "draft": "Draft",
+    "views": "Post views",
+    "comments": "Comments",
+    "commentsDeleted": "{n} deleted",
+    "prayers": "Prayers",
+    "joined": "Member since",
+    "donate": "Donate",
+    "donateDefault": "Support the charity fund",
+    "scan": "Scan the QR code to donate",
+    "accountName": "Account holder",
+    "accountNumber": "Account number",
+    "bank": "Bank",
+    "donateLink": "Official information",
+    "noDonate": "No donation information yet.",
+    "signIn": "Sign in to see your stats"
+  },
+  "library": {
+    "title": "Library",
+    "description": "Photos, temple reviews, Buddhas & Bodhisattvas, meditation music and sutra audio shared by the community.",
+    "all": "All",
+    "kinds": {
+      "anh": "Photos",
+      "review": "Temple reviews",
+      "bo-tat": "Buddhas & Bodhisattvas",
+      "nhac-thien": "Meditation music",
+      "audio-kinh": "Sutra audio"
+    },
+    "empty": "Nothing in this section yet.",
+    "contribute": "Contribute",
+    "photos": "{n} photos",
+    "listen": "Listen",
+    "contributor": "Contributed by"
   }
 }

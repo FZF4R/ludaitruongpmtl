@@ -1,5 +1,5 @@
 import { LocaleLink as Link } from "@/components/ui/locale-link";
-import { Headphones, PlayCircle, BookOpen, FileText } from "lucide-react";
+import { Headphones, PlayCircle, BookOpen, FileText, Images } from "lucide-react";
 import type { ContentSummary } from "@/lib/schema";
 import { contentHref } from "@/lib/seo";
 import { getDictionary } from "@/lib/dictionary";
@@ -14,6 +14,7 @@ const typeIcon = {
   sutra: BookOpen,
   audio: Headphones,
   video: PlayCircle,
+  library: Images,
 } as const;
 
 export async function ContentCard({

@@ -137,10 +137,14 @@ module.exports = {
         exits: sails.config.responseType,
         fn: async function (inputs, exits) {
             try {
+                // `indexes` xoá nhiều câu một lần (chọn nhiều ở trang Tổng quan);
+                // `index` giữ cho lời gọi cũ. Chỉ số nào ngoài danh sách thì cả lượt bị từ chối.
+                let canXoa = Array.isArray(inputs.indexes) ? inputs.indexes : [inputs.index]
+                canXoa = Array.from(new Set(canXoa.map(Number)))
                 await suaDanhSachThongBao(danhSach => {
-                    if (inputs.index < 0 || inputs.index >= danhSach.length) return null
+                    if (!canXoa.length || canXoa.some(i => !Number.isInteger(i) || i < 0 || i >= danhSach.length)) return null
 
-                    return danhSach.filter((_, i) => i !== inputs.index)
+                    return danhSach.filter((_, i) => !canXoa.includes(i))
                 }, exits)
             } catch (err) {
                 sails.checkErrorOutput(err, exits);

@@ -33,6 +33,16 @@ module.exports.routes = {
     'GET  /v1/public/comments': 'System.Public.CommentController.listComments',
     'GET  /v1/public/prayers': 'System.Public.PrayerController.listPrayers',
     'GET  /v1/public/prayers/featured': 'System.Public.PrayerController.listFeatured',
+    // Am thanh cho cac cong cu tu tap (/tu-tap/*).
+    'GET  /v1/public/sounds': 'System.Public.SoundController.listSounds',
+    'GET  /v1/public/sounds/:id/file': 'System.Public.SoundController.getFile',
+    // Tep nguoi dung tai len (anh, am thanh trong bai viet / thu vien).
+    'GET  /v1/public/media/:id/file': 'System.Public.MediaController.getFile',
+    // Thong tin ung ho (QR) hien o trang thong ke nguoi dung.
+    'GET  /v1/public/donate': 'System.Public.DonateController.getDonate',
+    // Su kien theo ngay duong (lich trang chu / Phat lich).
+    'GET  /v1/public/day-events': 'System.Public.DayEventController.listEvents',
+    'GET  /v1/public/donate/qr': 'System.Public.DonateController.getQr',
     // De xuat & gop y tu trang chu (khong can dang nhap).
     'POST /v1/public/feedback': 'System.Public.FeedbackController.sendFeedback',
     'GET  /v1/public/avatar/:userId': 'System.Public.AvatarController.getFile',
@@ -65,6 +75,26 @@ module.exports.routes = {
     'POST /v1/user/notifications/read': 'System.Users.NotificationController.markRead',
     // Cau an / cau sieu: moi nguoi toi da 3 loi moi ngay.
     'GET  /v1/user/prayers/list': 'System.Users.PrayerController.listMine',
+    // Nhat ky tu tap (trang Qua trinh tu tap).
+    'POST /v1/user/practice/log': 'System.Users.PracticeController.addLog',
+    'GET  /v1/user/practice/stats': 'System.Users.PracticeController.getStats',
+    'POST /v1/user/practice/session': 'System.Users.PracticeController.startSession',
+    'GET  /v1/user/practice/presets': 'System.Users.PracticeController.listPresets',
+    'POST /v1/user/practice/presets/save': 'System.Users.PracticeController.savePreset',
+    'POST /v1/user/practice/presets/delete': 'System.Users.PracticeController.deletePreset',
+    // Bai viet cua toi: soan, gui duyet, tra loi de xuat sua.
+    'GET  /v1/user/content/mine': 'System.Users.ContentController.listMine',
+    'GET  /v1/user/content/detail': 'System.Users.ContentController.getMine',
+    'POST /v1/user/content/save': 'System.Users.ContentController.saveMine',
+    'POST /v1/user/content/delete': 'System.Users.ContentController.deleteMine',
+    'POST /v1/user/content/proposal/accept': 'System.Users.ContentController.acceptProposal',
+    'POST /v1/user/content/proposal/reject': 'System.Users.ContentController.rejectProposal',
+    'POST /v1/user/media/upload': 'System.Users.MediaController.upload',
+    // Cong duc + thong ke ca nhan.
+    'POST /v1/user/checkin': 'System.Users.MeritController.checkin',
+    'GET  /v1/user/stats': 'System.Users.MeritController.getStats',
+    // Noi dung binh luan da xoa (kiem duyet vien).
+    'GET  /v1/user/comments/deleted': 'System.Users.CommentController.getDeleted',
     'POST /v1/user/prayers': 'System.Users.PrayerController.addPrayer',
     'POST /v1/user/prayers/delete': 'System.Users.PrayerController.deletePrayer',
 
@@ -73,6 +103,22 @@ module.exports.routes = {
     'GET  /v1/admin/user/detail': 'System.Admin.UsersController.getUserDetail',
     'POST /v1/admin/user/update': 'System.Admin.UsersController.updateUser',
     'POST /v1/admin/user/changepass': 'System.Admin.UsersController.changePass',
+
+    //==== Am thanh tu tap =====
+    'GET  /v1/admin/sounds': 'System.Admin.SoundController.listAll',
+    'POST /v1/admin/sounds/add': 'System.Admin.SoundController.addSound',
+    'POST /v1/admin/sounds/update': 'System.Admin.SoundController.updateSound',
+    'POST /v1/admin/sounds/delete': 'System.Admin.SoundController.deleteSound',
+    'POST /v1/admin/sounds/reorder': 'System.Admin.SoundController.reorderSounds',
+
+    //==== Tu cam mac dinh (chi tai khoan chu - xem BannedWordsController) =====
+    'GET  /v1/admin/banned-words/default': 'System.Admin.BannedWordsController.getDefault',
+    'POST /v1/admin/banned-words/default': 'System.Admin.BannedWordsController.saveDefault',
+
+    //==== Cong duc: bang diem, ung ho =====
+    'GET  /v1/admin/merit': 'System.Admin.MeritController.getMerit',
+    'POST /v1/admin/merit/rules': 'System.Admin.MeritController.saveRules',
+    'POST /v1/admin/merit/donate': 'System.Admin.MeritController.saveDonate',
 
     //==== Loi nguyen noi bat (slideshow trang chu) =====
     'POST /v1/admin/prayers/feature': 'System.Admin.PrayerController.setFeatured',
@@ -87,6 +133,20 @@ module.exports.routes = {
     'GET  /v1/admin/moderation/user': 'System.Admin.ModerationController.userInfo',
     'POST /v1/admin/moderation/warn': 'System.Admin.ModerationController.warnUser',
     'POST /v1/admin/moderation/ban': 'System.Admin.ModerationController.banUser',
+    'POST /v1/admin/moderation/unwarn': 'System.Admin.ModerationController.unwarnUser',
+
+    //==== Phe duyet: binh luan / loi nguyen chua tu cam =====
+    'GET  /v1/admin/approval': 'System.Admin.ApprovalController.listPending',
+    'POST /v1/admin/approval/approve': 'System.Admin.ApprovalController.approve',
+    'POST /v1/admin/approval/reject': 'System.Admin.ApprovalController.reject',
+
+    //==== Thong bao toan bo nguoi dung =====
+    'GET  /v1/admin/broadcast': 'System.Admin.BroadcastController.list',
+    'POST /v1/admin/broadcast/send': 'System.Admin.BroadcastController.send',
+
+    //==== Su kien theo ngay tren lich =====
+    'POST /v1/admin/day-events/save': 'System.Admin.DayEventController.saveEvent',
+    'POST /v1/admin/day-events/delete': 'System.Admin.DayEventController.deleteEvent',
     'POST /v1/admin/moderation/unban': 'System.Admin.ModerationController.unbanUser',
 
     //==== Anh xoay vong trang chu =====

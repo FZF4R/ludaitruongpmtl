@@ -9,7 +9,7 @@ import {
 } from "@/lib/api";
 import { baKhoang, cacThangToi, homNayVN, sangChuoiNgay, suKienTrongKhoang } from "@/lib/buddhist-events";
 import { HomeCalendar } from "@/components/home/home-calendar";
-import { PrayerWall } from "@/components/home/prayer-wall";
+import { PrayerTeaser } from "@/components/home/prayer-teaser";
 import { ContactDock } from "@/components/home/contact-dock";
 import { Container, SectionHeading, Badge } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
@@ -201,7 +201,7 @@ export default async function HomePage() {
             <FeaturedSplit
               noiBat={mostRead}
               moi={latest}
-              nhanNoiBat={sua("home.mostRead", "Đọc nhiều nhất")}
+              nhanNoiBat={sua("home.mostRead", "Độc giả quan tâm")}
               nhanMoi={sua("home.latest", dict.home.latest)}
               hanhDongMoi={
                 <Button size="sm" asChild>
@@ -286,7 +286,7 @@ export default async function HomePage() {
             title={sua("prayers.title", dict.prayers.title)}
             description={sua("prayers.description", dict.prayers.description)}
           />
-          <PrayerWall nhan={dict.prayers} />
+          <PrayerTeaser nhan={dict.prayers} cta={dict.practiceTools.prayersPage.cta} />
         </section>
       </Container>
 

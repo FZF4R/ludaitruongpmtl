@@ -33,7 +33,13 @@
     "recitation": "염불",
     "woodenFish": "목탁",
     "mala": "염주",
-    "prayers": "기도 / 천도"
+    "prayers": "기도 / 천도",
+    "chantingRecitation": "독경 / 염불",
+    "woodenFishMala": "목탁 / 염주",
+    "meditationHint": "명상 타이머, 종소리, 배경음",
+    "chantingRecitationHint": "염불 카운터와 독경 모드",
+    "woodenFishMalaHint": "가상 목탁과 108 염주",
+    "prayersHint": "발원 쓰기, 평안·천도 기도 안내"
   },
   "footer": {
     "content": "콘텐츠",
@@ -47,7 +53,8 @@
     "blog": "수필",
     "sutra": "경전",
     "audio": "오디오 법문",
-    "video": "영상 법문"
+    "video": "영상 법문",
+    "library": "자료실"
   },
   "language": {
     "label": "언어",
@@ -102,7 +109,9 @@
     "eyebrow": "개인 공간",
     "title": "계정",
     "description": "로그인하면 글을 저장하고 청취 진도를 기록하며 여러 기기에서 이어볼 수 있습니다.",
-    "signIn": "로그인"
+    "signIn": "로그인",
+    "myContent": "내 글",
+    "stats": "통계 및 공덕"
   },
   "auth": {
     "eyebrow": "내 계정",
@@ -305,7 +314,12 @@
       "정말 뜻깊은 글입니다"
     ],
     "suggestionsLabel": "추천 댓글",
-    "flaggedNotice": "댓글에 부적절한 표현이 있어 표시되지 않았습니다."
+    "flaggedNotice": "댓글에 부적절한 표현이 있어 표시되지 않았습니다.",
+    "deletedBySelf": "{name}님이 삭제한 댓글입니다",
+    "deletedByModerator": "관리자가 삭제한 댓글입니다",
+    "viewDeleted": "내용 보기",
+    "hideDeleted": "숨기기",
+    "deletedBy": "삭제한 사람: {name}"
   },
   "homeCalendar": {
     "eyebrow": "불교 달력",
@@ -379,7 +393,12 @@
     "reply": "{name}님이 “{title}”에서 회원님의 댓글에 답글을 남겼습니다",
     "someone": "누군가",
     "warning": "경고를 받았습니다 ({n}): {reason}",
-    "warningNoReason": "댓글 규정 위반으로 경고를 받았습니다 ({n})"
+    "warningNoReason": "댓글 규정 위반으로 경고를 받았습니다 ({n})",
+    "published": "“{title}” 글이 게시되었습니다",
+    "rejected": "“{title}” 글이 수정 요청으로 반려되었습니다",
+    "editProposal": "{name}님이 “{title}” 수정을 제안했습니다 — 동의를 기다립니다",
+    "editAccepted": "{name}님이 “{title}” 수정안에 동의했습니다",
+    "editRejected": "{name}님이 “{title}” 수정안을 거절했습니다"
   },
   "banned": {
     "title": "계정이 정지되었습니다",
@@ -412,5 +431,349 @@
     "footerTitle": "관리자에게 제안하기",
     "anonymousNote": "익명으로 전송",
     "footerPlaceholder": "제안이나 의견을 적어 주세요..."
+  },
+  "practiceTools": {
+    "saveLog": "일지에 저장",
+    "saved": "일지에 저장했습니다",
+    "signInToSave": "로그인하고 수행 일지 저장하기",
+    "saveError": "저장하지 못했습니다. 다시 시도해 주세요.",
+    "sound": "소리",
+    "soundOff": "사용 안 함",
+    "noSounds": "소리가 없습니다",
+    "reset": "다시 하기",
+    "start": "시작",
+    "pause": "일시 정지",
+    "resume": "계속",
+    "stop": "마치기",
+    "guideTitle": "안내",
+    "viewJourney": "수행 기록 보기",
+    "woodenFish": {
+      "title": "목탁",
+      "tapHint": "목탁을 누르거나 스페이스 키를 누르세요",
+      "strikes": "{n}번",
+      "auto": "자동 박자",
+      "bpm": "분당 {n}박",
+      "moSound": "목탁 소리"
+    },
+    "mala": {
+      "title": "염주",
+      "beads": "염주 종류",
+      "beadsOf": "{n}알",
+      "progress": "{i}/{t}번째 알",
+      "rounds": "{n}바퀴",
+      "tap": "눌러서 한 알 넘기기",
+      "lapBell": "한 바퀴마다 종소리",
+      "total": "모두 {n}알"
+    },
+    "recitation": {
+      "title": "염불",
+      "phrase": "염불 구절",
+      "phrases": [
+        "나무아미타불",
+        "나무 본사 석가모니불",
+        "나무 대자대비 관세음보살",
+        "나무 약사유리광여래불",
+        "나무 지장보살"
+      ],
+      "goal": "목표",
+      "count": "{n}번",
+      "tap": "눌러서 세기 (또는 스페이스 키)",
+      "moEach": "셀 때마다 목탁 소리",
+      "goalReached": "{n}번을 채웠습니다"
+    },
+    "reader": {
+      "title": "독경",
+      "choose": "경전 선택",
+      "noSutra": "아직 게시된 경전이 없습니다.",
+      "fontSize": "글자 크기",
+      "autoScroll": "자동 스크롤",
+      "speed": "속도",
+      "openBell": "시작 종소리",
+      "sampleAudio": "독경 예시",
+      "noSample": "독경 예시가 없습니다",
+      "finished": "독경을 마쳤습니다",
+      "loading": "경전을 불러오는 중…"
+    },
+    "meditation": {
+      "title": "명상 타이머",
+      "duration": "시간",
+      "minutes": "{n}분",
+      "custom": "직접 입력",
+      "bell": "시작 / 종료 종소리",
+      "interval": "중간 종소리",
+      "intervalNone": "없음",
+      "intervalEvery": "{n}분마다",
+      "ambient": "배경음",
+      "volume": "음량",
+      "guided": "안내 명상",
+      "noGuided": "안내 명상이 없습니다",
+      "remaining": "남은 시간",
+      "done": "{n}분 명상을 마쳤습니다",
+      "breathe": "들이쉬고… 내쉬고…"
+    },
+    "prayersPage": {
+      "cta": "발원 쓰기",
+      "ambient": "발원을 읽을 때 배경음",
+      "calendarLink": "다가오는 재일·법회 보기"
+    },
+    "journey": {
+      "title": "수행 기록",
+      "signIn": "로그인하고 수행 일지를 확인하세요",
+      "empty": "아직 기록이 없습니다. 수행 메뉴의 도구를 사용한 뒤 “일지에 저장”을 누르세요.",
+      "today": "오늘",
+      "week": "7일",
+      "all": "전체",
+      "streak": "{n}일 연속",
+      "activeDays": "수행한 날 {n}일",
+      "chart": "최근 30일",
+      "recent": "최근 기록",
+      "types": {
+        "tung-kinh": "독경",
+        "niem-phat": "염불",
+        "thien": "명상",
+        "go-mo": "목탁",
+        "chuoi-hat": "염주"
+      },
+      "units": {
+        "tung-kinh": "번",
+        "niem-phat": "번",
+        "thien": "분",
+        "go-mo": "번",
+        "chuoi-hat": "알"
+      }
+    },
+    "guides": {
+      "chanting": [
+        {
+          "title": "독경 전",
+          "body": "손을 씻고 입을 헹굽니다. 향을 피우고 바르게 서서 합장하고 “나무 본사 석가모니불”을 세 번 염합니다."
+        },
+        {
+          "title": "독경할 때",
+          "body": "글자마다 또렷하게 읽고 목탁 박자에 맞추며 마음을 경문에 둡니다. 빠르기보다 고르고 집중하는 것이 중요합니다."
+        },
+        {
+          "title": "염불",
+          "body": "소리 내어, 속으로, 또는 입술만 움직여 염불해도 됩니다. 한 구절에 한 호흡, 자신의 염불을 또렷이 듣습니다."
+        },
+        {
+          "title": "회향",
+          "body": "마친 뒤 그 공덕을 부모님과 가족, 모든 중생에게 회향합니다."
+        }
+      ],
+      "meditation": [
+        {
+          "title": "몸 고르기",
+          "body": "결가부좌, 반가부좌 또는 의자에 앉습니다. 허리는 자연스럽게 펴고 어깨는 편안히, 손은 무릎 위에 둡니다."
+        },
+        {
+          "title": "숨 고르기",
+          "body": "코로 천천히 부드럽게 숨 쉽니다. 들숨과 날숨을 지켜보며 하나부터 열까지 세고 다시 시작해도 좋습니다."
+        },
+        {
+          "title": "마음 고르기",
+          "body": "생각이 일어나면 알아차리되 따라가거나 밀어내지 말고, 부드럽게 호흡으로 돌아옵니다."
+        },
+        {
+          "title": "명상 마치기",
+          "body": "종료 종소리가 울리면 손바닥, 얼굴, 다리를 문지른 뒤 천천히 일어납니다."
+        }
+      ],
+      "woodenFish": [
+        {
+          "title": "목탁",
+          "body": "목탁은 독경의 박자를 잡아 줍니다. 한 글자나 한 구절에 한 번, 대중이 고르게 독경하고 마음이 흩어지지 않게 돕습니다."
+        },
+        {
+          "title": "염주",
+          "body": "108알은 108번뇌를 상징합니다. 한 번 염할 때마다 한 알씩 넘기고, 한 바퀴를 돌면 모주를 넘지 않고 되돌아갑니다."
+        },
+        {
+          "title": "여기서 해 보기",
+          "body": "목탁이나 염주 알을 누르거나 스페이스 키를 누르세요. “자동 박자”를 켜면 독경할 때 박자를 맞출 수 있습니다."
+        }
+      ],
+      "prayers": [
+        {
+          "title": "평안 기도",
+          "body": "살아 있는 이의 평안과 건강, 재난을 면하기를 기원합니다. 새해, 초하루와 보름, 가족이 아플 때 주로 올립니다."
+        },
+        {
+          "title": "천도 기도",
+          "body": "돌아가신 이가 해탈하여 좋은 곳에 나기를 기원합니다. 사후 49일 동안, 기일과 우란분절에 주로 올립니다."
+        },
+        {
+          "title": "기도하는 마음",
+          "body": "발원은 말의 아름다움보다 진심이 소중합니다. 선행, 채식, 방생을 함께 회향하면 공덕이 더욱 커집니다."
+        }
+      ]
+    },
+    "tooFast": "조금 천천히…",
+    "savedAdjusted": "{n} 저장됨 — 실제 경과 시간에 맞춰 조정했습니다",
+    "counters": "카운터",
+    "beadSound": "염주 소리",
+    "presets": {
+      "title": "내 설정",
+      "hint": "시간, 명상 음악, 목탁, 염주, 독경 오디오를 하나의 설정으로 저장해 매일 한 번에 고르세요.",
+      "save": "현재 설정 저장",
+      "update": "“{name}” 업데이트",
+      "namePrompt": "설정 이름 (예: 아침 명상)",
+      "delete": "삭제",
+      "confirmDelete": "“{name}” 설정을 삭제할까요?",
+      "signIn": "로그인하고 설정 저장하기",
+      "empty": "저장된 설정이 없습니다.",
+      "using": "사용 중: {name}"
+    },
+    "medExtra": {
+      "music": "명상 음악 / 배경음",
+      "mo": "명상 중 목탁",
+      "mala": "명상 중 염주",
+      "sutra": "독경 오디오",
+      "none": "재생 안 함",
+      "tapBead": "눌러서 한 알 넘기기",
+      "beads": "{n}알"
+    }
+  },
+  "myContent": {
+    "title": "내 글",
+    "description": "글을 쓰고 자료실에 기여하며 검토 상태를 확인하세요.",
+    "newArticle": "새 글 쓰기",
+    "newLibrary": "자료실 기여",
+    "all": "전체",
+    "statuses": {
+      "draft": "임시 저장",
+      "pending": "검토 대기",
+      "published": "게시됨",
+      "archived": "내려짐"
+    },
+    "empty": "아직 글이 없습니다.",
+    "edit": "수정",
+    "delete": "삭제",
+    "confirmDelete": "“{title}”을(를) 삭제할까요?",
+    "view": "보기",
+    "views": "조회 {n}",
+    "reviewNote": "반려 사유",
+    "proposalBadge": "수정 제안 있음",
+    "type": "종류",
+    "typeArticle": "글",
+    "typeLibrary": "자료실 콘텐츠",
+    "libraryKind": "자료실 분류",
+    "fTitle": "제목",
+    "fSummary": "요약",
+    "fCover": "표지 이미지",
+    "coverHint": "이미지를 올리거나 이미지 링크를 붙여 넣으세요",
+    "upload": "올리기",
+    "uploading": "올리는 중…",
+    "uploadError": "파일을 올리지 못했습니다.",
+    "fBody": "내용",
+    "bodyHint": "문단 사이에 빈 줄을 넣으세요. 기본 HTML 태그를 쓸 수 있습니다.",
+    "fTags": "태그",
+    "tagsHint": "쉼표로 구분",
+    "fCategory": "분류",
+    "noCategory": "— 선택 안 함 —",
+    "fGallery": "첨부 사진",
+    "galleryHint": "최대 60장, 장당 4 MB",
+    "addImages": "사진 추가",
+    "caption": "설명",
+    "remove": "빼기",
+    "fAudio": "오디오 파일",
+    "audioHint": "MP3(최대 10 MB)를 올리거나 링크를 붙여 넣으세요",
+    "saveDraft": "임시 저장",
+    "submit": "검토 요청",
+    "publish": "게시",
+    "saving": "저장 중…",
+    "back": "목록",
+    "editPublishedNote": "게시 중인 글입니다. 변경 사항을 저장하면 다시 검토를 받습니다.",
+    "directPublishNote": "이 종류의 콘텐츠는 검토 없이 바로 게시할 수 있습니다.",
+    "proposal": {
+      "title": "편집진의 수정 제안",
+      "by": "{name}님이 {date}에 제안",
+      "note": "메시지",
+      "before": "현재",
+      "after": "제안",
+      "accept": "동의하고 게시",
+      "reject": "거절",
+      "rejectReason": "거절 사유 (선택)",
+      "info": "동의하기 전까지 공개 페이지에는 현재 버전이 표시됩니다."
+    },
+    "fields": {
+      "title": "제목",
+      "summary": "요약",
+      "bodyHtml": "내용",
+      "coverUrl": "표지 이미지",
+      "tags": "태그",
+      "categories": "분류",
+      "gallery": "첨부 사진",
+      "libraryKind": "분류",
+      "media": "오디오",
+      "author": "작성자",
+      "source": "출처"
+    },
+    "signIn": "로그인하고 글 쓰기",
+    "noPermission": "계정에 글쓰기 권한이 없습니다.",
+    "loadError": "데이터를 불러오지 못했습니다."
+  },
+  "stats": {
+    "title": "통계 및 공덕",
+    "description": "나의 공덕, 수행, 글과 기여.",
+    "merit": "공덕",
+    "total": "총 공덕",
+    "today": "오늘",
+    "checkin": "오늘 출석하기",
+    "checkedIn": "오늘 출석 완료",
+    "streak": "{n}일 연속",
+    "earned": "+{n} 공덕",
+    "rulesTitle": "공덕 쌓는 방법",
+    "perTime": "회당 +{p}",
+    "capDay": "하루 최대 {c}",
+    "actions": {
+      "checkin": "매일 출석",
+      "comment": "댓글 쓰기",
+      "reply-received": "내 댓글에 답글이 달림",
+      "content-approved": "글 / 자료실 콘텐츠 승인",
+      "views-100": "내 글 조회수 100 증가",
+      "practice": "수행 기록 저장",
+      "prayer": "발원 쓰기"
+    },
+    "recent": "최근 공덕",
+    "practice": "수행",
+    "practiceSessions": "{n}회",
+    "content": "글 및 기여",
+    "articles": "글",
+    "library": "자료실 콘텐츠",
+    "published": "게시됨",
+    "pending": "검토 대기",
+    "draft": "임시 저장",
+    "views": "글 조회수",
+    "comments": "댓글",
+    "commentsDeleted": "{n}개 삭제됨",
+    "prayers": "발원",
+    "joined": "가입일",
+    "donate": "후원",
+    "donateDefault": "자선 기금 후원",
+    "scan": "QR 코드를 스캔해 후원하세요",
+    "accountName": "예금주",
+    "accountNumber": "계좌번호",
+    "bank": "은행",
+    "donateLink": "공식 정보 보기",
+    "noDonate": "후원 정보가 없습니다.",
+    "signIn": "로그인하고 내 통계 보기"
+  },
+  "library": {
+    "title": "자료실",
+    "description": "공동체가 나눈 사진, 사찰 후기, 불보살, 명상 음악, 독경 오디오.",
+    "all": "전체",
+    "kinds": {
+      "anh": "사진",
+      "review": "사찰 후기",
+      "bo-tat": "불보살",
+      "nhac-thien": "명상 음악",
+      "audio-kinh": "독경 오디오"
+    },
+    "empty": "이 분류에는 아직 콘텐츠가 없습니다.",
+    "contribute": "기여하기",
+    "photos": "사진 {n}장",
+    "listen": "듣기",
+    "contributor": "기여자"
   }
 }

@@ -42,6 +42,29 @@ const guiThongBao = async ({ danhSach, actorId, bai, binhLuan }) => {
     }
 }
 
+/**
+ * Thông báo về MỘT bài cho MỘT người (bài được duyệt, bị trả lại, có đề xuất
+ * sửa...). Không gửi cho chính người gây ra sự kiện. Lỗi chỉ ghi log.
+ */
+const guiThongBaoBai = async ({ userId, type, actorId, bai, excerpt = '', link = '' }) => {
+    try {
+        let id = String(userId || '')
+        if (!id || id === String(actorId || '')) return
+        await UserNotification.create({
+            userId: id,
+            type: type,
+            actorId: String(actorId || ''),
+            contentId: String(bai.id || bai._id || ''),
+            contentSlug: bai.slug || '',
+            contentTitle: bai.title || '',
+            excerpt: String(excerpt || '').replace(/\s+/g, ' ').slice(0, 200),
+            link: link
+        })
+    } catch (err) {
+        sails.log.error('[thongBao] Không gửi được thông báo bài:', err.message)
+    }
+}
+
 /** Gắn tên + avatar người gây ra sự kiện, đọc từ hồ sơ hiện tại. */
 const dinhDangThongBao = async ds => {
     let ids = Array.from(new Set(ds.map(t => String(t.actorId))))
@@ -62,9 +85,10 @@ const dinhDangThongBao = async ds => {
         contentTitle: t.contentTitle,
         commentId: t.commentId,
         excerpt: t.excerpt,
+        link: t.link || '',
         createdAt: new Date(t.createdAt || Date.now()).toISOString(),
         actor: { name: ten[String(t.actorId)] || '', avatarUrl: avatar[String(t.actorId)] || '' }
     }))
 }
 
-module.exports = { guiThongBao, dinhDangThongBao }
+module.exports = { guiThongBao, guiThongBaoBai, dinhDangThongBao }

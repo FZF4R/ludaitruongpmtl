@@ -9,8 +9,13 @@ export type ThongBao = {
   /**
    * comment = có bình luận ở bài của bạn; reply = có người trả lời bạn;
    * warning = bạn bị cảnh cáo (contentTitle = "lần/5", excerpt = lý do).
+   * published / rejected = bài của bạn được đăng / bị trả lại (excerpt = lý do);
+   * edit-proposal = ban biên tập đề xuất sửa bài của bạn;
+   * edit-accepted / edit-rejected = tác giả đồng ý / từ chối bản sửa của bạn.
    */
-  type: "comment" | "reply" | "warning";
+  type: "comment" | "reply" | "warning" | "published" | "rejected" | "edit-proposal" | "edit-accepted" | "edit-rejected";
+  /** Đường dẫn (chưa có tiền tố ngôn ngữ) thông báo mở ra; rỗng = tự dựng theo loại. */
+  link: string;
   read: boolean;
   contentSlug: string;
   contentTitle: string;

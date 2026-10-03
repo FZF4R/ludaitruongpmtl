@@ -109,6 +109,8 @@ export type ListParams = {
   limit?: number;
   /** "popular" = nhiều lượt đọc nhất trước; mặc định mới nhất trước. */
   sort?: "newest" | "popular";
+  /** Lọc danh mục thư viện (type = library). */
+  libraryKind?: string;
 };
 
 export async function listContent(
@@ -128,6 +130,7 @@ export async function listContent(
         page: params.page ?? 1,
         limit: params.limit ?? 12,
         sort: params.sort,
+        libraryKind: params.libraryKind,
       },
       revalidate: revalidate.list,
       tags: [tags.content],

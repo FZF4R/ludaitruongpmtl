@@ -27,8 +27,32 @@ module.exports = {
     attributes: {
         type: {
             type: 'string',
-            isIn: ['article', 'blog', 'sutra', 'audio', 'video'],
+            isIn: ['article', 'blog', 'sutra', 'audio', 'video', 'library'],
             required: true
+        },
+        libraryKind: {
+            type: 'string',
+            defaultsTo: '',
+            description: "Chỉ với type = library: 'anh' | 'review' | 'bo-tat' | 'nhac-thien' | 'audio-kinh'"
+        },
+        gallery: {
+            type: 'json',
+            defaultsTo: [],
+            description: 'Ảnh kèm theo (thư viện ảnh, Phật - Bồ Tát): [{ url, caption }]'
+        },
+        pendingEdit: {
+            type: 'json',
+            defaultsTo: {},
+            description: [
+                'Đề xuất sửa của ban biên tập với bài do người dùng viết, chờ tác giả đồng ý:',
+                '{ fields, changes: [{ field, before, after }], byId, byName, at, note }.',
+                'Rỗng = không có đề xuất. Trang công khai vẫn hiện bản đang đăng.'
+            ].join(' ')
+        },
+        reviewNote: {
+            type: 'string',
+            defaultsTo: '',
+            description: 'Lý do lần trả bài gần nhất (người gửi xem ở Bài viết của tôi)'
         },
         slug: {
             type: 'string',

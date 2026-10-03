@@ -33,7 +33,13 @@
     "recitation": "Niệm Phật",
     "woodenFish": "Gõ mõ",
     "mala": "Lần chuỗi hạt",
-    "prayers": "Cầu an / Cầu siêu"
+    "prayers": "Cầu an / Cầu siêu",
+    "chantingRecitation": "Tụng kinh / Niệm Phật",
+    "woodenFishMala": "Gõ mõ / Chuỗi hạt",
+    "meditationHint": "Đồng hồ thiền, chuông, âm nền",
+    "chantingRecitationHint": "Bộ đếm niệm Phật và chế độ đọc kinh",
+    "woodenFishMalaHint": "Mõ ảo và chuỗi hạt 108 hạt",
+    "prayersHint": "Viết lời nguyện, hướng dẫn cầu an, cầu siêu"
   },
   "footer": {
     "content": "Nội dung",
@@ -47,7 +53,8 @@
     "blog": "Tuỳ bút",
     "sutra": "Kinh sách",
     "audio": "Bài giảng audio",
-    "video": "Bài giảng video"
+    "video": "Bài giảng video",
+    "library": "Thư viện"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -102,7 +109,9 @@
     "eyebrow": "Khu vực cá nhân",
     "title": "Tài khoản",
     "description": "Đăng nhập để lưu bài, đánh dấu tiến độ nghe và đồng bộ giữa các thiết bị.",
-    "signIn": "Đăng nhập"
+    "signIn": "Đăng nhập",
+    "myContent": "Bài viết của tôi",
+    "stats": "Thống kê & công đức"
   },
   "auth": {
     "eyebrow": "Khu vực cá nhân",
@@ -305,7 +314,12 @@
       "Bài viết thật ý nghĩa"
     ],
     "suggestionsLabel": "Gợi ý",
-    "flaggedNotice": "Bình luận của bạn chứa từ ngữ không phù hợp nên chưa được hiển thị."
+    "flaggedNotice": "Bình luận của bạn chứa từ ngữ không phù hợp nên chưa được hiển thị.",
+    "deletedBySelf": "Bình luận đã được {name} xoá",
+    "deletedByModerator": "Bình luận đã bị quản trị viên xoá",
+    "viewDeleted": "Xem nội dung",
+    "hideDeleted": "Ẩn",
+    "deletedBy": "Người xoá: {name}"
   },
   "homeCalendar": {
     "eyebrow": "Lịch Phật giáo",
@@ -379,7 +393,12 @@
     "reply": "{name} đã trả lời bình luận của bạn ở “{title}”",
     "someone": "Một người",
     "warning": "Bạn nhận cảnh cáo ({n}): {reason}",
-    "warningNoReason": "Bạn nhận cảnh cáo ({n}) vì vi phạm quy định bình luận"
+    "warningNoReason": "Bạn nhận cảnh cáo ({n}) vì vi phạm quy định bình luận",
+    "published": "Bài “{title}” của bạn đã được đăng",
+    "rejected": "Bài “{title}” được trả lại để chỉnh sửa",
+    "editProposal": "{name} đề xuất sửa bài “{title}” — chờ bạn đồng ý",
+    "editAccepted": "{name} đã đồng ý bản sửa bài “{title}”",
+    "editRejected": "{name} đã từ chối bản sửa bài “{title}”"
   },
   "banned": {
     "title": "Tài khoản đã bị khoá",
@@ -412,5 +431,349 @@
     "footerTitle": "Đề xuất với quản trị viên",
     "anonymousNote": "Gửi ẩn danh",
     "footerPlaceholder": "Đề xuất hoặc góp ý của bạn..."
+  },
+  "practiceTools": {
+    "saveLog": "Lưu vào nhật ký",
+    "saved": "Đã lưu vào nhật ký",
+    "signInToSave": "Đăng nhập để lưu nhật ký tu tập",
+    "saveError": "Không lưu được, vui lòng thử lại.",
+    "sound": "Âm thanh",
+    "soundOff": "Không dùng",
+    "noSounds": "Chưa có âm thanh",
+    "reset": "Làm lại",
+    "start": "Bắt đầu",
+    "pause": "Tạm dừng",
+    "resume": "Tiếp tục",
+    "stop": "Kết thúc",
+    "guideTitle": "Hướng dẫn",
+    "viewJourney": "Xem quá trình tu tập",
+    "woodenFish": {
+      "title": "Gõ mõ",
+      "tapHint": "Chạm vào mõ hoặc nhấn phím Cách để gõ",
+      "strikes": "{n} tiếng",
+      "auto": "Tự gõ theo nhịp",
+      "bpm": "{n} nhịp/phút",
+      "moSound": "Tiếng mõ"
+    },
+    "mala": {
+      "title": "Lần chuỗi hạt",
+      "beads": "Loại chuỗi",
+      "beadsOf": "{n} hạt",
+      "progress": "Hạt {i}/{t}",
+      "rounds": "{n} vòng",
+      "tap": "Chạm để lần hạt",
+      "lapBell": "Chuông hết vòng",
+      "total": "Tổng {n} hạt"
+    },
+    "recitation": {
+      "title": "Niệm Phật",
+      "phrase": "Câu niệm",
+      "phrases": [
+        "Nam Mô A Di Đà Phật",
+        "Nam Mô Bổn Sư Thích Ca Mâu Ni Phật",
+        "Nam Mô Đại Từ Đại Bi Quán Thế Âm Bồ Tát",
+        "Nam Mô Dược Sư Lưu Ly Quang Vương Phật",
+        "Nam Mô Địa Tạng Vương Bồ Tát"
+      ],
+      "goal": "Mục tiêu",
+      "count": "{n} câu",
+      "tap": "Chạm để đếm (hoặc phím Cách)",
+      "moEach": "Tiếng mõ mỗi lần đếm",
+      "goalReached": "Đã đủ {n} câu"
+    },
+    "reader": {
+      "title": "Tụng kinh",
+      "choose": "Chọn bộ kinh",
+      "noSutra": "Chưa có kinh sách nào được đăng.",
+      "fontSize": "Cỡ chữ",
+      "autoScroll": "Tự cuộn",
+      "speed": "Tốc độ",
+      "openBell": "Chuông mở đầu",
+      "sampleAudio": "Bài tụng mẫu",
+      "noSample": "Chưa có bài tụng mẫu",
+      "finished": "Đã tụng xong",
+      "loading": "Đang tải kinh…"
+    },
+    "meditation": {
+      "title": "Đồng hồ thiền",
+      "duration": "Thời gian",
+      "minutes": "{n} phút",
+      "custom": "Tuỳ chọn",
+      "bell": "Chuông mở đầu / kết thúc",
+      "interval": "Chuông nhắc giữa giờ",
+      "intervalNone": "Không",
+      "intervalEvery": "Mỗi {n} phút",
+      "ambient": "Âm nền",
+      "volume": "Âm lượng",
+      "guided": "Thiền có hướng dẫn",
+      "noGuided": "Chưa có bài thiền có hướng dẫn",
+      "remaining": "Còn lại",
+      "done": "Đã thiền xong {n} phút",
+      "breathe": "Thở vào… thở ra…"
+    },
+    "prayersPage": {
+      "cta": "Viết lời nguyện của bạn",
+      "ambient": "Âm nền khi đọc lời nguyện",
+      "calendarLink": "Xem các ngày lễ, ngày vía sắp tới"
+    },
+    "journey": {
+      "title": "Quá trình tu tập",
+      "signIn": "Đăng nhập để xem nhật ký tu tập của bạn",
+      "empty": "Chưa có ghi chép nào. Dùng các công cụ ở mục Tu tập rồi bấm “Lưu vào nhật ký”.",
+      "today": "Hôm nay",
+      "week": "7 ngày",
+      "all": "Tất cả",
+      "streak": "{n} ngày liên tục",
+      "activeDays": "{n} ngày đã tu tập",
+      "chart": "30 ngày gần đây",
+      "recent": "Ghi chép gần đây",
+      "types": {
+        "tung-kinh": "Tụng kinh",
+        "niem-phat": "Niệm Phật",
+        "thien": "Thiền định",
+        "go-mo": "Gõ mõ",
+        "chuoi-hat": "Lần chuỗi hạt"
+      },
+      "units": {
+        "tung-kinh": "lần",
+        "niem-phat": "câu",
+        "thien": "phút",
+        "go-mo": "tiếng",
+        "chuoi-hat": "hạt"
+      }
+    },
+    "guides": {
+      "chanting": [
+        {
+          "title": "Trước khi tụng",
+          "body": "Rửa tay, súc miệng, mặc áo tràng nếu có. Thắp hương, đứng ngay ngắn, chắp tay niệm “Nam Mô Bổn Sư Thích Ca Mâu Ni Phật” ba lần."
+        },
+        {
+          "title": "Khi tụng",
+          "body": "Đọc rõ từng chữ, giữ nhịp theo tiếng mõ, tâm đặt trọn vào lời kinh. Không cần nhanh; cần đều và chú tâm."
+        },
+        {
+          "title": "Niệm Phật",
+          "body": "Niệm ra tiếng, niệm thầm hay kim cang trì (mấp máy môi) đều được. Mỗi câu một hơi thở, tai nghe rõ câu mình niệm."
+        },
+        {
+          "title": "Hồi hướng",
+          "body": "Tụng niệm xong, hồi hướng công đức cho cha mẹ, người thân và tất cả chúng sinh."
+        }
+      ],
+      "meditation": [
+        {
+          "title": "Điều thân",
+          "body": "Ngồi kiết già, bán già hoặc trên ghế; lưng thẳng tự nhiên, vai thả lỏng, tay đặt trong lòng."
+        },
+        {
+          "title": "Điều tức",
+          "body": "Thở bằng mũi, chậm và nhẹ. Theo dõi hơi thở vào ra, có thể đếm từ một đến mười rồi lại bắt đầu."
+        },
+        {
+          "title": "Điều tâm",
+          "body": "Vọng tưởng khởi lên thì biết, không theo, không chống; nhẹ nhàng đưa tâm trở về hơi thở."
+        },
+        {
+          "title": "Xả thiền",
+          "body": "Nghe chuông kết thúc, xoa hai bàn tay, xoa mặt, xoa chân rồi mới đứng dậy chậm rãi."
+        }
+      ],
+      "woodenFish": [
+        {
+          "title": "Tiếng mõ",
+          "body": "Mõ giữ nhịp cho buổi tụng: mỗi tiếng mõ một chữ hay một câu, giúp đại chúng tụng đều và tâm không tán loạn."
+        },
+        {
+          "title": "Chuỗi hạt",
+          "body": "Chuỗi 108 hạt tượng trưng 108 phiền não. Mỗi câu niệm lần một hạt; hết vòng thì chuyển ngược chiều, không vượt qua hạt mẫu."
+        },
+        {
+          "title": "Gõ ở đây",
+          "body": "Chạm vào mõ hoặc hạt, hay nhấn phím Cách. Bật “Tự gõ theo nhịp” để giữ nhịp khi tụng theo."
+        }
+      ],
+      "prayers": [
+        {
+          "title": "Cầu an",
+          "body": "Cầu cho người còn sống được bình an, khoẻ mạnh, tai qua nạn khỏi. Thường làm đầu năm, ngày Rằm, mùng Một, hay khi người thân ốm đau."
+        },
+        {
+          "title": "Cầu siêu",
+          "body": "Cầu cho hương linh người đã khuất được siêu thoát, sinh về cảnh giới an lành. Thường làm trong 49 ngày sau khi mất, ngày giỗ và mùa Vu Lan."
+        },
+        {
+          "title": "Tâm khi cầu nguyện",
+          "body": "Lời nguyện quý ở tâm thành, không ở lời hay. Kèm theo làm việc thiện, ăn chay, phóng sinh để hồi hướng thì công đức càng lớn."
+        }
+      ]
+    },
+    "tooFast": "Chậm lại một chút…",
+    "savedAdjusted": "Đã lưu {n} — số liệu được điều chỉnh theo thời gian thực",
+    "counters": "Bộ đếm",
+    "beadSound": "Tiếng hạt",
+    "presets": {
+      "title": "Bộ cấu hình của tôi",
+      "hint": "Lưu thời gian, nhạc thiền, mõ, chuỗi hạt, bài kinh thành một bộ để mỗi ngày chọn lại bằng một lần bấm.",
+      "save": "Lưu cấu hình hiện tại",
+      "update": "Cập nhật “{name}”",
+      "namePrompt": "Tên bộ cấu hình (vd. Thiền sáng)",
+      "delete": "Xoá",
+      "confirmDelete": "Xoá bộ cấu hình “{name}”?",
+      "signIn": "Đăng nhập để lưu bộ cấu hình",
+      "empty": "Chưa có bộ cấu hình nào.",
+      "using": "Đang dùng: {name}"
+    },
+    "medExtra": {
+      "music": "Nhạc thiền / âm nền",
+      "mo": "Gõ mõ khi thiền",
+      "mala": "Lần chuỗi khi thiền",
+      "sutra": "Kinh phát âm thanh",
+      "none": "Không phát",
+      "tapBead": "Chạm để lần hạt",
+      "beads": "{n} hạt"
+    }
+  },
+  "myContent": {
+    "title": "Bài viết của tôi",
+    "description": "Viết bài, gửi nội dung thư viện và theo dõi trạng thái duyệt.",
+    "newArticle": "Viết bài mới",
+    "newLibrary": "Đóng góp thư viện",
+    "all": "Tất cả",
+    "statuses": {
+      "draft": "Nháp",
+      "pending": "Chờ duyệt",
+      "published": "Đã đăng",
+      "archived": "Đã gỡ"
+    },
+    "empty": "Bạn chưa có bài nào.",
+    "edit": "Sửa",
+    "delete": "Xoá",
+    "confirmDelete": "Xoá bài “{title}”?",
+    "view": "Xem bài",
+    "views": "{n} lượt xem",
+    "reviewNote": "Lý do trả lại",
+    "proposalBadge": "Có đề xuất sửa",
+    "type": "Loại",
+    "typeArticle": "Bài viết",
+    "typeLibrary": "Nội dung thư viện",
+    "libraryKind": "Danh mục thư viện",
+    "fTitle": "Tiêu đề",
+    "fSummary": "Tóm tắt",
+    "fCover": "Ảnh bìa",
+    "coverHint": "Tải ảnh lên hoặc dán đường dẫn ảnh",
+    "upload": "Tải lên",
+    "uploading": "Đang tải lên…",
+    "uploadError": "Không tải lên được tệp.",
+    "fBody": "Nội dung",
+    "bodyHint": "Mỗi đoạn cách nhau một dòng trống. Có thể dùng thẻ HTML cơ bản.",
+    "fTags": "Thẻ",
+    "tagsHint": "Cách nhau bằng dấu phẩy",
+    "fCategory": "Chuyên mục",
+    "noCategory": "— Không chọn —",
+    "fGallery": "Ảnh kèm theo",
+    "galleryHint": "Tối đa 60 ảnh, mỗi ảnh 4 MB",
+    "addImages": "Thêm ảnh",
+    "caption": "Chú thích",
+    "remove": "Bỏ",
+    "fAudio": "Tệp âm thanh",
+    "audioHint": "Tải tệp MP3 (tối đa 10 MB) hoặc dán đường dẫn",
+    "saveDraft": "Lưu nháp",
+    "submit": "Gửi duyệt",
+    "publish": "Đăng",
+    "saving": "Đang lưu…",
+    "back": "Danh sách",
+    "editPublishedNote": "Bài này đang hiển thị. Lưu thay đổi sẽ gửi bài đi duyệt lại.",
+    "directPublishNote": "Bạn có quyền đăng thẳng loại nội dung này, không cần chờ duyệt.",
+    "proposal": {
+      "title": "Đề xuất sửa từ ban biên tập",
+      "by": "{name} đề xuất ngày {date}",
+      "note": "Lời nhắn",
+      "before": "Hiện tại",
+      "after": "Đề xuất",
+      "accept": "Đồng ý và đăng",
+      "reject": "Từ chối",
+      "rejectReason": "Lý do từ chối (không bắt buộc)",
+      "info": "Trang công khai vẫn hiện bản hiện tại cho tới khi bạn đồng ý."
+    },
+    "fields": {
+      "title": "Tiêu đề",
+      "summary": "Tóm tắt",
+      "bodyHtml": "Nội dung",
+      "coverUrl": "Ảnh bìa",
+      "tags": "Thẻ",
+      "categories": "Chuyên mục",
+      "gallery": "Ảnh kèm",
+      "libraryKind": "Danh mục",
+      "media": "Âm thanh",
+      "author": "Tác giả",
+      "source": "Nguồn"
+    },
+    "signIn": "Đăng nhập để viết bài",
+    "noPermission": "Tài khoản của bạn chưa được phép viết bài.",
+    "loadError": "Không tải được dữ liệu."
+  },
+  "stats": {
+    "title": "Thống kê & công đức",
+    "description": "Công đức, tu tập, bài viết và đóng góp của bạn.",
+    "merit": "Công đức",
+    "total": "Tổng công đức",
+    "today": "Hôm nay",
+    "checkin": "Điểm danh hôm nay",
+    "checkedIn": "Đã điểm danh hôm nay",
+    "streak": "{n} ngày liên tiếp",
+    "earned": "+{n} công đức",
+    "rulesTitle": "Cách tích công đức",
+    "perTime": "+{p} mỗi lần",
+    "capDay": "tối đa {c}/ngày",
+    "actions": {
+      "checkin": "Điểm danh mỗi ngày",
+      "comment": "Viết bình luận",
+      "reply-received": "Bình luận được người khác trả lời",
+      "content-approved": "Bài viết / nội dung thư viện được duyệt",
+      "views-100": "Bài của bạn đạt thêm 100 lượt xem",
+      "practice": "Lưu một buổi tu tập",
+      "prayer": "Viết lời nguyện"
+    },
+    "recent": "Công đức gần đây",
+    "practice": "Tu tập",
+    "practiceSessions": "{n} buổi",
+    "content": "Bài viết & đóng góp",
+    "articles": "Bài viết",
+    "library": "Nội dung thư viện",
+    "published": "Đã đăng",
+    "pending": "Chờ duyệt",
+    "draft": "Nháp",
+    "views": "Lượt xem bài",
+    "comments": "Bình luận",
+    "commentsDeleted": "{n} đã xoá",
+    "prayers": "Lời nguyện",
+    "joined": "Tham gia từ",
+    "donate": "Ủng hộ",
+    "donateDefault": "Ủng hộ quỹ từ thiện",
+    "scan": "Quét mã QR để ủng hộ",
+    "accountName": "Chủ tài khoản",
+    "accountNumber": "Số tài khoản",
+    "bank": "Ngân hàng",
+    "donateLink": "Xem thông tin chính thức",
+    "noDonate": "Chưa có thông tin ủng hộ.",
+    "signIn": "Đăng nhập để xem thống kê của bạn"
+  },
+  "library": {
+    "title": "Thư viện",
+    "description": "Ảnh, review chùa đền, Phật - Bồ Tát, nhạc thiền và audio kinh do cộng đồng đóng góp.",
+    "all": "Tất cả",
+    "kinds": {
+      "anh": "Ảnh",
+      "review": "Review chùa, đền",
+      "bo-tat": "Phật - Bồ Tát",
+      "nhac-thien": "Nhạc thiền",
+      "audio-kinh": "Audio kinh"
+    },
+    "empty": "Chưa có nội dung nào trong mục này.",
+    "contribute": "Đóng góp nội dung",
+    "photos": "{n} ảnh",
+    "listen": "Nghe",
+    "contributor": "Người đóng góp"
   }
 }

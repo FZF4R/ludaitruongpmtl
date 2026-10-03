@@ -31,7 +31,9 @@ module.exports = async function (req, res, proceed) {
         return res.status(403).json(responseObject);
     }
 
-    if (!sails.config.roles.can(User.role, canQuyen)) {
+    // Mảng quyền = có một trong số đó là đủ (config/permissions.js).
+    var danhSach = Array.isArray(canQuyen) ? canQuyen : [canQuyen]
+    if (!danhSach.some(function (q) { return sails.config.roles.can(User.role, q) })) {
         sails.log.verbose('[requirePermission] Từ chối', User.username, `(${User.role})`, '- thiếu quyền', canQuyen)
         return res.status(403).json(responseObject);
     }

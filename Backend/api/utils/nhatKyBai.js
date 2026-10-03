@@ -40,7 +40,8 @@ const truongDaDoi = (cu, ban) => Object.keys(ban).filter(ten =>
  */
 const TRUONG_NOI_DUNG = [
     'type', 'title', 'slug', 'summary', 'coverUrl', 'bodyHtml', 'chapters', 'media',
-    'author', 'translator', 'source', 'categories', 'tags', 'publishedAt', 'readingMinutes', 'seo'
+    'author', 'translator', 'source', 'categories', 'tags', 'publishedAt', 'readingMinutes', 'seo',
+    'libraryKind', 'gallery'
 ]
 
 /** Giá trị "trống" không đáng chụp: '', 0, [], {} và chưa có. */

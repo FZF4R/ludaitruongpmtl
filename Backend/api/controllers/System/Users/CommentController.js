@@ -8,11 +8,23 @@
 const { ganTacGia } = require('../../../utils/binhLuan')
 const { guiThongBao } = require('../../../utils/thongBao')
 const { timTuCam } = require('../../../utils/tuCam')
+const { ghiCongDuc } = require('../../../utils/congDuc')
+const { ngayVN } = require('../../../utils/loiNguyen')
 
 const DAI_TOI_THIEU = 2
 const DAI_TOI_DA = 2000
 /** Khoảng cách tối thiểu giữa hai bình luận của cùng một người - chặn spam bấm liên tục. */
 const CACH_NHAU_MS = 20 * 1000
+
+/**
+ * Giới hạn số bình luận theo vai trò: mỗi bài và mỗi ngày (giờ Việt Nam). Vai
+ * trò không có ở đây (Kiểm duyệt viên trở lên) không bị giới hạn. Đếm cả bình
+ * luận đã xoá / bị giữ lại - xoá đi viết lại không lách được giới hạn.
+ */
+const GIOI_HAN = {
+    User: { moiBai: 5, moiNgay: 50 },
+    Partner: { moiBai: 5, moiNgay: 100 }
+}
 
 const baoLoi = (exits, message) => sails.checkErrorOutput({ messageNode: 'Users', message: message }, exits)
 
@@ -32,6 +44,17 @@ module.exports = {
                 // Chỉ bài viết đã đăng mới nhận bình luận.
                 let bai = await Content.findOne({ slug: inputs.slug, status: 'published' })
                 if (!bai || !['article', 'blog'].includes(bai.type)) return baoLoi(exits, 'commentNotFound')
+
+                let han = GIOI_HAN[User.role]
+                if (han) {
+                    let tuDauNgay = new Date(`${ngayVN()}T00:00:00+07:00`).getTime()
+                    let [trongBai, homNay] = await Promise.all([
+                        Comment.count({ userId: String(User.id), contentId: String(bai.id) }),
+                        Comment.count({ userId: String(User.id), createdAt: { '>=': tuDauNgay } })
+                    ])
+                    if (trongBai >= han.moiBai) return baoLoi(exits, 'commentLimitPost')
+                    if (homNay >= han.moiNgay) return baoLoi(exits, 'commentLimitDay')
+                }
 
                 let ganNhat = await Comment.find({
                     where: { userId: String(User.id) },
@@ -90,6 +113,11 @@ module.exports = {
                     bai: bai,
                     binhLuan: moi
                 })
+                // Công đức: người viết, và người được trả lời (khác người viết).
+                await ghiCongDuc(User.id, 'comment', { refId: String(moi.id) })
+                if (replyToUserId && replyToUserId !== String(User.id)) {
+                    await ghiCongDuc(replyToUserId, 'reply-received', { refId: String(moi.id) })
+                }
 
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',
@@ -116,12 +144,46 @@ module.exports = {
                     return baoLoi(exits, 'commentForbidden')
                 }
 
-                await Comment.updateOne({ id: bl.id }).set({ status: 'hidden', hiddenBy: String(User.id) })
+                // Xoá mềm: bản ghi giữ nguyên nội dung để ban quản trị xem lại; trang
+                // bài hiện dòng "đã xoá" kèm người xoá (chính chủ hay quản trị viên).
+                await Comment.updateOne({ id: bl.id }).set({
+                    status: 'hidden',
+                    hiddenBy: String(User.id),
+                    hiddenByModerator: !chinhChu,
+                    deletedAt: Date.now()
+                })
 
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',
                     message: 'success',
                     data: { id: String(bl.id) }
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+
+    /** Nội dung bình luận đã xoá - chỉ người có `comment.moderate` (kiểm tra ở config/permissions.js). */
+    getDeleted: ({
+        inputs: sails.config.inputs.Users.Comment.getDeleted,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let bl = await Comment.findOne({ id: String(inputs.id) })
+                if (!bl || bl.status !== 'hidden') return baoLoi(exits, 'commentNotFound')
+                let nguoiXoa = bl.hiddenBy ? await Users.findOne({ id: String(bl.hiddenBy) }) : null
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: {
+                        id: String(bl.id),
+                        body: bl.body,
+                        deletedAt: bl.deletedAt ? new Date(bl.deletedAt).toISOString() : '',
+                        deletedBy: nguoiXoa ? (nguoiXoa.fullName || nguoiXoa.username || '') : ''
+                    }
                 });
             } catch (err) {
                 sails.checkErrorOutput(err, exits);

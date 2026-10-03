@@ -204,6 +204,33 @@ module.exports = {
         }
     }),
 
+    /** Giảm một mức cảnh cáo (gỡ cảnh cáo nhầm / người đã sửa đổi). Ghi nhật ký, báo người đó. */
+    unwarnUser: ({
+        inputs: sails.config.inputs.Admin.Moderation.unwarnUser,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let muc = await Users.findOne({ id: String(inputs.id) })
+                let loi = loiXuLy(inputs.User, muc)
+                if (loi) return baoLoi(exits, loi)
+                if (!(muc.warningCount > 0)) return baoLoi(exits, 'moderationNoWarning')
+
+                let lan = muc.warningCount - 1
+                let lyDo = String(inputs.reason || '').trim().slice(0, 300)
+                await Users.updateOne({ id: muc.id }).set({ warningCount: lan })
+                await ghiLog(this.req, inputs.User, { targetUserId: String(muc.id), action: 'unwarn', reason: lyDo })
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: { warningCount: lan }
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
     banUser: ({
         inputs: sails.config.inputs.Admin.Moderation.banUser,
         exits: sails.config.responseType,

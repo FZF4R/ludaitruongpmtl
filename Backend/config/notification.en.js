@@ -24,6 +24,48 @@ module.exports.notificationEn = {
         }
     },
     Content: {
+        contentForbidden: {
+            message: "You do not have permission for this content"
+        },
+        libraryKindRequired: {
+            message: "Please choose a library category"
+        },
+        contentNoChanges: {
+            message: "Nothing changed"
+        },
+        contentEditProposed: {
+            message: "Edit proposal sent to the author for approval"
+        },
+        contentHasProposal: {
+            message: "This post has an editor proposal - accept or decline it before editing"
+        },
+        contentTooMany: {
+            message: "You have created too many posts today, please come back tomorrow"
+        },
+        contentInvalid: {
+            message: "Invalid content"
+        },
+        contentSubmitted: {
+            message: "Submitted for review"
+        },
+        contentSaved: {
+            message: "Saved"
+        },
+        contentProposalAccepted: {
+            message: "Edit accepted"
+        },
+        contentProposalRejected: {
+            message: "Edit declined"
+        },
+        mediaInvalid: {
+            message: "Invalid file (JPG, PNG, WEBP, GIF image or MP3, WAV, OGG, M4A audio)"
+        },
+        mediaTooLarge: {
+            message: "File too large (images up to 4 MB, audio up to 10 MB)"
+        },
+        mediaTooMany: {
+            message: "You have uploaded too many files today"
+        },
         contentNotFound: {
             message: "Content not found"
         },
@@ -227,6 +269,48 @@ module.exports.notificationEn = {
         },
         feedbackNotFound: {
             message: "Feedback not found"
+        },
+        soundInvalid: {
+            message: "Invalid sound information"
+        },
+        soundFileInvalid: {
+            message: "Invalid audio file (MP3, WAV, OGG, M4A under 5.5MB) or invalid link"
+        },
+        soundTooMany: {
+            message: "This section already has too many sounds (max 50)"
+        },
+        soundNotFound: {
+            message: "Sound not found"
+        },
+        practiceSessionInvalid: {
+            message: "Invalid or already saved practice session, please start again"
+        },
+        practicePresetTooMany: {
+            message: "You have saved too many presets (max 30)"
+        },
+        practiceLogInvalid: {
+            message: "Invalid practice record"
+        },
+        commentLimitPost: {
+            message: "You have reached the limit of 5 comments on this post"
+        },
+        commentLimitDay: {
+            message: "You have reached your daily comment limit, please come back tomorrow"
+        },
+        meritInvalid: {
+            message: "Invalid information"
+        },
+        broadcastInvalid: {
+            message: "A title is required; the link must start with / or http(s)://"
+        },
+        dayEventInvalid: {
+            message: "Invalid event (date and a title up to 80 characters required; at most 10 events per day)"
+        },
+        moderationNoWarning: {
+            message: "This account has no warnings left"
+        },
+        prayerFlagged: {
+            message: "Your prayer contains inappropriate words and is awaiting review"
         },
         commentInvalid: {
             message: "Comments must be 2 to 2000 characters long"

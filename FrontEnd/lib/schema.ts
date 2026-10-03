@@ -14,6 +14,7 @@ export const contentTypeSchema = z.enum([
   "sutra",
   "audio",
   "video",
+  "library",
 ]);
 export type ContentType = z.infer<typeof contentTypeSchema>;
 
@@ -50,6 +51,10 @@ export const authorSchema = z.object({
   avatarUrl: z.string().optional(),
 });
 
+/** Danh mục thư viện: ảnh, review chùa / đền, Phật - Bồ Tát, nhạc thiền, audio kinh. */
+export const libraryKinds = ["anh", "review", "bo-tat", "nhac-thien", "audio-kinh"] as const;
+export type LibraryKind = (typeof libraryKinds)[number];
+
 export const categoryRefSchema = z.object({
   slug: z.string(),
   name: z.string(),
@@ -78,6 +83,12 @@ export const contentSchema = z.object({
   readingMinutes: z.number().optional(),
   viewCount: z.number().optional(),
   seo: seoSchema,
+  /** Chỉ với type = library. */
+  libraryKind: z.enum(libraryKinds).optional(),
+  /** Ảnh kèm (thư viện ảnh, Phật - Bồ Tát). */
+  gallery: z.array(z.object({ url: z.string(), caption: z.string().default("") })).optional(),
+  /** Tác giả là người dùng có tài khoản. */
+  authorId: z.string().optional(),
 });
 export type Content = z.infer<typeof contentSchema>;
 

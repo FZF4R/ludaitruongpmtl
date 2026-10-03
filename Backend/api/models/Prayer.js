@@ -52,8 +52,13 @@ module.exports = {
         },
         status: {
             type: 'string',
-            isIn: ['visible', 'hidden'],
+            isIn: ['visible', 'hidden', 'flagged'],
             defaultsTo: 'visible',
+            description: 'flagged = chứa từ cấm, chờ duyệt ở tab Phê duyệt'
+        },
+        flaggedWords: {
+            type: 'json',
+            defaultsTo: [],
         },
         hiddenBy: {
             type: 'string',

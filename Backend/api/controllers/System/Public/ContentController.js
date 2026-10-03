@@ -18,7 +18,8 @@
  */
 const { boDau, thoatRegex } = require('../../../utils/vietnamese')
 
-const LOAI_HOP_LE = ['article', 'blog', 'sutra', 'audio', 'video']
+const { LOAI_HOP_LE, LOAI_THU_VIEN } = require('../../../utils/quyenNoiDung')
+const { congDucLuotXem } = require('../../../utils/congDuc')
 
 /** Truy cập thẳng collection để dùng $or, khớp trường lồng và đếm trong một vòng. */
 const { layAvatarUrls } = require('../../../utils/avatar')
@@ -66,6 +67,10 @@ const dinhDangNoiDung = (row, { rutGon = false } = {}) => {
     // dấu vết thì không có trường này.
     if (row.createdByName) kq.postedBy = { name: row.createdByName }
     if (row.media && row.media.url) kq.media = row.media
+    if (row.libraryKind) kq.libraryKind = row.libraryKind
+    if (!rutGon && Array.isArray(row.gallery) && row.gallery.length) kq.gallery = row.gallery
+    // Tác giả là người dùng có tài khoản: để trang bài hiện avatar.
+    if (row.authorId) kq.authorId = String(row.authorId)
 
     if (!rutGon) {
         if (row.bodyHtml) kq.bodyHtml = row.bodyHtml
@@ -108,8 +113,9 @@ const dinhDangSuKien = row => {
 }
 
 /** Điều kiện lọc dùng chung cho danh sách và tìm kiếm. */
-const dungDieuKien = ({ type, category, q }) => {
+const dungDieuKien = ({ type, category, q, libraryKind }) => {
     let dieuKien = { status: 'published' }
+    if (libraryKind && LOAI_THU_VIEN.includes(libraryKind)) dieuKien.libraryKind = libraryKind
 
     if (type) {
         let loai = String(type).split(',').map(t => t.trim()).filter(t => LOAI_HOP_LE.includes(t))
@@ -164,15 +170,20 @@ module.exports = {
         fn: async function (inputs, exits) {
             try {
                 // $inc nguyên tử ở Mongo: hai người đọc cùng lúc không đè mất lượt của nhau.
-                let kq = await bangNoiDung().updateOne(
+                let kq = await bangNoiDung().findOneAndUpdate(
                     { slug: String(inputs.slug), status: 'published' },
-                    { $inc: { viewCount: 1 } }
+                    { $inc: { viewCount: 1 } },
+                    { returnOriginal: false, returnDocument: 'after', projection: { viewCount: 1, authorId: 1 } }
                 )
+                // Driver mới trả thẳng bản ghi, driver cũ bọc trong { value }.
+                let sau = kq && kq.value !== undefined ? kq.value : kq
+                // Bài của người dùng đạt mỗi mốc 100 lượt xem: tác giả được cộng công đức.
+                if (sau) await congDucLuotXem(Object.assign({ id: String(sau._id) }, sau), sau.viewCount)
 
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',
                     message: 'success',
-                    data: { counted: kq.modifiedCount === 1 }
+                    data: { counted: !!sau }
                 });
             } catch (err) {
                 sails.checkErrorOutput(err, exits);

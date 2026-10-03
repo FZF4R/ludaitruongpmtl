@@ -38,9 +38,11 @@ function Dong({ nhan, giaTri }: { nhan: string; giaTri: string }) {
 export function AccountPanel({
   nhanAuth,
   nhanHoSo,
+  nhanTaiKhoan,
 }: {
   nhanAuth: Dictionary["auth"];
   nhanHoSo: Dictionary["onboarding"];
+  nhanTaiKhoan: Dictionary["account"];
 }) {
   const router = useRouter();
   const { locale } = splitLocale(usePathname());
@@ -135,7 +137,7 @@ export function AccountPanel({
           </Badge>
         ) : null}
 
-        <div className="ml-auto flex gap-2">
+        <div className="ml-auto flex flex-wrap gap-2">
           {/*
             Lối vào khu quản trị chỉ hiện khi vai trò có ít nhất một quyền quản
             trị, và dẫn thẳng tới tab đầu tiên mở được. Không đưa vào menu
@@ -147,6 +149,12 @@ export function AccountPanel({
               <Link href={lp(tabQuanTri)}>Khu quản trị</Link>
             </Button>
           ) : null}
+          <Button variant="outline" size="sm" asChild>
+            <Link href={lp("/tai-khoan/thong-ke")}>{nhanTaiKhoan.stats}</Link>
+          </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link href={lp("/tai-khoan/bai-viet")}>{nhanTaiKhoan.myContent}</Link>
+          </Button>
           <Button variant="outline" size="sm" asChild>
             <Link href={lp("/hoan-thien-ho-so")}>{nhanAuth.editProfile}</Link>
           </Button>

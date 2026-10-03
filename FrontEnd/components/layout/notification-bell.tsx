@@ -29,6 +29,11 @@ export type NhanThongBao = {
   someone: string;
   warning: string;
   warningNoReason: string;
+  published: string;
+  rejected: string;
+  editProposal: string;
+  editAccepted: string;
+  editRejected: string;
 };
 
 const CHU_KY_MS = 60_000;
@@ -113,16 +118,30 @@ export function NotificationBell({ nhan }: { nhan: NhanThongBao }) {
         ? nhan.warning.replace("{n}", t.contentTitle).replace("{reason}", t.excerpt)
         : nhan.warningNoReason.replace("{n}", t.contentTitle);
     }
-    return (t.type === "reply" ? nhan.reply : nhan.comment)
+    const mau: Record<string, string> = {
+      reply: nhan.reply,
+      comment: nhan.comment,
+      published: nhan.published,
+      rejected: nhan.rejected,
+      "edit-proposal": nhan.editProposal,
+      "edit-accepted": nhan.editAccepted,
+      "edit-rejected": nhan.editRejected,
+    };
+    return (mau[t.type] ?? nhan.comment)
       .replace("{name}", t.actor.name || nhan.someone)
       .replace("{title}", t.contentTitle);
   };
 
-  // Cảnh cáo không gắn với bài nào: dẫn về trang tài khoản.
+  // Cảnh cáo không gắn với bài nào: dẫn về trang tài khoản. Thông báo về bài
+  // (duyệt, trả lại, đề xuất sửa) mang sẵn đường dẫn từ backend.
   const duongDan = (t: ThongBao) =>
-    t.type === "warning"
-      ? localePath(locale, "/tai-khoan")
-      : `${localePath(locale, `/bai-viet/${t.contentSlug}`)}#binh-luan-${t.commentId}`;
+    t.link
+      ? localePath(locale, t.link)
+      : t.type === "warning"
+        ? localePath(locale, "/tai-khoan")
+        : t.type === "comment" || t.type === "reply"
+          ? `${localePath(locale, `/bai-viet/${t.contentSlug}`)}#binh-luan-${t.commentId}`
+          : localePath(locale, "/tai-khoan/bai-viet");
 
   return (
     <div ref={khung} className="relative">

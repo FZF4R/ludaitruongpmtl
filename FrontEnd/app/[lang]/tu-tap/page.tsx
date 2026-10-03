@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * Trang tổng quan "Tu tập".
  *
- * Sáu pháp tu ở đây trùng với menu thả xuống trên header — cùng đọc từ
+ * Bốn pháp tu ở đây trùng với menu thả xuống trên header — cùng đọc từ
  * `practiceNav` nên không thể lệch nhau. Người dùng cảm ứng không có hover
  * để thấy menu con, trang này là đường vào của họ.
  */
@@ -43,7 +43,7 @@ export default async function PracticePage() {
         description={dict.nav.practiceHint}
       />
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2">
         {practiceNav.map((item) => (
           <Card key={item.href} className="relative p-5 hover:border-line-strong hover:shadow-card-lift">
             <h2 className="font-serif text-lg font-bold leading-snug text-ink">
@@ -52,6 +52,7 @@ export default async function PracticePage() {
                 {dict.nav[item.key]}
               </LocaleLink>
             </h2>
+            <p className="mt-1.5 text-sm text-muted">{dict.nav[`${item.key}Hint`]}</p>
           </Card>
         ))}
       </div>

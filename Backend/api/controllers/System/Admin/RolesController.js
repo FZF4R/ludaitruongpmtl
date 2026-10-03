@@ -38,9 +38,11 @@ function endpointTheoQuyen() {
     const ketQua = {}
     const bang = sails.config.permissions.actionPermissions
     Object.keys(bang).forEach(endpoint => {
-        const quyen = bang[endpoint]
-        if (!ketQua[quyen]) ketQua[quyen] = []
-        ketQua[quyen].push(endpoint)
+        // Endpoint nhận nhiều quyền (mảng) thì tính là đang dùng cho từng quyền.
+        ;[].concat(bang[endpoint]).forEach(quyen => {
+            if (!ketQua[quyen]) ketQua[quyen] = []
+            ketQua[quyen].push(endpoint)
+        })
     })
 
     return ketQua

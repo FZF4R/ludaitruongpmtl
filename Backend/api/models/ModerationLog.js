@@ -17,7 +17,7 @@ module.exports = {
         },
         action: {
             type: 'string',
-            isIn: ['warn', 'ban', 'unban', 'delete-comment'],
+            isIn: ['warn', 'unwarn', 'ban', 'unban', 'delete-comment', 'approve', 'reject'],
             required: true,
         },
         reason: {

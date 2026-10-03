@@ -38,7 +38,7 @@ export default async function AccountPage() {
         description={dict.account.description}
       />
 
-      <AccountPanel nhanAuth={dict.auth} nhanHoSo={dict.onboarding} />
+      <AccountPanel nhanAuth={dict.auth} nhanHoSo={dict.onboarding} nhanTaiKhoan={dict.account} />
     </Container>
   );
 }

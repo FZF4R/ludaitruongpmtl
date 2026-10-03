@@ -10,7 +10,7 @@ const { layAvatarUrls } = require('./avatar')
  * ba truy vấn, không truy vấn theo từng dòng.
  */
 const ganTacGia = async binhLuan => {
-    let ids = Array.from(new Set(binhLuan.flatMap(b => [String(b.userId), String(b.replyToUserId || '')]).filter(Boolean)))
+    let ids = Array.from(new Set(binhLuan.flatMap(b => [String(b.userId), String(b.replyToUserId || ''), String(b.hiddenBy || '')]).filter(Boolean)))
     if (!binhLuan.length) return []
 
     let [taiKhoan, hoSo, avatar] = await Promise.all([
@@ -40,6 +40,18 @@ const ganTacGia = async binhLuan => {
         }
         if (b.replyToUserId) {
             kq.replyTo = { userId: String(b.replyToUserId), name: (theoId[String(b.replyToUserId)] || {}).name || '' }
+        }
+        // Đã xoá: không lộ nội dung, chỉ nói ai xoá. Bình luận xoá trước khi có
+        // `hiddenByModerator` thì suy ra từ việc người xoá có phải chính chủ không.
+        if (b.status === 'hidden') {
+            let boiQuanTri = b.hiddenByModerator !== undefined
+                ? !!b.hiddenByModerator
+                : !!b.hiddenBy && String(b.hiddenBy) !== String(b.userId)
+            kq.body = ''
+            kq.deleted = {
+                byModerator: boiQuanTri,
+                byName: boiQuanTri ? '' : (theoId[String(b.hiddenBy || b.userId)] || {}).name || kq.author.name
+            }
         }
 
         return kq

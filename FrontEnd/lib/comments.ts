@@ -17,6 +17,11 @@ export type BinhLuan = {
   /** Chỉ có ở bình luận gốc trong danh sách: các câu trả lời, cũ trước. */
   replies?: BinhLuan[];
   body: string;
+  /**
+   * Đã xoá: nội dung để trống, chỉ còn ai xoá (chính chủ - kèm tên, hay quản
+   * trị viên). Bản gốc vẫn lưu; người có `comment.moderate` xem lại được.
+   */
+  deleted?: { byModerator: boolean; byName: string };
   /** Chỉ có trong phản hồi lúc gửi: bình luận chứa từ cấm, đã lưu nhưng không hiện. */
   flagged?: boolean;
   createdAt: string;
@@ -50,6 +55,14 @@ export function xoaBinhLuan(id: string, locale: Locale) {
   return goiApi<{ id: string }>("/v1/user/comments/delete", {
     method: "POST",
     body: { id },
+    locale,
+  });
+}
+
+/** Nội dung gốc của một bình luận đã xoá - chỉ kiểm duyệt viên (`comment.moderate`). */
+export function layBinhLuanDaXoa(id: string, locale: Locale) {
+  return goiApi<{ id: string; body: string; deletedAt: string; deletedBy: string }>("/v1/user/comments/deleted", {
+    query: { id },
     locale,
   });
 }
