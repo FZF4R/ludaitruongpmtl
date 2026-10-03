@@ -15,13 +15,40 @@
 const actionPermissions = {
   //==== Người dùng =====
   'GET /v1/admin/user/list': 'user.list',
+  // Chi tiết và sửa nằm ở bậc cao hơn danh sách: hai endpoint này mở ra email
+  // và hồ sơ cá nhân, còn danh sách thì không.
+  'GET /v1/admin/user/detail': 'user.manage',
+  'POST /v1/admin/user/update': 'user.manage',
   'POST /v1/admin/user/changepass': 'user.password.reset',
 
+  //==== Sửa chữ giao diện trực tiếp =====
+  'POST /v1/admin/texts/update': 'site.text.edit',
+
+  //==== Phân quyền =====
+  'GET /v1/admin/roles/permissions': 'role.permissions.manage',
+  'POST /v1/admin/roles/permissions/update': 'role.permissions.manage',
+  'POST /v1/admin/roles/permissions/reset': 'role.permissions.manage',
+
   //==== Cấu hình hệ thống =====
+  'GET /v1/admin/settings': 'system.settings',
   'POST /v1/admin/settings/update': 'system.settings',
   'POST /v1/admin/settings/updateServiceMaintain': 'system.settings',
+  'POST /v1/admin/settings/notify/add': 'system.settings',
+  'POST /v1/admin/settings/notify/update': 'system.settings',
+  'POST /v1/admin/settings/notify/delete': 'system.settings',
   'GET /v1/admin/systemsetting/supportInfo': 'system.settings',
   'POST /v1/admin/systemsetting/supportinfo/update': 'system.settings',
+
+  //==== Nội dung =====
+  // Đổi trạng thái và xoá tách khỏi việc sửa: một người được giao soạn bài
+  // không nghiễm nhiên được tự đẩy bài mình lên trang, hay xoá bài người khác.
+  'GET /v1/admin/content/list': 'content.editAny',
+  'GET /v1/admin/content/detail': 'content.editAny',
+  'GET /v1/admin/content/categories': 'content.editAny',
+  'POST /v1/admin/content/create': 'content.editAny',
+  'POST /v1/admin/content/update': 'content.editAny',
+  'POST /v1/admin/content/status': 'content.publish',
+  'POST /v1/admin/content/delete': 'content.delete',
 
   //==== Thông báo =====
   'GET /v1/admin/notify': 'notify.manage',

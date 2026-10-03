@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/primitives";
 import { LocaleLink } from "@/components/ui/locale-link";
 import { buddhistYear, canChiYear, solarToLunar } from "@/lib/lunar";
 import { getDictionary } from "@/lib/dictionary";
+import { EditableText } from "@/components/layout/inline-edit";
 
 /**
  * Footer là Server Component: nó tính năm Phật lịch một lần lúc render rồi
@@ -24,7 +25,9 @@ export async function SiteFooter() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col gap-3">
             <p className="font-serif text-lg font-bold text-ink">{site.name}</p>
-            <p className="max-w-xs text-sm text-muted">{dict.site.description}</p>
+            <p className="max-w-xs text-sm text-muted">
+              <EditableText k="site.description" value={dict.site.description} />
+            </p>
           </div>
 
           {footerNav.map((group) => {
@@ -57,7 +60,9 @@ export async function SiteFooter() {
             {/* Can chi va Phat lich la khai niem lich Viet, giu nguyen o moi ngon ngu */}
             Phật lịch {buddhistYear(now)} · năm {canChiYear(lunar.year)}
           </p>
-          <p>{dict.footer.rights}</p>
+          <p>
+            <EditableText k="footer.rights" value={dict.footer.rights} />
+          </p>
         </div>
       </Container>
     </footer>

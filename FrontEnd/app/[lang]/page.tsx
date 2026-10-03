@@ -8,7 +8,8 @@ import { ContentCard, ContentGrid } from "@/components/content/content-card";
 import { TodayLunarBadge } from "@/components/calendar/today-marker";
 import { contentHref } from "@/lib/seo";
 import { formatDate } from "@/lib/format";
-import { getDictionary } from "@/lib/dictionary";
+import { getI18n } from "@/lib/dictionary";
+import { EditableText } from "@/components/layout/inline-edit";
 import { randomHeroImage } from "@/lib/hero-images";
 
 /**
@@ -17,8 +18,19 @@ import { randomHeroImage } from "@/lib/hero-images";
  */
 export const revalidate = 300;
 
+/** Câu kệ mở đầu: chưa nằm trong từ điển nên mặc định viết ở đây, admin sửa được. */
+const KE_MAC_DINH = `Ý dẫn đầu các pháp,
+Ý làm chủ, ý tạo;
+Nếu với ý thanh tịnh,
+An lạc bước theo sau,
+Như bóng, không rời hình.`;
+
 export default async function HomePage() {
-  const dict = await getDictionary();
+  const { dict, texts } = await getI18n();
+  // `k` có trong từ điển thì `dict` đã gộp sẵn bản sửa; khoá riêng thì đọc `texts`.
+  const sua = (k: string, macDinh: string) => (
+    <EditableText k={k} value={texts[k] ?? macDinh} />
+  );
   const [featured, sutras, talks, categories, settings] = await Promise.all([
     listContent({ type: ["article", "blog"], limit: 7 }),
     listContent({ type: "sutra", limit: 3 }),
@@ -86,21 +98,17 @@ export default async function HomePage() {
 
           <blockquote className="max-w-3xl">
             <p className="whitespace-pre-line font-serif text-2xl leading-relaxed text-white drop-shadow-sm sm:text-[2rem] sm:leading-[1.5]">
-              {`Ý dẫn đầu các pháp,
-Ý làm chủ, ý tạo;
-Nếu với ý thanh tịnh,
-An lạc bước theo sau,
-Như bóng, không rời hình.`}
+              {sua("home.heroQuote", KE_MAC_DINH)}
             </p>
             <footer className="mt-5 text-sm text-white/75">
-              — Kinh Pháp Cú, phẩm Song Yếu
+              — {sua("home.heroSource", "Kinh Pháp Cú, phẩm Song Yếu")}
             </footer>
           </blockquote>
 
           <div className="flex flex-wrap gap-3">
             <Button asChild>
               <Link href="/kinh-sach">
-                Đọc kinh sách <ArrowRight />
+                {sua("home.heroCtaSutras", "Đọc kinh sách")} <ArrowRight />
               </Link>
             </Button>
             <Button
@@ -108,7 +116,7 @@ Như bóng, không rời hình.`}
               className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
               asChild
             >
-              <Link href="/bai-giang">Nghe bài giảng</Link>
+              <Link href="/bai-giang">{sua("home.heroCtaTalks", "Nghe bài giảng")}</Link>
             </Button>
           </div>
         </Container>
@@ -118,12 +126,12 @@ Như bóng, không rời hình.`}
         {lead ? (
           <section className="flex flex-col gap-6">
             <SectionHeading
-              eyebrow={dict.home.latest}
-              title={dict.nav.articles}
+              eyebrow={sua("home.latest", dict.home.latest)}
+              title={sua("nav.articles", dict.nav.articles)}
               action={
                 <Button variant="link" asChild>
                   <Link href="/bai-viet">
-                    Tất cả bài viết <ArrowRight />
+                    {sua("home.allArticles", "Tất cả bài viết")} <ArrowRight />
                   </Link>
                 </Button>
               }
@@ -153,13 +161,13 @@ Như bóng, không rời hình.`}
         {sutras.data.length > 0 ? (
           <section className="flex flex-col gap-6">
             <SectionHeading
-              eyebrow={dict.home.sutrasEyebrow}
-              title={dict.nav.sutras}
-              description={dict.home.sutrasDesc2}
+              eyebrow={sua("home.sutrasEyebrow", dict.home.sutrasEyebrow)}
+              title={sua("nav.sutras", dict.nav.sutras)}
+              description={sua("home.sutrasDesc2", dict.home.sutrasDesc2)}
               action={
                 <Button variant="link" asChild>
                   <Link href="/kinh-sach">
-                    {dict.home.viewAll} <ArrowRight />
+                    {sua("home.viewAll", dict.home.viewAll)} <ArrowRight />
                   </Link>
                 </Button>
               }
@@ -171,13 +179,13 @@ Như bóng, không rời hình.`}
         {talks.data.length > 0 ? (
           <section className="flex flex-col gap-6">
             <SectionHeading
-              eyebrow={dict.home.talksEyebrow}
-              title={dict.nav.talks}
-              description={dict.home.talksDesc2}
+              eyebrow={sua("home.talksEyebrow", dict.home.talksEyebrow)}
+              title={sua("nav.talks", dict.nav.talks)}
+              description={sua("home.talksDesc2", dict.home.talksDesc2)}
               action={
                 <Button variant="link" asChild>
                   <Link href="/bai-giang">
-                    {dict.home.viewAll} <ArrowRight />
+                    {sua("home.viewAll", dict.home.viewAll)} <ArrowRight />
                   </Link>
                 </Button>
               }
@@ -188,7 +196,10 @@ Như bóng, không rời hình.`}
 
         {categories.length > 0 ? (
           <section className="flex flex-col gap-6">
-            <SectionHeading eyebrow={dict.home.browseBy} title={dict.home.categories} />
+            <SectionHeading
+              eyebrow={sua("home.browseBy", dict.home.browseBy)}
+              title={sua("home.categories", dict.home.categories)}
+            />
             <div className="flex flex-wrap gap-2.5">
               {categories.map((c) => (
                 <Link key={c.slug} href={`/danh-muc/${c.slug}`}>

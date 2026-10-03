@@ -50,6 +50,7 @@ export const tags = {
   categories: "categories",
   calendar: "calendar",
   settings: "settings",
+  siteTexts: "site-texts",
 } as const;
 
 class ApiError extends Error {
@@ -222,6 +223,28 @@ export type SiteSettings = {
   theme?: Record<string, unknown>;
   themeDark?: Record<string, unknown>;
 };
+
+/**
+ * Chữ giao diện admin đã sửa ngay trên trang, dạng phẳng { "home.latest": "..." }.
+ *
+ * Gọi trong getI18n nên mọi trang đều chạm tới nó; fetch cache gộp các lần gọi
+ * trong cùng một lượt render thành một request. Lưu chữ xong thì Server Action
+ * gọi updateTag(tags.siteTexts) nên admin thấy ngay, không chờ hết ISR.
+ */
+export async function getSiteTexts(locale: string): Promise<Record<string, string>> {
+  if (isMock) return {};
+
+  try {
+    return await get(
+      "/v1/public/texts",
+      (raw) => (raw && typeof raw === "object" ? (raw as Record<string, string>) : {}),
+      { query: { lang: locale }, revalidate: revalidate.list, tags: [tags.siteTexts] },
+    );
+  } catch {
+    // Như cấu hình site: hỏng thì trang vẫn lên với chữ mặc định.
+    return {};
+  }
+}
 
 export async function getSiteSettings(): Promise<SiteSettings | null> {
   if (isMock) return mock.getSiteSettings();

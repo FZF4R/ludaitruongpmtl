@@ -98,11 +98,16 @@ module.exports = {
             defaultsTo: {},
             description: '{ title, description, ogImage, canonical }'
         },
+        authorId: {
+            type: 'string',
+            defaultsTo: '',
+            description: 'Users.id của người tạo bài. Trống với dữ liệu seed và bài do ban biên tập nhập thẳng.'
+        },
         status: {
             type: 'string',
-            isIn: ['draft', 'pending', 'published'],
+            isIn: ['draft', 'pending', 'published', 'archived'],
             defaultsTo: 'draft',
-            description: 'Cộng tác viên soạn draft -> gửi pending -> kiểm duyệt/quản trị đẩy lên published. Endpoint public chỉ trả published.'
+            description: 'Cộng tác viên soạn draft -> gửi pending -> kiểm duyệt/quản trị đẩy lên published -> gỡ xuống archived. Endpoint public chỉ trả published; archived giữ lại bài chứ không xoá.'
         },
         searchText: {
             type: 'string',

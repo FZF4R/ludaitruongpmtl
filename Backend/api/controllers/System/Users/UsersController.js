@@ -37,6 +37,9 @@ function dinhDangHoSo(user, profile) {
         username: user.username || '',
         email: user.email || '',
         role: user.role || 'User',
+        // Giao diện quản trị ẩn/hiện theo đúng quyền đang dùng, không đoán từ
+        // tên vai trò - quyền của vai trò chỉnh được ở /admin/roles.
+        permissions: sails.config.roles.permissionsOf(user.role || 'User'),
         fullName: (profile && profile.fullName) || user.fullName || '',
         dharmaName: (profile && profile.dharmaName) || '',
         nickname: (profile && profile.nickname) || '',

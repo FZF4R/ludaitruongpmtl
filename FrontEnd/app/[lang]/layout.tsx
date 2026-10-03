@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/ui/primitives";
 import { ThemeProvider } from "@/components/layout/theme";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { InlineEditProvider } from "@/components/layout/inline-edit";
 import { getI18n } from "@/lib/dictionary";
 import { defaultLocale, isLocale, localeTags, locales, type Locale } from "@/lib/i18n";
 import { getSiteSettings } from "@/lib/api";
@@ -134,11 +135,13 @@ export default async function RootLayout({
           >
             {dict.nav.skipToContent}
           </a>
-          <SiteHeader dict={dict.nav} language={dict.language} />
-          <main id="noi-dung" className="flex-1">
-            {children}
-          </main>
-          <SiteFooter />
+          <InlineEditProvider>
+            <SiteHeader dict={dict.nav} language={dict.language} />
+            <main id="noi-dung" className="flex-1">
+              {children}
+            </main>
+            <SiteFooter />
+          </InlineEditProvider>
         </ThemeProvider>
         <JsonLd data={websiteJsonLd()} />
       </body>

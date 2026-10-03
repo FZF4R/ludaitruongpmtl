@@ -196,7 +196,7 @@ module.exports.inputs = {
                     "type": "string"
                 },
                 "notify": {
-                    "type": "string"
+                    "type": "json"
                 },
                 "warning": {
                     "type": "string"
@@ -267,6 +267,94 @@ module.exports.inputs = {
                 "isMaintaning": {
                     "type": "boolean",
                     "required": true
+                }
+            },
+            "getUserDetail": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "updateUser": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "email": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            }
+        },
+        "SiteText": {
+            "updateText": {
+                "User": {
+                    "type": "json"
+                },
+                "lang": {
+                    "type": "string",
+                    "required": true
+                },
+                "key": {
+                    "type": "string",
+                    "required": true
+                },
+                "value": {
+                    "type": "string",
+                    "defaultsTo": "",
+                    "description": "Chuoi rong = xoa ban ghi de, quay ve chu mac dinh cua FrontEnd"
+                }
+            }
+        },
+        "Roles": {
+            "getPermissions": {
+                "User": {
+                    "type": "json"
+                }
+            },
+            "updatePermissions": {
+                "User": {
+                    "type": "json"
+                },
+                "role": {
+                    "type": "string",
+                    "required": true
+                },
+                "permissions": {
+                    "type": "json",
+                    "required": true
+                },
+                "reason": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "resetPermissions": {
+                "User": {
+                    "type": "json"
+                },
+                "role": {
+                    "type": "string",
+                    "required": true
+                },
+                "reason": {
+                    "type": "string",
+                    "defaultsTo": ""
                 }
             }
         },
@@ -342,6 +430,214 @@ module.exports.inputs = {
                     "type": "json",
                     "required": true
                 }
+            },
+            "getSettings": {
+                "User": {
+                    "type": "json"
+                }
+            },
+            "addSettingNotify": {
+                "User": {
+                    "type": "json"
+                },
+                "text": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "updateSettingNotify": {
+                "User": {
+                    "type": "json"
+                },
+                "index": {
+                    "type": "number",
+                    "required": true
+                },
+                "text": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "deleteSettingNotify": {
+                "User": {
+                    "type": "json"
+                },
+                "index": {
+                    "type": "number",
+                    "required": true
+                }
+            }
+        },
+        "Content": {
+            "listContent": {
+                "User": {
+                    "type": "json"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "authorId": {
+                    "type": "string"
+                },
+                "q": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "number",
+                    "defaultsTo": 1
+                },
+                "limit": {
+                    "type": "number",
+                    "defaultsTo": 20
+                }
+            },
+            "getContent": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "createContent": {
+                "User": {
+                    "type": "json"
+                },
+                "type": {
+                    "type": "string",
+                    "required": true
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "required": true
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "coverUrl": {
+                    "type": "string"
+                },
+                "bodyHtml": {
+                    "type": "string"
+                },
+                "chapters": {
+                    "type": "json"
+                },
+                "media": {
+                    "type": "json"
+                },
+                "author": {
+                    "type": "json"
+                },
+                "source": {
+                    "type": "json"
+                },
+                "categories": {
+                    "type": "json"
+                },
+                "tags": {
+                    "type": "json"
+                },
+                "publishedAt": {
+                    "type": "string"
+                },
+                "readingMinutes": {
+                    "type": "number"
+                },
+                "seo": {
+                    "type": "json"
+                }
+            },
+            "updateContent": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "type": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "coverUrl": {
+                    "type": "string"
+                },
+                "bodyHtml": {
+                    "type": "string"
+                },
+                "chapters": {
+                    "type": "json"
+                },
+                "media": {
+                    "type": "json"
+                },
+                "author": {
+                    "type": "json"
+                },
+                "source": {
+                    "type": "json"
+                },
+                "categories": {
+                    "type": "json"
+                },
+                "tags": {
+                    "type": "json"
+                },
+                "publishedAt": {
+                    "type": "string"
+                },
+                "readingMinutes": {
+                    "type": "number"
+                },
+                "seo": {
+                    "type": "json"
+                }
+            },
+            "setStatus": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "status": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "deleteContent": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "listCategories": {
+                "User": {
+                    "type": "json"
+                }
             }
         }
     },
@@ -363,6 +659,14 @@ module.exports.inputs = {
             }
         },
         "getSettings": {},
+        "SiteText": {
+            "getTexts": {
+                "lang": {
+                    "type": "string",
+                    "defaultsTo": "vi"
+                }
+            }
+        },
         "Content": {
             "listContent": {
                 "type": {

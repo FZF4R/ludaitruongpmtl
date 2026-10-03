@@ -23,6 +23,46 @@ module.exports.notificationEn = {
             message: "Service Token Not Valid"
         }
     },
+    Content: {
+        contentNotFound: {
+            message: "Content not found"
+        },
+        contentTypeInvalid: {
+            message: "Invalid content type"
+        },
+        contentTitleRequired: {
+            message: "Title is required"
+        },
+        contentSlugInvalid: {
+            message: "Invalid slug: use lowercase letters, digits and hyphens"
+        },
+        contentSlugTaken: {
+            message: "This slug is already in use"
+        },
+        contentStatusInvalid: {
+            message: "Invalid status"
+        },
+        contentCreated: {
+            message: "Content created"
+        },
+        contentUpdated: {
+            message: "Content updated"
+        },
+        contentStatusChanged: {
+            message: "Status updated"
+        },
+        contentDeleted: {
+            message: "Content deleted"
+        },
+    },
+    Settings: {
+        notifyTextRequired: {
+            message: "Text is required"
+        },
+        notifyIndexInvalid: {
+            message: "That entry no longer exists, reload the page"
+        },
+    },
     GlobalNotifications: {
         success: {
             message: "Success"
@@ -118,6 +158,33 @@ module.exports.notificationEn = {
         },
         profileNameRequired: {
             message: "Full name is required"
+        },
+        emailInvalid: {
+            message: "Invalid email address"
+        },
+        emailTaken: {
+            message: "This email is already used by another account"
+        },
+        roleSelfChange: {
+            message: "You cannot change your own role"
+        },
+        roleNotAssignable: {
+            message: "You are not allowed to assign this role"
+        },
+        roleLastAdmin: {
+            message: "There must always be at least one Admin"
+        },
+        rolePermissionLocked: {
+            message: "The Admin role always has every permission and cannot be edited"
+        },
+        rolePermissionForbidden: {
+            message: "You can only edit permissions of roles below your own"
+        },
+        permissionNotGrantable: {
+            message: "You cannot grant a permission you do not have"
+        },
+        siteTextInvalid: {
+            message: "Invalid or too long text (max 2000 characters)"
         },
         wrongPassword: {
             message: "Wrong Password"

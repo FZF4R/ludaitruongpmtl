@@ -23,6 +23,46 @@ module.exports.notificationVi = {
             message: "Token lỗi... Vui lòng liên hệ Admin để cập nhật"
         }
     },
+    Content: {
+        contentNotFound: {
+            message: "Không tìm thấy bài"
+        },
+        contentTypeInvalid: {
+            message: "Loại nội dung không hợp lệ"
+        },
+        contentTitleRequired: {
+            message: "Vui lòng nhập tiêu đề"
+        },
+        contentSlugInvalid: {
+            message: "Đường dẫn chỉ gồm chữ thường, số và dấu gạch ngang"
+        },
+        contentSlugTaken: {
+            message: "Đường dẫn này đã có bài khác dùng"
+        },
+        contentStatusInvalid: {
+            message: "Trạng thái không hợp lệ"
+        },
+        contentCreated: {
+            message: "Đã tạo bài"
+        },
+        contentUpdated: {
+            message: "Đã lưu bài"
+        },
+        contentStatusChanged: {
+            message: "Đã đổi trạng thái"
+        },
+        contentDeleted: {
+            message: "Đã xoá bài"
+        },
+    },
+    Settings: {
+        notifyTextRequired: {
+            message: "Vui lòng nhập nội dung câu"
+        },
+        notifyIndexInvalid: {
+            message: "Câu này không còn nữa, hãy tải lại trang"
+        },
+    },
     GlobalNotifications: {
         success: {
             message: "Thành công"
@@ -118,6 +158,33 @@ module.exports.notificationVi = {
         },
         profileNameRequired: {
             message: "Vui lòng nhập họ tên"
+        },
+        emailInvalid: {
+            message: "Địa chỉ email không hợp lệ"
+        },
+        emailTaken: {
+            message: "Email này đã có tài khoản khác dùng"
+        },
+        roleSelfChange: {
+            message: "Không thể tự đổi vai trò của chính mình"
+        },
+        roleNotAssignable: {
+            message: "Bạn không được phép gán vai trò này"
+        },
+        roleLastAdmin: {
+            message: "Hệ thống phải luôn còn ít nhất một Quản lý"
+        },
+        rolePermissionLocked: {
+            message: "Quyền của vai trò Quản lý luôn đầy đủ, không chỉnh được"
+        },
+        rolePermissionForbidden: {
+            message: "Bạn chỉ chỉnh được quyền của vai trò thấp hơn mình"
+        },
+        permissionNotGrantable: {
+            message: "Không thể cấp quyền mà chính bạn không có"
+        },
+        siteTextInvalid: {
+            message: "Nội dung không hợp lệ hoặc quá dài (tối đa 2000 ký tự)"
         },
         wrongPassword: {
             message: "Sai mật khẩu"

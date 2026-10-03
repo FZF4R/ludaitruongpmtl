@@ -55,6 +55,7 @@ Kiểm chứng bằng `npm run build`, cột `Revalidate` trong bảng route.
 | `/phat-lich/[nam]/[thang]` | SSG + ISR | 1 ngày |
 | `/tim-kiem`, `/tai-khoan` | Động | không cache, `noindex` |
 | `/dang-nhap`, `/hoan-thien-ho-so` | Động | không cache, `noindex` |
+| `/admin/*` | Động | không cache, `noindex` |
 
 **Phân trang nằm ở route con** (`/bai-viet/trang/2`) chứ không phải `?page=2`.
 Lý do: chỉ cần đọc `searchParams` là cả trang chuyển sang render động — kể cả
@@ -107,6 +108,37 @@ sách trắng ở `Backend/config/survey.js`. Thêm lựa chọn ở một bên 
 lọc lặng lẽ lúc lưu. Chữ hiển thị nằm ở `lib/dictionaries/*.json` cho cả bốn
 ngôn ngữ.
 
+## Khu quản trị
+
+Bốn trang dưới `/admin`, chặn theo vai trò trong `Backend/config/roles.js`:
+
+| Trang | Việc | Vai trò tối thiểu |
+| --- | --- | --- |
+| `/admin/dashboard` | Tiêu đề site, liên hệ, dải thiền ngữ trang chủ, bảng màu | Quản lý (`system.settings`) |
+| `/admin/user` | Xem đầy đủ một tài khoản, sửa email / họ tên / vai trò | Quản lý (`user.manage`) |
+| `/admin/blog` | Bài viết và tuỳ bút: duyệt, sửa, lưu trữ, xoá | Quản trị viên (`content.*`) |
+| `/admin/library` | Kinh sách chia chương: thêm, sửa, xoá | Quản trị viên (`content.*`) |
+
+**Hai trang nội dung dùng chung một bộ endpoint** (`/v1/admin/content/*`) và một
+component (`components/admin/content-panel.tsx`), chỉ khác tham số `type`: bài
+viết và kinh sách là cùng một bảng `Content`. Tách đôi nghĩa là hai bản sao của
+cùng một luồng trạng thái, và chúng sẽ lệch nhau ngay lần sửa thứ hai.
+
+**Luồng trạng thái bài:** `draft` → `pending` → `published` → `archived`. Lưu trữ
+gỡ bài khỏi trang công khai nhưng GIỮ bản ghi; xoá mới là đường một chiều. Đổi
+trạng thái là endpoint riêng với quyền riêng (`content.publish`), nên người chỉ
+được giao soạn bài không tự đẩy bài của mình lên trang được.
+
+**Đổi vai trò** có bốn hàng rào — hai ở `config/roles.js`, hai trong action
+`updateUser`: bậc người thao tác phải cao hơn cả vai trò cũ lẫn mới, không ai tự
+đổi vai trò của mình, hệ luôn còn ít nhất một Quản lý, và mọi lần đổi đều ghi vào
+`RoleAuditLog`. Hệ quả có chủ ý: **không ai phong được người khác lên Quản lý qua
+API** — việc đó phải làm thẳng trong CSDL.
+
+Chữ trong `components/admin/` để tiếng Việt thẳng trong mã, KHÔNG qua
+`lib/dictionaries`. Đây là màn hình nội bộ; nhét vài trăm khoá quản trị vào hợp
+đồng dịch bốn ngôn ngữ bắt ba bản dịch chạy theo mỗi lần đổi một nhãn nút.
+
 ## Cấu trúc
 
 ```
@@ -114,6 +146,7 @@ app/          route, metadata, sitemap, robots, webhook revalidate
 components/
   ui/         nút, thẻ, badge, ô nhập — nền của hệ thiết kế
   auth/       đăng nhập mạng xã hội, form hồ sơ, màn hình tài khoản
+  admin/      khung quản trị, bảng nội dung, bảng người dùng, cấu hình
   layout/     header, footer, đổi sáng/tối
   content/    thẻ nội dung, prose, breadcrumb, phân trang, mục lục
   media/      trình phát audio, nhúng video
@@ -121,6 +154,7 @@ components/
 lib/
   api.ts      gọi Sails từ server, cấu hình cache và tag
   auth.ts     gọi Sails từ trình duyệt: đăng nhập, hồ sơ cá nhân
+  admin-api.ts  gọi các endpoint /v1/admin/* (dùng lại goiApi của auth.ts)
   survey.ts   cấu trúc bộ khảo sát (khớp Backend/config/survey.js)
   vietnam-address.ts  34 tỉnh/thành sau sáp nhập 2025
   mock.ts     dữ liệu mẫu (xoá khi backend xong)
@@ -163,7 +197,9 @@ bộ dấu tiếng Việt đầy đủ — đây là tiêu chí loại trừ đ�
 - Đăng nhập bằng tài khoản/mật khẩu và màn hình đăng ký (backend đã có
   `POST /v1/user/login`, `/v1/user/register`); hiện chỉ có Google/Facebook
 - Bước nhập mã 2FA sau khi đăng nhập mạng xã hội
-- Trang quản trị nội dung
+- Trình soạn thảo trực quan cho thân bài (hiện là ô nhập HTML thô)
+- Tải ảnh lên từ trang quản trị (hiện chỉ dán đường dẫn)
+- Khoá / mở khoá tài khoản (`user.status.set` đã có quyền, chưa có endpoint)
 - OG image động (`opengraph-image.tsx`)
 - RSS (`/rss.xml` đã có link ở footer nhưng chưa có route)
 - Tải bài giảng về nghe offline

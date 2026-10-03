@@ -32,6 +32,8 @@ export type HoSo = {
   username: string;
   email: string;
   role: string;
+  /** Quyền đang dùng của vai trò — chỉnh được ở /admin/roles. */
+  permissions: string[];
   fullName: string;
   dharmaName: string;
   nickname: string;
@@ -102,13 +104,25 @@ export function dangXuat(): void {
 /* Gọi API                                                             */
 /* ------------------------------------------------------------------ */
 
-type TuyChon = {
+export type TuyChonGoi = {
   method?: "GET" | "POST";
   body?: unknown;
   locale?: Locale;
+  /** Tham số querystring; khoá có giá trị undefined hoặc rỗng bị bỏ qua. */
+  query?: Record<string, string | number | undefined>;
 };
 
-async function goiApi<T>(endpoint: string, { method = "GET", body, locale }: TuyChon = {}): Promise<T> {
+/**
+ * Gọi một endpoint của Sails kèm access token.
+ *
+ * Xuất ra ngoài để lib/admin-api.ts dùng lại: nếu tệp đó tự viết fetch riêng
+ * thì cách nhận biết lỗi (xem `data` có hay không, chứ không xem mã trạng
+ * thái) sẽ tồn tại ở hai nơi, và chỉ một trong hai được sửa khi backend đổi.
+ */
+export async function goiApi<T>(
+  endpoint: string,
+  { method = "GET", body, locale, query }: TuyChonGoi = {},
+): Promise<T> {
   const headers: Record<string, string> = { Accept: "application/json" };
   if (body !== undefined) headers["Content-Type"] = "application/json";
   if (locale) headers["x-language"] = localeApiCodes[locale];
@@ -117,9 +131,14 @@ async function goiApi<T>(endpoint: string, { method = "GET", body, locale }: Tuy
   // userPolices đọc nguyên chuỗi trong header, KHÔNG cắt tiền tố "Bearer ".
   if (token) headers.Authorization = token;
 
+  const url = new URL(endpoint, API_URL);
+  for (const [khoa, giaTri] of Object.entries(query ?? {})) {
+    if (giaTri !== undefined && giaTri !== "") url.searchParams.set(khoa, String(giaTri));
+  }
+
   let res: Response;
   try {
-    res = await fetch(new URL(endpoint, API_URL), {
+    res = await fetch(url, {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),

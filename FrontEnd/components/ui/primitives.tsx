@@ -76,9 +76,10 @@ export function SectionHeading({
   description,
   action,
 }: {
-  eyebrow?: string;
-  title: string;
-  description?: string;
+  // ReactNode để trang truyền được <EditableText> (chế độ sửa giao diện).
+  eyebrow?: React.ReactNode;
+  title: React.ReactNode;
+  description?: React.ReactNode;
   action?: React.ReactNode;
 }) {
   return (

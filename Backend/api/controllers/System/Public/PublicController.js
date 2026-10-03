@@ -103,10 +103,17 @@ module.exports = {
         fn: async function(inputs, exits) {
             let filterObject = {
                 condition: {
-                    id: '000000000000000000000000'
+                    id: sails.PUBLIC_ID
                 }
             }
             let systemSettings = await sails.dataProcess.findOne(SystemSettings, filterObject);
+
+            // Lần chạy đầu trên một CSDL trống: tự dựng bản ghi mẫu rồi trả về
+            // luôn, để trang chủ có tiêu đề và thông báo thay vì nhận lỗi 500.
+            if (!systemSettings) {
+                systemSettings = await sails.config.siteSettings.docHoacTao();
+            }
+
             delete systemSettings.adminSystem
             delete systemSettings.accountSessionUrl
             delete systemSettings.followServiceUrl
@@ -126,6 +133,8 @@ module.exports = {
             delete systemSettings.isPublicServiceForAll
             delete systemSettings.serviceToken
             delete systemSettings.id
+
+            systemSettings.notify = sails.config.siteSettings.chonThongBao(systemSettings.notify);
 
             const lang = sails.Ultils.resolveLang(this.req)
             const langWarning = sails.Ultils.langLibValue(systemSettings, lang, 'mainWarning')

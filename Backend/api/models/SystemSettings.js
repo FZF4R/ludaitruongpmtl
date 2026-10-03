@@ -14,7 +14,9 @@ module.exports = {
             type: 'string',
         },
         notify: {
-            type: 'string',
+            type: 'json',
+            defaultsTo: '',
+            description: 'Dai thong bao dau trang chu. Nhan MOT chuoi (dat cung mot cau) hoac MOT MANG chuoi - mang thi PublicController.getSettings rut ngau nhien mot cau moi luot goi. API luon tra ve chuoi.'
         },
         warning: {
             type: 'string',

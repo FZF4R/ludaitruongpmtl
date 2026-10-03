@@ -31,4 +31,16 @@ module.exports.policies = {
     'System/Admin/SystemController': {
         '*': ['userPolices', 'requirePermission']
     },
+    'System/Admin/ContentController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    'System/Public/SiteTextController': {
+        '*': true
+    },
+    'System/Admin/SiteTextController': {
+        '*': ['userPolices', 'requirePermission']
+    },
+    'System/Admin/RolesController': {
+        '*': ['userPolices', 'requirePermission']
+    },
 };

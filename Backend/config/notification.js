@@ -32,6 +32,82 @@ module.exports.notification = {
             }
         }
     },
+    Content: {
+        contentNotFound: {
+            message: {
+                messageEN: "Content not found",
+                messageVNI: "Không tìm thấy bài"
+            }
+        },
+        contentTypeInvalid: {
+            message: {
+                messageEN: "Invalid content type",
+                messageVNI: "Loại nội dung không hợp lệ"
+            }
+        },
+        contentTitleRequired: {
+            message: {
+                messageEN: "Title is required",
+                messageVNI: "Vui lòng nhập tiêu đề"
+            }
+        },
+        contentSlugInvalid: {
+            message: {
+                messageEN: "Invalid slug: use lowercase letters, digits and hyphens",
+                messageVNI: "Đường dẫn chỉ gồm chữ thường, số và dấu gạch ngang"
+            }
+        },
+        contentSlugTaken: {
+            message: {
+                messageEN: "This slug is already in use",
+                messageVNI: "Đường dẫn này đã có bài khác dùng"
+            }
+        },
+        contentStatusInvalid: {
+            message: {
+                messageEN: "Invalid status",
+                messageVNI: "Trạng thái không hợp lệ"
+            }
+        },
+        contentCreated: {
+            message: {
+                messageEN: "Content created",
+                messageVNI: "Đã tạo bài"
+            }
+        },
+        contentUpdated: {
+            message: {
+                messageEN: "Content updated",
+                messageVNI: "Đã lưu bài"
+            }
+        },
+        contentStatusChanged: {
+            message: {
+                messageEN: "Status updated",
+                messageVNI: "Đã đổi trạng thái"
+            }
+        },
+        contentDeleted: {
+            message: {
+                messageEN: "Content deleted",
+                messageVNI: "Đã xoá bài"
+            }
+        },
+    },
+    Settings: {
+        notifyTextRequired: {
+            message: {
+                messageEN: "Text is required",
+                messageVNI: "Vui lòng nhập nội dung câu"
+            }
+        },
+        notifyIndexInvalid: {
+            message: {
+                messageEN: "That entry no longer exists, reload the page",
+                messageVNI: "Câu này không còn nữa, hãy tải lại trang"
+            }
+        },
+    },
     GlobalNotifications: {
         success: {
             message: {
@@ -226,6 +302,60 @@ module.exports.notification = {
             message: {
                 messageEN: "Full name is required",
                 messageVNI: "Vui lòng nhập họ tên"
+            }
+        },
+        emailInvalid: {
+            message: {
+                messageEN: "Invalid email address",
+                messageVNI: "Địa chỉ email không hợp lệ"
+            }
+        },
+        emailTaken: {
+            message: {
+                messageEN: "This email is already used by another account",
+                messageVNI: "Email này đã có tài khoản khác dùng"
+            }
+        },
+        roleSelfChange: {
+            message: {
+                messageEN: "You cannot change your own role",
+                messageVNI: "Không thể tự đổi vai trò của chính mình"
+            }
+        },
+        roleNotAssignable: {
+            message: {
+                messageEN: "You are not allowed to assign this role",
+                messageVNI: "Bạn không được phép gán vai trò này"
+            }
+        },
+        roleLastAdmin: {
+            message: {
+                messageEN: "There must always be at least one Admin",
+                messageVNI: "Hệ thống phải luôn còn ít nhất một Quản lý"
+            }
+        },
+        rolePermissionLocked: {
+            message: {
+                messageEN: "The Admin role always has every permission and cannot be edited",
+                messageVNI: "Quyền của vai trò Quản lý luôn đầy đủ, không chỉnh được"
+            }
+        },
+        rolePermissionForbidden: {
+            message: {
+                messageEN: "You can only edit permissions of roles below your own",
+                messageVNI: "Bạn chỉ chỉnh được quyền của vai trò thấp hơn mình"
+            }
+        },
+        permissionNotGrantable: {
+            message: {
+                messageEN: "You cannot grant a permission you do not have",
+                messageVNI: "Không thể cấp quyền mà chính bạn không có"
+            }
+        },
+        siteTextInvalid: {
+            message: {
+                messageEN: "Invalid or too long text (max 2000 characters)",
+                messageVNI: "Nội dung không hợp lệ hoặc quá dài (tối đa 2000 ký tự)"
             }
         },
         wrongPassword: {

@@ -15,6 +15,7 @@
 import { lang } from "next/root-params";
 import { notFound } from "next/navigation";
 import { defaultLocale, isLocale, type Locale } from "@/lib/i18n";
+import { getSiteTexts } from "@/lib/api";
 
 import vi from "@/lib/dictionaries/vi.json";
 
@@ -42,16 +43,49 @@ export async function getLocale(): Promise<Locale> {
   return doc;
 }
 
-export async function getDictionary(): Promise<Dictionary> {
-  const locale = await getLocale();
+/**
+ * Gộp chữ admin đã sửa (lib/api getSiteTexts) lên từ điển mặc định.
+ *
+ * Chỉ ghi đè chỗ mà từ điển ĐANG là chuỗi: khoá lạ hay khoá trỏ vào một nhánh
+ * object bị bỏ qua, nên dữ liệu bẩn trong CSDL không thể làm sai hình dạng
+ * từ điển mà cả trang đang dựa vào. Khoá không có trong từ điển (chữ viết
+ * thẳng trong trang, như câu kệ trang chủ) đọc qua `texts` của getI18n.
+ */
+function gopChuDaSua(goc: Dictionary, texts: Record<string, string>): Dictionary {
+  const khoa = Object.keys(texts);
+  if (!khoa.length) return goc;
 
-  return (await dictionaries[locale]()) as Dictionary;
+  const ban = structuredClone(goc) as unknown as Record<string, unknown>;
+  for (const duongDan of khoa) {
+    const phan = duongDan.split(".");
+    let nut: Record<string, unknown> | undefined = ban;
+    for (const p of phan.slice(0, -1)) {
+      const con: unknown = nut?.[p];
+      nut = con && typeof con === "object" ? (con as Record<string, unknown>) : undefined;
+    }
+    const cuoi = phan[phan.length - 1];
+    if (nut && typeof nut[cuoi] === "string") nut[cuoi] = texts[duongDan];
+  }
+
+  return ban as unknown as Dictionary;
+}
+
+export async function getDictionary(): Promise<Dictionary> {
+  return (await getI18n()).dict;
 }
 
 /** Tiện dụng khi cần cả hai, tránh gọi lang() hai lần. */
-export async function getI18n(): Promise<{ locale: Locale; dict: Dictionary }> {
+export async function getI18n(): Promise<{
+  locale: Locale;
+  dict: Dictionary;
+  /** Chữ admin đã sửa, gồm cả khoá không nằm trong từ điển. */
+  texts: Record<string, string>;
+}> {
   const locale = await getLocale();
-  const dict = (await dictionaries[locale]()) as Dictionary;
+  const [goc, texts] = await Promise.all([
+    dictionaries[locale]() as Promise<Dictionary>,
+    getSiteTexts(locale),
+  ]);
 
-  return { locale, dict };
+  return { locale, dict: gopChuDaSua(goc, texts), texts };
 }

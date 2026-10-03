@@ -10,6 +10,7 @@ import { localePath, splitLocale } from "@/lib/i18n";
 import type { Dictionary } from "@/lib/dictionary";
 import { LoiApi, dangXuat, docToken, layHoSo, type HoSo } from "@/lib/auth";
 import { cauHoi } from "@/lib/survey";
+import { tabQuanTriDau } from "@/lib/admin-api";
 
 /**
  * Màn hình tài khoản: chưa đăng nhập thì hiện hai nút, đã đăng nhập thì hiện
@@ -101,6 +102,8 @@ export function AccountPanel({
   const tuyChon = nhanHoSo.options as unknown as Record<string, Record<string, string>>;
   const chuaKhai = nhanAuth.notFilled;
 
+  const tabQuanTri = tabQuanTriDau(hoSo.permissions);
+
   const queQuan = [hoSo.hometown.detail, hoSo.hometown.province]
     .filter(Boolean)
     .join(", ");
@@ -125,6 +128,17 @@ export function AccountPanel({
         ) : null}
 
         <div className="ml-auto flex gap-2">
+          {/*
+            Lối vào khu quản trị chỉ hiện khi vai trò có ít nhất một quyền quản
+            trị, và dẫn thẳng tới tab đầu tiên mở được. Không đưa vào menu
+            chính vì header là Client Component không biết vai trò của ai — mà
+            trang tài khoản thì đã đọc hồ sơ rồi.
+          */}
+          {tabQuanTri ? (
+            <Button variant="outline" size="sm" asChild>
+              <Link href={lp(tabQuanTri)}>Khu quản trị</Link>
+            </Button>
+          ) : null}
           <Button variant="outline" size="sm" asChild>
             <Link href={lp("/hoan-thien-ho-so")}>{nhanAuth.editProfile}</Link>
           </Button>
