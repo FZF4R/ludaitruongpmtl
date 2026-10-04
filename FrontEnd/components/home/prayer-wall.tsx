@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
  */
 
 export type NhanLoiNguyen = {
+  flaggedNotice: string;
   kindCauAn: string;
   kindCauSieu: string;
   forName: string;
@@ -104,6 +105,7 @@ export function PrayerWall({ nhan }: { nhan: NhanLoiNguyen }) {
   const [anDanh, setAnDanh] = React.useState(false);
   const [dangGui, setDangGui] = React.useState(false);
   const [loiGui, setLoiGui] = React.useState("");
+  const [biGiu, setBiGiu] = React.useState(false);
 
   const nap = React.useCallback(
     (soTrang: number) => {
@@ -142,9 +144,13 @@ export function PrayerWall({ nhan }: { nhan: NhanLoiNguyen }) {
         { kind: "cau-an", forName: "", body: noiDung.trim(), anonymous: anDanh },
         locale,
       );
-      setDs((cu) => [moi, ...cu]);
-      setTong((t) => t + 1);
-      setHomNay((n) => n + 1);
+      // Chứa từ cấm: đã lưu nhưng chờ duyệt ở tab Phê duyệt - không chèn vào danh sách.
+      setBiGiu(!!moi.flagged);
+      if (!moi.flagged) {
+        setDs((cu) => [moi, ...cu]);
+        setTong((t) => t + 1);
+        setHomNay((n) => n + 1);
+      }
       // Còn lượt thì vẫn giữ ô viết; hết lượt mới đổi sang câu "hẹn ngày mai".
       setConLai((n) => {
         const moiCon = Math.max(0, (n ?? 1) - 1);
@@ -227,6 +233,9 @@ export function PrayerWall({ nhan }: { nhan: NhanLoiNguyen }) {
           ) : null}
         </form>
       )}
+
+      {/* Ngoài form: lời cuối trong ngày bị giữ lại thì form đã đổi sang câu hết lượt. */}
+      {biGiu ? <p className="text-sm text-brass">{nhan.flaggedNotice}</p> : null}
 
       {/*
         Danh sách lời nguyện KHÔNG hiện công khai (chỉ slideshow nổi bật ở trên).

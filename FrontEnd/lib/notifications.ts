@@ -13,7 +13,7 @@ export type ThongBao = {
    * edit-proposal = ban biên tập đề xuất sửa bài của bạn;
    * edit-accepted / edit-rejected = tác giả đồng ý / từ chối bản sửa của bạn.
    */
-  type: "comment" | "reply" | "warning" | "published" | "rejected" | "edit-proposal" | "edit-accepted" | "edit-rejected";
+  type: "comment" | "reply" | "warning" | "published" | "rejected" | "edit-proposal" | "edit-accepted" | "edit-rejected" | "broadcast";
   /** Đường dẫn (chưa có tiền tố ngôn ngữ) thông báo mở ra; rỗng = tự dựng theo loại. */
   link: string;
   read: boolean;

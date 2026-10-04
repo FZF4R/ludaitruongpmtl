@@ -40,6 +40,7 @@ export const tabQuanTri: { href: string; nhan: string; quyen: string | readonly 
   { href: "/admin/dashboard", nhan: "Tổng quan", quyen: "system.settings" },
   { href: "/admin/user", nhan: "Người dùng", quyen: "user.list" },
   { href: "/admin/blog", nhan: "Bài viết", quyen: ["content.editAny", "content.review"] },
+  { href: "/admin/phe-duyet", nhan: "Phê duyệt", quyen: "comment.moderate" },
   { href: "/admin/library", nhan: "Kinh sách", quyen: "sutra.manage" },
   { href: "/admin/thu-vien", nhan: "Thư viện", quyen: "library.manage" },
   { href: "/admin/merit", nhan: "Công đức", quyen: "merit.manage" },
@@ -230,7 +231,7 @@ export type KyLuatNguoiDung = {
   /** Người đang xem có được cảnh cáo / khoá người này không (bậc cao hơn, không phải chính mình). */
   canAct: boolean;
   flaggedComments: BinhLuanViPham[];
-  log: { id: string; action: "warn" | "ban" | "unban" | "delete-comment"; reason: string; commentBody: string; actorName: string; createdAt: string }[];
+  log: { id: string; action: "warn" | "unwarn" | "ban" | "unban" | "delete-comment" | "approve" | "reject"; reason: string; commentBody: string; actorName: string; createdAt: string }[];
 };
 
 export function layBinhLuanViPham(slug: string, locale: Locale) {
@@ -740,4 +741,93 @@ export function luuQuyTacCongDuc(rules: Record<string, { points: number; dailyCa
 /** `qr`: data URL ảnh mới, "" = giữ ảnh cũ, "remove" = bỏ ảnh. */
 export function luuUngHo(than: Omit<UngHoQT, "qrUrl"> & { qr: string }, locale: Locale) {
   return goiApi<{ donate: UngHoQT }>("/v1/admin/merit/donate", { method: "POST", body: than, locale });
+}
+
+/* ------------------------------------------------------------------ */
+/* Phê duyệt: bình luận / lời nguyện chứa từ cấm (/admin/phe-duyet)    */
+/* ------------------------------------------------------------------ */
+
+export type MucChoDuyet = {
+  id: string;
+  type: "comment" | "prayer";
+  body: string;
+  forName: string;
+  flaggedWords: string[];
+  parentId: string;
+  createdAt: string;
+  author: {
+    userId: string;
+    name: string;
+    username: string;
+    role: string;
+    warningCount: number;
+    banned: boolean;
+    avatarUrl: string;
+  };
+  content: { slug: string; title: string; type: string } | null;
+};
+
+export type DanhSachChoDuyet = {
+  type: "comment" | "prayer";
+  counts: { comment: number; prayer: number };
+  total: number;
+  page: number;
+  data: MucChoDuyet[];
+};
+
+export function layChoDuyet(type: "comment" | "prayer", page: number, locale: Locale) {
+  return goiApi<DanhSachChoDuyet>("/v1/admin/approval", { query: { type, page }, locale });
+}
+
+export function duyetMuc(type: "comment" | "prayer", id: string, locale: Locale) {
+  return goiApi<{ id: string }>("/v1/admin/approval/approve", { method: "POST", body: { type, id }, locale });
+}
+
+export function tuChoiMuc(type: "comment" | "prayer", id: string, locale: Locale) {
+  return goiApi<{ id: string }>("/v1/admin/approval/reject", { method: "POST", body: { type, id }, locale });
+}
+
+/** Giảm một mức cảnh cáo (quyền moderation.manage). */
+export function giamCanhCao(id: string, reason: string, locale: Locale) {
+  return goiApi<{ warningCount: number }>("/v1/admin/moderation/unwarn", { method: "POST", body: { id, reason }, locale });
+}
+
+/* ------------------------------------------------------------------ */
+/* Thông báo tới toàn bộ người dùng                                    */
+/* ------------------------------------------------------------------ */
+
+export type ThongBaoChung = {
+  id: string;
+  title: string;
+  body: string;
+  link: string;
+  recipients: number;
+  createdByName: string;
+  createdAt: string;
+};
+
+export function layThongBaoChung(locale: Locale) {
+  return goiApi<ThongBaoChung[]>("/v1/admin/broadcast", { locale });
+}
+
+export function guiThongBaoChung(than: { title: string; body: string; link: string }, locale: Locale) {
+  return goiApi<ThongBaoChung>("/v1/admin/broadcast/send", { method: "POST", body: than, locale });
+}
+
+/* ------------------------------------------------------------------ */
+/* Sự kiện theo ngày trên lịch                                         */
+/* ------------------------------------------------------------------ */
+
+export type SuKienNgayGui = { id?: string; date: string; title: string; imageUrl: string; body: string };
+
+export function luuSuKienNgay(than: SuKienNgayGui, locale: Locale) {
+  return goiApi<{ id: string; date: string; title: string; imageUrl: string; body: string }>("/v1/admin/day-events/save", {
+    method: "POST",
+    body: than,
+    locale,
+  });
+}
+
+export function xoaSuKienNgay(id: string, locale: Locale) {
+  return goiApi<{ id: string }>("/v1/admin/day-events/delete", { method: "POST", body: { id }, locale });
 }

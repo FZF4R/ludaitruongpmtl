@@ -350,7 +350,9 @@
     "eventLegend": "Holy days, festivals",
     "traiDay": "Vegetarian day",
     "noEventDay": "No events",
-    "lunarFull": "Lunar {d}/{m}"
+    "lunarFull": "Lunar {d}/{m}",
+    "dayEventLegend": "Event",
+    "dayEventMore": "Click a day to see details"
   },
   "prayers": {
     "eyebrow": "Prayers for peace · for the departed",
@@ -383,7 +385,8 @@
     "feature": "Feature this prayer",
     "unfeature": "Remove from featured",
     "reviewTitle": "Review prayers (moderators only)",
-    "remainingToday": "{n}/3 left today"
+    "remainingToday": "{n}/3 left today",
+    "flaggedNotice": "Your prayer contains inappropriate words and is awaiting review."
   },
   "notifications": {
     "title": "Notifications",
@@ -398,7 +401,8 @@
     "rejected": "Your post “{title}” was returned for revision",
     "editProposal": "{name} proposed edits to “{title}” — awaiting your approval",
     "editAccepted": "{name} accepted your edits to “{title}”",
-    "editRejected": "{name} declined your edits to “{title}”"
+    "editRejected": "{name} declined your edits to “{title}”",
+    "broadcast": "{title}"
   },
   "banned": {
     "title": "Account suspended",

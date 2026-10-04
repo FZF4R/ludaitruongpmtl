@@ -2,13 +2,14 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Ban, ShieldAlert, ShieldCheck, Trash2, TriangleAlert } from "lucide-react";
+import { Ban, ShieldAlert, ShieldCheck, ShieldMinus, Trash2, TriangleAlert } from "lucide-react";
 import { Badge } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/form";
 import { HopLoi, chuLoi, useLocale } from "@/components/admin/admin-shell";
 import {
   canhCao,
+  giamCanhCao,
   khoaTaiKhoan,
   layKyLuat,
   moKhoaTaiKhoan,
@@ -33,6 +34,9 @@ import { cn } from "@/lib/utils";
 
 const nhanHanhDong: Record<KyLuatNguoiDung["log"][number]["action"], string> = {
   warn: "Cảnh cáo",
+  unwarn: "Giảm cảnh cáo",
+  approve: "Duyệt nội dung bị giữ",
+  reject: "Từ chối nội dung bị giữ",
   ban: "Khoá tài khoản",
   unban: "Mở khoá",
   "delete-comment": "Xoá hẳn bình luận",
@@ -138,6 +142,17 @@ export function DisciplinePanel({ userId, binhLuanId }: { userId: string; binhLu
                 >
                   <TriangleAlert aria-hidden /> Cảnh cáo ({kl.warningCount + 1 > kl.maxWarnings ? kl.maxWarnings : kl.warningCount + 1}/{kl.maxWarnings})
                 </Button>
+                {kl.warningCount > 0 ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={ban}
+                    title="Gỡ một lần cảnh cáo (cảnh cáo nhầm, người dùng đã sửa đổi)"
+                    onClick={() => chay(() => giamCanhCao(kl.id, lyDo, locale))}
+                  >
+                    <ShieldMinus aria-hidden /> Giảm cảnh cáo ({kl.warningCount - 1}/{kl.maxWarnings})
+                  </Button>
+                ) : null}
                 <Button
                   size="sm"
                   className="bg-lacquer text-white hover:bg-lacquer/90"

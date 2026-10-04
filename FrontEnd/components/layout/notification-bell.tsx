@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, CheckCheck, ShieldAlert } from "lucide-react";
+import { Bell, CheckCheck, Megaphone, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { useCheDoSua } from "@/components/layout/inline-edit";
@@ -34,12 +34,14 @@ export type NhanThongBao = {
   editProposal: string;
   editAccepted: string;
   editRejected: string;
+  broadcast: string;
 };
 
 const CHU_KY_MS = 60_000;
 
 export function NotificationBell({ nhan }: { nhan: NhanThongBao }) {
-  const { locale } = splitLocale(usePathname());
+  const pathname = usePathname();
+  const { locale } = splitLocale(pathname);
   const { nguoiDungId } = useCheDoSua();
   const [chuaDoc, setChuaDoc] = React.useState(0);
   const [mo, setMo] = React.useState(false);
@@ -126,6 +128,7 @@ export function NotificationBell({ nhan }: { nhan: NhanThongBao }) {
       "edit-proposal": nhan.editProposal,
       "edit-accepted": nhan.editAccepted,
       "edit-rejected": nhan.editRejected,
+      broadcast: nhan.broadcast,
     };
     return (mau[t.type] ?? nhan.comment)
       .replace("{name}", t.actor.name || nhan.someone)
@@ -136,12 +139,16 @@ export function NotificationBell({ nhan }: { nhan: NhanThongBao }) {
   // (duyệt, trả lại, đề xuất sửa) mang sẵn đường dẫn từ backend.
   const duongDan = (t: ThongBao) =>
     t.link
-      ? localePath(locale, t.link)
-      : t.type === "warning"
-        ? localePath(locale, "/tai-khoan")
-        : t.type === "comment" || t.type === "reply"
-          ? `${localePath(locale, `/bai-viet/${t.contentSlug}`)}#binh-luan-${t.commentId}`
-          : localePath(locale, "/tai-khoan/bai-viet");
+      ? /^https?:\/\//i.test(t.link)
+        ? t.link
+        : localePath(locale, t.link)
+      : t.type === "broadcast"
+        ? pathname
+        : t.type === "warning"
+          ? localePath(locale, "/tai-khoan")
+          : t.type === "comment" || t.type === "reply"
+            ? `${localePath(locale, `/bai-viet/${t.contentSlug}`)}#binh-luan-${t.commentId}`
+            : localePath(locale, "/tai-khoan/bai-viet");
 
   return (
     <div ref={khung} className="relative">
@@ -193,7 +200,11 @@ export function NotificationBell({ nhan }: { nhan: NhanThongBao }) {
                         !t.read && "bg-accent-soft/40",
                       )}
                     >
-                      {t.type === "warning" ? (
+                      {t.type === "broadcast" ? (
+                        <span className="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-brass/15 text-brass">
+                          <Megaphone className="size-4" aria-hidden />
+                        </span>
+                      ) : t.type === "warning" ? (
                         <span className="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-lacquer/15 text-lacquer">
                           <ShieldAlert className="size-4" aria-hidden />
                         </span>
@@ -204,7 +215,9 @@ export function NotificationBell({ nhan }: { nhan: NhanThongBao }) {
                         <span className={cn("leading-snug", t.read ? "text-body" : "font-medium text-ink")}>
                           {cau(t)}
                         </span>
-                        {t.excerpt && t.type !== "warning" ? (
+                        {t.excerpt && t.type === "broadcast" ? (
+                          <span className="line-clamp-4 whitespace-pre-line text-xs text-body">{t.excerpt}</span>
+                        ) : t.excerpt && t.type !== "warning" ? (
                           <span className="truncate text-xs text-muted">“{t.excerpt}”</span>
                         ) : null}
                         <time dateTime={t.createdAt} className="text-[11px] text-muted">

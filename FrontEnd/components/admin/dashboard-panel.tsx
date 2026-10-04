@@ -1,5 +1,6 @@
 "use client";
 
+import { KhoiSuKienLich, KhoiThongBaoChung } from "@/components/admin/dashboard-extra";
 import * as React from "react";
 import {
   Trash2,
@@ -126,6 +127,10 @@ export function DashboardPanel() {
       />
 
       <KhoiGopY onLoi={setLoi} />
+
+      <KhoiThongBaoChung />
+
+      <KhoiSuKienLich />
 
       <KhoiTuCam
         giaTri={cauHinh.bannedWords ?? []}

@@ -350,7 +350,9 @@
     "eventLegend": "재일·법회",
     "traiDay": "재일",
     "noEventDay": "행사 없음",
-    "lunarFull": "음력 {m}월 {d}일"
+    "lunarFull": "음력 {m}월 {d}일",
+    "dayEventLegend": "행사",
+    "dayEventMore": "날짜를 눌러 자세히 보기"
   },
   "prayers": {
     "eyebrow": "평안 기도 · 천도 기도",
@@ -383,7 +385,8 @@
     "feature": "선정 발원으로 지정",
     "unfeature": "선정 해제",
     "reviewTitle": "발원 검토 (검토자만 보임)",
-    "remainingToday": "오늘 {n}/3개 남음"
+    "remainingToday": "오늘 {n}/3개 남음",
+    "flaggedNotice": "발원에 부적절한 표현이 있어 관리자 검토를 기다리고 있습니다."
   },
   "notifications": {
     "title": "알림",
@@ -398,7 +401,8 @@
     "rejected": "“{title}” 글이 수정 요청으로 반려되었습니다",
     "editProposal": "{name}님이 “{title}” 수정을 제안했습니다 — 동의를 기다립니다",
     "editAccepted": "{name}님이 “{title}” 수정안에 동의했습니다",
-    "editRejected": "{name}님이 “{title}” 수정안을 거절했습니다"
+    "editRejected": "{name}님이 “{title}” 수정안을 거절했습니다",
+    "broadcast": "{title}"
   },
   "banned": {
     "title": "계정이 정지되었습니다",

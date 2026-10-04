@@ -350,7 +350,9 @@
     "eventLegend": "圣诞、节日",
     "traiDay": "斋日",
     "noEventDay": "无节日",
-    "lunarFull": "农历{m}月{d}日"
+    "lunarFull": "农历{m}月{d}日",
+    "dayEventLegend": "活动",
+    "dayEventMore": "点击日期查看详情"
   },
   "prayers": {
     "eyebrow": "祈福 · 超度",
@@ -383,7 +385,8 @@
     "feature": "设为精选",
     "unfeature": "取消精选",
     "reviewTitle": "审核心愿（仅审核员可见）",
-    "remainingToday": "今天还可写 {n}/3 句"
+    "remainingToday": "今天还可写 {n}/3 句",
+    "flaggedNotice": "您的心愿含有不当用语，正在等待管理员审核。"
   },
   "notifications": {
     "title": "通知",
@@ -398,7 +401,8 @@
     "rejected": "您的文章《{title}》已退回修改",
     "editProposal": "{name} 建议修改《{title}》——等待您同意",
     "editAccepted": "{name} 已同意您对《{title}》的修改",
-    "editRejected": "{name} 已拒绝您对《{title}》的修改"
+    "editRejected": "{name} 已拒绝您对《{title}》的修改",
+    "broadcast": "{title}"
   },
   "banned": {
     "title": "账户已被封禁",

@@ -10,6 +10,8 @@ import type { Locale } from "@/lib/i18n";
 export type LoaiNguyen = "cau-an" | "cau-sieu";
 
 export type LoiNguyen = {
+  /** Chỉ có trong phản hồi lúc gửi: chứa từ cấm, đã lưu nhưng chờ duyệt (không hiện). */
+  flagged?: boolean;
   id: string;
   kind: LoaiNguyen;
   forName: string;

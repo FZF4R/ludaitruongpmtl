@@ -350,7 +350,9 @@
     "eventLegend": "Ngày vía, lễ",
     "traiDay": "Ngày Trai",
     "noEventDay": "Không có sự kiện",
-    "lunarFull": "Âm lịch {d}/{m}"
+    "lunarFull": "Âm lịch {d}/{m}",
+    "dayEventLegend": "Sự kiện",
+    "dayEventMore": "Bấm vào ngày để xem chi tiết"
   },
   "prayers": {
     "eyebrow": "Cầu an · Cầu siêu",
@@ -383,7 +385,8 @@
     "feature": "Chọn làm lời nguyện nổi bật",
     "unfeature": "Bỏ khỏi lời nguyện nổi bật",
     "reviewTitle": "Duyệt lời nguyện (chỉ người kiểm duyệt thấy)",
-    "remainingToday": "Hôm nay còn {n}/3 lời"
+    "remainingToday": "Hôm nay còn {n}/3 lời",
+    "flaggedNotice": "Lời nguyện của bạn chứa từ ngữ chưa phù hợp nên đang chờ ban quản trị duyệt."
   },
   "notifications": {
     "title": "Thông báo",
@@ -398,7 +401,8 @@
     "rejected": "Bài “{title}” được trả lại để chỉnh sửa",
     "editProposal": "{name} đề xuất sửa bài “{title}” — chờ bạn đồng ý",
     "editAccepted": "{name} đã đồng ý bản sửa bài “{title}”",
-    "editRejected": "{name} đã từ chối bản sửa bài “{title}”"
+    "editRejected": "{name} đã từ chối bản sửa bài “{title}”",
+    "broadcast": "{title}"
   },
   "banned": {
     "title": "Tài khoản đã bị khoá",
