@@ -1,7 +1,6 @@
 import { Container } from "@/components/ui/primitives";
-import { PracticeHeader, practiceMetadata } from "@/components/practice/practice-page";
+import { HuongDanSuaDuoc, PracticeHeader, practiceMetadata } from "@/components/practice/practice-page";
 import { Chanting } from "@/components/practice/chanting";
-import { HuongDan } from "@/components/practice/common";
 import { listContent } from "@/lib/api";
 import { getDictionary } from "@/lib/dictionary";
 import { docKinh } from "./actions";
@@ -24,7 +23,7 @@ export default async function Page() {
     <Container className="flex flex-col gap-8 py-12">
       <PracticeHeader navKey="chantingRecitation" href={HREF} />
       <Chanting nhan={dict.practiceTools} kinh={kinh} docKinh={docKinh} />
-      <HuongDan tieuDe={dict.practiceTools.guideTitle} muc={dict.practiceTools.guides.chanting} />
+      <HuongDanSuaDuoc nhom="chanting" />
     </Container>
   );
 }

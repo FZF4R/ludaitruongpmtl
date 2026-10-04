@@ -140,6 +140,8 @@ module.exports.routes = {
 
     //==== Phe duyet: binh luan / loi nguyen chua tu cam =====
     'GET  /v1/admin/approval': 'System.Admin.ApprovalController.listPending',
+    // Toan bo hoat dong mot tai khoan (trang /admin/user/hoat-dong).
+    'GET  /v1/admin/user/activity': 'System.Admin.UserActivityController.getActivity',
     'GET  /v1/admin/approval/reports': 'System.Admin.ApprovalController.listReports',
     'POST /v1/admin/approval/reports/handle': 'System.Admin.ApprovalController.handleReport',
     'POST /v1/admin/approval/approve': 'System.Admin.ApprovalController.approve',

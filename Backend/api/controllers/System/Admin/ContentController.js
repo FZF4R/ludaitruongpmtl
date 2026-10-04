@@ -32,6 +32,17 @@ const {
 } = require('../../../utils/quyenNoiDung')
 const { guiThongBaoBai } = require('../../../utils/thongBao')
 const { baoDaDang } = require('../../../utils/dangBai')
+const { ngayVN } = require('../../../utils/loiNguyen')
+
+const MOT_NGAY = 24 * 3600 * 1000
+/** Thứ tự sắp xếp danh sách quản trị. */
+const SAP_XEP = {
+    updated: { updatedAt: -1, createdAt: -1 },
+    newest: { createdAt: -1 },
+    oldest: { createdAt: 1 },
+    views: { viewCount: -1, createdAt: -1 },
+    title: { title: 1 }
+}
 const TRANG_THAI_HOP_LE = ['draft', 'pending', 'published', 'archived']
 
 /** Truy cập thẳng collection để dùng $or, $in và đếm trong một lượt. */
@@ -124,8 +135,16 @@ const dungDieuKien = ({ type, status, category, authorId, q }) => {
     if (category) dieuKien['categories.slug'] = category
     if (authorId) dieuKien.authorId = String(authorId)
 
-    // searchText đã bỏ dấu lúc ghi, nên bỏ dấu từ khoá rồi mới so.
-    if (q) dieuKien.searchText = { $regex: thoatRegex(boDau(q)), $options: 'i' }
+    // Tiêu đề / tóm tắt / thẻ (searchText bỏ dấu) HOẶC tên tác giả, người đăng (so như gõ).
+    if (q) {
+        let coDau = { $regex: thoatRegex(String(q).trim()), $options: 'i' }
+        dieuKien.$or = [
+            { searchText: { $regex: thoatRegex(boDau(q)), $options: 'i' } },
+            { 'author.name': coDau },
+            { 'author.dharmaName': coDau },
+            { createdByName: coDau }
+        ]
+    }
 
     return dieuKien
 }
@@ -252,7 +271,7 @@ module.exports = {
                 let { page, limit } = inputs
 
                 let bts = bang.find(dieuKien, { projection: { bodyHtml: 0, searchText: 0 } })
-                    .sort({ updatedAt: -1, createdAt: -1 })
+                    .sort(SAP_XEP[inputs.sort] || SAP_XEP.updated)
                     .skip(limit * (page - 1))
                     .limit(limit)
 
@@ -271,15 +290,71 @@ module.exports = {
                     if (item._id && thongKe[item._id] !== undefined) thongKe[item._id] = item.n
                 })
 
+                // Số liệu từng bài: bình luận (đang hiện / bị giữ), lượt xem hôm nay và 7 ngày.
+                let ids = rows.map(r => String(r._id))
+                let homNay = ngayVN()
+                let tu7 = ngayVN(Date.now() - 6 * MOT_NGAY)
+                let bangXem = ContentViewDaily.getDatastore().manager.collection(ContentViewDaily.tableName)
+                let bangBl = Comment.getDatastore().manager.collection(Comment.tableName)
+                let [xem, bl, tongQuan] = await Promise.all([
+                    ids.length ? bangXem.aggregate([
+                        { $match: { contentId: { $in: ids }, dayKey: { $gte: tu7 } } },
+                        { $group: { _id: '$contentId', week: { $sum: '$n' }, today: { $sum: { $cond: [{ $eq: ['$dayKey', homNay] }, '$n', 0] } } } }
+                    ]).toArray() : [],
+                    ids.length ? bangBl.aggregate([
+                        { $match: { contentId: { $in: ids } } },
+                        { $group: { _id: { c: '$contentId', s: '$status' }, n: { $sum: 1 } } }
+                    ]).toArray() : [],
+                    // Tổng quan cho cả loại đang xem: tổng lượt xem, lượt xem hôm nay, bình luận hôm nay.
+                    (async () => {
+                        let tatCa = await bang.aggregate([
+                            { $match: { type: { $in: loaiLoc.split(',') } } },
+                            { $group: { _id: null, views: { $sum: '$viewCount' } } }
+                        ]).toArray()
+                        let idsLoai = (await bang.find({ type: { $in: loaiLoc.split(',') } }, { projection: { _id: 1 } }).toArray()).map(r => String(r._id))
+                        let tuDauNgay = new Date(`${homNay}T00:00:00+07:00`).getTime()
+                        let [xemHomNay, blHomNay] = await Promise.all([
+                            bangXem.aggregate([
+                                { $match: { contentId: { $in: idsLoai }, dayKey: homNay } },
+                                { $group: { _id: null, n: { $sum: '$n' } } }
+                            ]).toArray(),
+                            bangBl.countDocuments({ contentId: { $in: idsLoai }, createdAt: { $gte: tuDauNgay } })
+                        ])
+                        return {
+                            views: tatCa[0] ? tatCa[0].views : 0,
+                            viewsToday: xemHomNay[0] ? xemHomNay[0].n : 0,
+                            commentsToday: blHomNay
+                        }
+                    })()
+                ])
+                let xemTheoBai = {}
+                xem.forEach(x => { xemTheoBai[x._id] = x })
+                let blTheoBai = {}
+                bl.forEach(x => {
+                    let m = blTheoBai[x._id.c] = blTheoBai[x._id.c] || { visible: 0, flagged: 0, hidden: 0 }
+                    if (m[x._id.s] !== undefined) m[x._id.s] = x.n
+                })
+
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',
                     message: 'success',
                     data: {
-                        data: rows.map(row => dinhDangQuanTri(row, { rutGon: true })),
+                        data: rows.map(row => {
+                            let id = String(row._id)
+                            return Object.assign(dinhDangQuanTri(row, { rutGon: true }), {
+                                metrics: {
+                                    viewsToday: (xemTheoBai[id] || {}).today || 0,
+                                    viewsWeek: (xemTheoBai[id] || {}).week || 0,
+                                    comments: (blTheoBai[id] || {}).visible || 0,
+                                    commentsFlagged: (blTheoBai[id] || {}).flagged || 0
+                                }
+                            })
+                        }),
                         total: total,
                         page: page,
                         limit: limit,
-                        stats: thongKe
+                        stats: thongKe,
+                        overview: tongQuan
                     }
                 });
             } catch (err) {

@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, Check } from "lucide-react";
+import { Search, Check, Activity } from "lucide-react";
+import { localePath } from "@/lib/i18n";
 import { Badge, Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/form";
@@ -134,8 +135,11 @@ export function UserPanel() {
                     return (
                       <tr
                         key={id}
+                        // Bấm cả dòng để mở chi tiết (nút / link bên trong tự chặn lan sự kiện).
+                        onClick={xemChiTiet ? () => setDangChon(id) : undefined}
                         className={
                           "border-b border-line last:border-0 " +
+                          (xemChiTiet ? "cursor-pointer hover:bg-surface-2/60 " : "") +
                           (dangChon === id ? "bg-accent-soft/50" : "")
                         }
                       >
@@ -160,11 +164,23 @@ export function UserPanel() {
                         </td>
                         <td className="px-4 py-2.5 tabular-nums text-muted">{ngay(u.createdAt)}</td>
                         <td className="px-4 py-2.5 text-right">
-                          {xemChiTiet ? (
-                            <Button size="sm" variant="outline" onClick={() => setDangChon(id)}>
-                              Xem
+                          <span className="inline-flex gap-1.5" onClick={(e) => e.stopPropagation()}>
+                            {xemChiTiet ? (
+                              <Button size="sm" variant="outline" onClick={() => setDangChon(id)}>
+                                Xem
+                              </Button>
+                            ) : null}
+                            {/* Toàn bộ hoạt động: mở tab mới để vẫn giữ danh sách. */}
+                            <Button size="sm" variant="ghost" asChild>
+                              <a
+                                href={`${localePath(locale, "/admin/user/hoat-dong")}?id=${encodeURIComponent(id)}`}
+                                target="_blank"
+                                rel="noopener"
+                              >
+                                <Activity aria-hidden /> Hoạt động
+                              </a>
                             </Button>
-                          ) : null}
+                          </span>
                         </td>
                       </tr>
                     );
@@ -288,6 +304,14 @@ function ChiTiet({
           {nd.googleId ? " · Google" : ""}
           {nd.facebookId ? " · Facebook" : ""}
         </p>
+        <a
+          href={`${localePath(locale, "/admin/user/hoat-dong")}?id=${encodeURIComponent(nd.id)}`}
+          target="_blank"
+          rel="noopener"
+          className="mt-1 flex w-fit items-center gap-1.5 text-sm font-medium text-accent hover:underline"
+        >
+          <Activity className="size-4" aria-hidden /> Xem toàn bộ hoạt động (tu tập, bài viết, bình luận) ↗
+        </a>
       </div>
 
       <HopLoi loi={loi} />

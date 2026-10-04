@@ -397,13 +397,20 @@ export function VongLan({ lan, className }: { lan: number; className?: string })
 }
 
 /** Mục hướng dẫn ngắn dưới mỗi công cụ. */
-export function HuongDan({ tieuDe, muc }: { tieuDe: string; muc: { title: string; body: string }[] }) {
+export function HuongDan({
+  tieuDe,
+  muc,
+}: {
+  /** Chuỗi, hoặc <EditableText> để sửa được ở Chế độ sửa (xem HuongDanSuaDuoc). */
+  tieuDe: React.ReactNode;
+  muc: { title: React.ReactNode; body: React.ReactNode }[];
+}) {
   return (
-    <section aria-label={tieuDe} className="flex flex-col gap-4">
+    <section aria-label={typeof tieuDe === "string" ? tieuDe : undefined} className="flex flex-col gap-4">
       <h2 className="font-serif text-xl font-bold text-ink">{tieuDe}</h2>
       <div className="grid gap-4 sm:grid-cols-2">
-        {muc.map((m) => (
-          <div key={m.title} className="rounded-lg border border-line bg-surface p-4">
+        {muc.map((m, i) => (
+          <div key={i} className="rounded-lg border border-line bg-surface p-4">
             <h3 className="font-semibold text-ink">{m.title}</h3>
             <p className="mt-1.5 text-sm leading-relaxed text-body">{m.body}</p>
           </div>

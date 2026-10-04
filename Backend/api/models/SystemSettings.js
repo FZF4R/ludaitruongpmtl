@@ -84,6 +84,11 @@ module.exports = {
             defaultsTo: {},
             description: 'Anh dai dien tung danh muc Thu vien (/thu-vien): { anh, review, bo-tat, nhac-thien, audio-kinh } -> URL. Admin doi o Che do sua ngay tren trang.'
         },
+        libraryOrder: {
+            type: 'json',
+            defaultsTo: [],
+            description: 'Thu tu hien thi danh muc Thu vien: mang cac khoa anh | review | bo-tat | nhac-thien | audio-kinh. Rong = thu tu mac dinh.'
+        },
         aboutHtml: {
             type: 'json',
             defaultsTo: {},

@@ -3,7 +3,9 @@ import Image from "next/image";
 import { getSiteSettings } from "@/lib/api";
 import { anhMucTuTap } from "@/lib/practice-images";
 import { Breadcrumbs } from "@/components/content/navigation";
-import { getDictionary, getLocale } from "@/lib/dictionary";
+import { getDictionary, getLocale, type Dictionary } from "@/lib/dictionary";
+import { EditableText } from "@/components/layout/inline-edit";
+import { HuongDan } from "@/components/practice/common";
 import { SettingImageEditor } from "@/components/library/library-image-editor";
 import { i18nAlternates } from "@/lib/seo";
 import type { PracticeKey } from "@/lib/site";
@@ -59,5 +61,24 @@ export async function PracticeHeader({ navKey, href }: { navKey: PracticeKey; hr
         />
       </div>
     </>
+  );
+}
+
+/**
+ * Mục Hướng dẫn cuối trang công cụ tu tập, sửa được ở Chế độ sửa: tiêu đề và
+ * từng thẻ (tiêu đề + nội dung) là chữ giao diện với khoá
+ * `practiceTools.guides.<nhom>.<i>.title|body`, lưu theo từng ngôn ngữ.
+ */
+export async function HuongDanSuaDuoc({ nhom }: { nhom: keyof Dictionary["practiceTools"]["guides"] }) {
+  const dict = await getDictionary();
+  const ds = dict.practiceTools.guides[nhom];
+  return (
+    <HuongDan
+      tieuDe={<EditableText k="practiceTools.guideTitle" value={dict.practiceTools.guideTitle} />}
+      muc={ds.map((m, i) => ({
+        title: <EditableText k={`practiceTools.guides.${nhom}.${i}.title`} value={m.title} />,
+        body: <EditableText k={`practiceTools.guides.${nhom}.${i}.body`} value={m.body} multiline />,
+      }))}
+    />
   );
 }

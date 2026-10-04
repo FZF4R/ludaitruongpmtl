@@ -606,6 +606,9 @@ module.exports.inputs = {
                 "libraryImages": {
                     "type": "json"
                 },
+                "libraryOrder": {
+                    "type": "json"
+                },
                 "aboutHtml": {
                     "type": "json"
                 },
@@ -785,6 +788,21 @@ module.exports.inputs = {
                 "id": {
                     "type": "string",
                     "required": true
+                }
+            }
+        },
+        "UserActivity": {
+            "getActivity": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "commentPage": {
+                    "type": "number",
+                    "defaultsTo": 1
                 }
             }
         },
@@ -1283,6 +1301,11 @@ module.exports.inputs = {
             "listContent": {
                 "User": {
                     "type": "json"
+                },
+                "sort": {
+                    "type": "string",
+                    "defaultsTo": "updated",
+                    "description": "updated | newest | oldest | views | title"
                 },
                 "pendingEdit": {
                     "type": "boolean",

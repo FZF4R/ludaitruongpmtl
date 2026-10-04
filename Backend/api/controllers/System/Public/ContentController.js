@@ -20,6 +20,7 @@ const { boDau, thoatRegex } = require('../../../utils/vietnamese')
 
 const { LOAI_HOP_LE, LOAI_THU_VIEN } = require('../../../utils/quyenNoiDung')
 const { congDucLuotXem } = require('../../../utils/congDuc')
+const { ngayVN } = require('../../../utils/loiNguyen')
 
 /** Truy cập thẳng collection để dùng $or, khớp trường lồng và đếm trong một vòng. */
 const { layAvatarUrls } = require('../../../utils/avatar')
@@ -194,6 +195,12 @@ module.exports = {
                 let sau = kq && kq.value !== undefined ? kq.value : kq
                 // Bài của người dùng đạt mỗi mốc 100 lượt xem: tác giả được cộng công đức.
                 if (sau) await congDucLuotXem(Object.assign({ id: String(sau._id) }, sau), sau.viewCount)
+                // Lượt xem theo ngày (trang quản trị: hôm nay / 7 ngày). Lỗi thì bỏ qua.
+                if (sau) {
+                    await ContentViewDaily.getDatastore().manager.collection(ContentViewDaily.tableName)
+                        .updateOne({ contentId: String(sau._id), dayKey: ngayVN() }, { $inc: { n: 1 } }, { upsert: true })
+                        .catch(() => {})
+                }
 
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',

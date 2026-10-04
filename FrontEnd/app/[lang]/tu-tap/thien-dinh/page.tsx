@@ -1,7 +1,6 @@
 import { Container } from "@/components/ui/primitives";
-import { PracticeHeader, practiceMetadata } from "@/components/practice/practice-page";
+import { HuongDanSuaDuoc, PracticeHeader, practiceMetadata } from "@/components/practice/practice-page";
 import { MeditationTimer } from "@/components/practice/meditation-timer";
-import { HuongDan } from "@/components/practice/common";
 import { getDictionary } from "@/lib/dictionary";
 
 export const revalidate = 3600;
@@ -18,7 +17,7 @@ export default async function Page() {
     <Container className="flex flex-col gap-8 py-12">
       <PracticeHeader navKey="meditation" href={HREF} />
       <MeditationTimer nhan={dict.practiceTools} />
-      <HuongDan tieuDe={dict.practiceTools.guideTitle} muc={dict.practiceTools.guides.meditation} />
+      <HuongDanSuaDuoc nhom="meditation" />
     </Container>
   );
 }

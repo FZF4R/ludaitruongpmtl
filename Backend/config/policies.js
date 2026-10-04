@@ -92,6 +92,9 @@ module.exports.policies = {
     'System/Public/DayEventController': {
         '*': true
     },
+    'System/Admin/UserActivityController': {
+        '*': ['userPolices', 'requirePermission']
+    },
     'System/Admin/ApprovalController': {
         '*': ['userPolices', 'requirePermission']
     },

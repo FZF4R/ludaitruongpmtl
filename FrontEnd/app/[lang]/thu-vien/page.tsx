@@ -9,7 +9,8 @@ import Image from "next/image";
 import { getSiteSettings, listContent } from "@/lib/api";
 import { getDictionary, getLocale } from "@/lib/dictionary";
 import { anhDanhMucThuVien } from "@/lib/library-images";
-import { LibraryImageEditor } from "@/components/library/library-image-editor";
+import { LibraryImageEditor, LibraryOrderControls } from "@/components/library/library-image-editor";
+import { EditableText } from "@/components/layout/inline-edit";
 import { i18nAlternates } from "@/lib/seo";
 import { libraryKinds, type LibraryKind } from "@/lib/schema";
 import { cn } from "@/lib/utils";
@@ -45,6 +46,9 @@ export default async function LibraryPage(props: { searchParams: Promise<{ muc?:
   const trang = Math.max(1, Number(sp.trang) || 1);
   const [dict, locale, settings] = await Promise.all([getDictionary(), getLocale(), getSiteSettings().catch(() => null)]);
   const anhDaDat = settings?.libraryImages ?? {};
+  // Thứ tự danh mục admin sắp (Chế độ sửa); khoá lạ bị bỏ, khoá thiếu nối vào cuối.
+  const daSap = (settings?.libraryOrder ?? []).filter((k): k is LibraryKind => libraryKinds.includes(k as LibraryKind));
+  const thuTu: LibraryKind[] = [...new Set([...daSap, ...libraryKinds])];
   const kq = await listContent({ type: "library", libraryKind: muc, page: trang, limit: MOI_TRANG }).catch(() => null);
   const ds = kq?.data ?? [];
   const soTrang = kq ? Math.max(1, Math.ceil(kq.total / MOI_TRANG)) : 1;
@@ -65,7 +69,10 @@ export default async function LibraryPage(props: { searchParams: Promise<{ muc?:
         ]}
       />
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <SectionHeading title={dict.library.title} description={dict.library.description} />
+        <SectionHeading
+          title={<EditableText k="library.title" value={dict.library.title} />}
+          description={<EditableText k="library.description" value={dict.library.description} multiline />}
+        />
         <Button variant="outline" asChild>
           <Link href="/tai-khoan/bai-viet?moi=library">
             <PenLine aria-hidden /> {dict.library.contribute}
@@ -76,7 +83,7 @@ export default async function LibraryPage(props: { searchParams: Promise<{ muc?:
       {/* Danh mục dạng thẻ có biểu tượng; bấm lại thẻ đang chọn để xem tất cả. */}
       <nav aria-label={dict.library.title} className="flex flex-col gap-3">
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {libraryKinds.map((k) => {
+          {thuTu.map((k) => {
             const Icon = ICON_DANH_MUC[k];
             const dangChon = muc === k;
             return (
@@ -115,12 +122,15 @@ export default async function LibraryPage(props: { searchParams: Promise<{ muc?:
                   </span>
                   <span className="flex flex-1 flex-col gap-1.5 p-3.5">
                     <span className={cn("font-serif text-base font-bold leading-snug", dangChon ? "text-accent" : "text-ink")}>
-                      {dict.library.kinds[k]}
+                      <EditableText k={`library.kinds.${k}`} value={dict.library.kinds[k]} />
                     </span>
-                    <span className="text-xs leading-relaxed text-muted">{dict.library.kindHints[k]}</span>
+                    <span className="text-xs leading-relaxed text-muted">
+                      <EditableText k={`library.kindHints.${k}`} value={dict.library.kindHints[k]} multiline />
+                    </span>
                   </span>
                 </Link>
                 <LibraryImageEditor kind={k} ten={dict.library.kinds[k]} daDat={anhDaDat} locale={locale} />
+                <LibraryOrderControls kind={k} thuTu={thuTu} locale={locale} />
               </li>
             );
           })}

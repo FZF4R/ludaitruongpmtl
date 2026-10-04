@@ -2,10 +2,9 @@ import { CalendarDays } from "lucide-react";
 import { Container, SectionHeading } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { LocaleLink } from "@/components/ui/locale-link";
-import { PracticeHeader, practiceMetadata } from "@/components/practice/practice-page";
+import { HuongDanSuaDuoc, PracticeHeader, practiceMetadata } from "@/components/practice/practice-page";
 import { PrayerWall } from "@/components/home/prayer-wall";
 import { PrayerSounds } from "@/components/practice/prayer-sounds";
-import { HuongDan } from "@/components/practice/common";
 import { getDictionary } from "@/lib/dictionary";
 
 export const revalidate = 3600;
@@ -29,7 +28,7 @@ export default async function Page() {
         <PrayerWall nhan={dict.prayers} />
       </section>
 
-      <HuongDan tieuDe={dict.practiceTools.guideTitle} muc={dict.practiceTools.guides.prayers} />
+      <HuongDanSuaDuoc nhom="prayers" />
 
       <div>
         <Button variant="outline" asChild>

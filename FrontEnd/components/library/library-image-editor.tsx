@@ -147,3 +147,62 @@ export function SettingImageEditor({
 export function LibraryImageEditor(props: Omit<React.ComponentProps<typeof SettingImageEditor>, "truong">) {
   return <SettingImageEditor truong="libraryImages" {...props} />;
 }
+
+/**
+ * Nút ← → đổi thứ tự một danh mục Thư viện (Chế độ sửa, quyền system.settings).
+ * Lưu cả mảng thứ tự vào cấu hình site (libraryOrder) rồi tải lại trang.
+ */
+export function LibraryOrderControls({
+  kind,
+  thuTu,
+  locale,
+}: {
+  kind: string;
+  /** Thứ tự đang hiện (đủ các danh mục). */
+  thuTu: string[];
+  locale: Locale;
+}) {
+  const { dangSua, quyen } = useCheDoSua();
+  const router = useRouter();
+  const [dang, setDang] = React.useState(false);
+  if (!dangSua || !quyen.includes("system.settings")) return null;
+
+  const i = thuTu.indexOf(kind);
+  async function doi(huong: -1 | 1) {
+    const j = i + huong;
+    if (i < 0 || j < 0 || j >= thuTu.length) return;
+    const moi = [...thuTu];
+    [moi[i], moi[j]] = [moi[j], moi[i]];
+    setDang(true);
+    try {
+      await luuCauHinh({ libraryOrder: moi }, locale);
+      const token = docToken();
+      if (token) await lamMoiCauHinh(token);
+      router.refresh();
+    } catch (err) {
+      window.alert((err instanceof LoiApi && err.thongDiep) || "Không lưu được thứ tự.");
+    } finally {
+      setDang(false);
+    }
+  }
+
+  const nut =
+    "flex size-7 items-center justify-center rounded-full border border-dashed border-accent bg-surface/95 text-xs font-bold text-accent shadow-sm hover:bg-accent hover:text-paper disabled:opacity-40";
+  return (
+    <div className="absolute left-2 top-2 z-10 flex gap-1">
+      <button type="button" className={nut} disabled={dang || i <= 0} onClick={() => doi(-1)} aria-label="Đưa lên trước" title="Đưa lên trước">
+        ←
+      </button>
+      <button
+        type="button"
+        className={nut}
+        disabled={dang || i < 0 || i >= thuTu.length - 1}
+        onClick={() => doi(1)}
+        aria-label="Đưa ra sau"
+        title="Đưa ra sau"
+      >
+        →
+      </button>
+    </div>
+  );
+}

@@ -45,7 +45,8 @@ export const mainNav: NavItem[] = [
   { href: "/bai-viet", key: "articles" },
   { href: "/tu-tap", key: "practice", children: practiceNav },
   { href: "/thu-vien", key: "library" },
-  { href: "/phat-lich", key: "calendar" },
+  // "Phật lịch" bỏ khỏi menu: lịch đã có ở trang chủ và trang Quá trình tu tập;
+  // trang /phat-lich vẫn còn (các link "Xem Phật lịch" vẫn dẫn tới).
   { href: "/qua-trinh-tu-tap", key: "journey" },
   { href: "/ve-chung-toi", key: "about" },
 ];
@@ -79,7 +80,6 @@ export const footerNav: {
       { href: "/bai-viet", key: "articles" },
       { href: "/bai-giang", key: "talks" },
       { href: "/thu-vien", key: "library" },
-      { href: "/phat-lich", key: "calendar" },
     ],
   },
   {

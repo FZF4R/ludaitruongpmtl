@@ -79,6 +79,8 @@ const actionPermissions = {
 
   //==== Phê duyệt bình luận / lời nguyện chứa từ cấm (Kiểm duyệt viên trở lên) =====
   'GET /v1/admin/approval': 'comment.moderate',
+  // Hoạt động một tài khoản: ai xem được danh sách người dùng thì xem được; email chỉ trả khi có user.manage.
+  'GET /v1/admin/user/activity': 'user.list',
   'GET /v1/admin/approval/reports': 'comment.moderate',
   'POST /v1/admin/approval/reports/handle': 'comment.moderate',
   'POST /v1/admin/approval/approve': 'comment.moderate',

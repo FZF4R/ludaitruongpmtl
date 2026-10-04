@@ -27,6 +27,7 @@ import {
   type NhatKyBai,
   type NguoiChon,
   type BaiTomTat,
+  type SapXepBai,
   type Chuong,
   type ChuyenMuc,
   type LoaiNoiDung,
@@ -90,6 +91,8 @@ export function ContentPanel({
   const [tuKhoa, setTuKhoa] = React.useState("");
   const [daGui, setDaGui] = React.useState("");
   const [trang, setTrang] = React.useState(1);
+  const [sapXep, setSapXep] = React.useState<SapXepBai>("updated");
+  const [tongQuan, setTongQuan] = React.useState<{ views: number; viewsToday: number; commentsToday: number } | null>(null);
 
   const [danhSach, setDanhSach] = React.useState<BaiTomTat[]>([]);
   const [tong, setTong] = React.useState(0);
@@ -114,17 +117,18 @@ export function ContentPanel({
     setDangTai(true);
     setLoi("");
     layDanhSachBai(
-      { type: loai, status: locTrangThai || undefined, q: daGui, page: trang, limit: MOI_TRANG },
+      { type: loai, status: locTrangThai || undefined, q: daGui, page: trang, limit: MOI_TRANG, sort: sapXep },
       locale,
     )
       .then((kq) => {
         setDanhSach(kq.data ?? []);
         setTong(kq.total ?? 0);
         setThongKe(kq.stats ?? {});
+        setTongQuan(kq.overview ?? null);
       })
       .catch((err) => setLoi(chuLoi(err, "Không tải được danh sách.")))
       .finally(() => setDangTai(false));
-  }, [loai, locTrangThai, daGui, trang, locale]);
+  }, [loai, locTrangThai, daGui, trang, locale, sapXep]);
 
   React.useEffect(nap, [nap]);
 
@@ -178,6 +182,23 @@ export function ContentPanel({
 
       <HopLoi loi={loi} thuLai={nap} />
 
+      {/* Tổng quan cả mục: số bài, tổng lượt xem, lượt xem và bình luận hôm nay. */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {(
+          [
+            ["Số bài", tongTatCa],
+            ["Tổng lượt xem", tongQuan?.views ?? 0],
+            ["Lượt xem hôm nay", tongQuan?.viewsToday ?? 0],
+            ["Bình luận hôm nay", tongQuan?.commentsToday ?? 0],
+          ] as const
+        ).map(([nhan, so]) => (
+          <Card key={nhan} className="flex flex-col gap-0.5 p-4">
+            <span className="text-xs text-muted">{nhan}</span>
+            <span className="font-serif text-2xl font-bold tabular-nums text-ink">{so.toLocaleString("vi-VN")}</span>
+          </Card>
+        ))}
+      </div>
+
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex flex-wrap gap-1.5">
           <NutLoc
@@ -219,7 +240,7 @@ export function ContentPanel({
             <Input
               value={tuKhoa}
               onChange={(e) => setTuKhoa(e.target.value)}
-              placeholder="Tìm theo tiêu đề…"
+              placeholder="Tìm theo tiêu đề, tác giả, thẻ…"
               aria-label="Tìm bài"
               className="pl-9"
             />
@@ -228,29 +249,51 @@ export function ContentPanel({
             Tìm
           </Button>
         </form>
+        <label className="flex items-center gap-2 text-sm text-muted">
+          Sắp xếp
+          <Select
+            value={sapXep}
+            onChange={(e) => {
+              setSapXep(e.target.value as SapXepBai);
+              setTrang(1);
+            }}
+            className="h-9 w-auto"
+            aria-label="Sắp xếp"
+          >
+            <option value="updated">Mới cập nhật</option>
+            <option value="newest">Bài mới nhất</option>
+            <option value="oldest">Bài cũ nhất</option>
+            <option value="views">Nhiều lượt xem nhất</option>
+            <option value="title">Theo tên (A–Z)</option>
+          </Select>
+        </label>
       </div>
 
       <Card className="flex flex-col overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[46rem] text-sm">
+          <table className="w-full min-w-[60rem] text-sm">
             <thead>
               <tr className="border-b border-line bg-surface-2 text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-4 py-2.5 font-medium">Tiêu đề</th>
                 <th className="px-4 py-2.5 font-medium">Trạng thái</th>
-                <th className="px-4 py-2.5 font-medium">Cập nhật</th>
+                <th className="px-3 py-2.5 text-right font-medium" title="Tổng lượt xem">Lượt xem</th>
+                <th className="px-3 py-2.5 text-right font-medium" title="Lượt xem hôm nay (giờ Việt Nam)">Hôm nay</th>
+                <th className="px-3 py-2.5 text-right font-medium" title="Lượt xem 7 ngày gần nhất">7 ngày</th>
+                <th className="px-3 py-2.5 text-right font-medium" title="Bình luận đang hiện (bị giữ chờ duyệt)">Bình luận</th>
+                <th className="px-4 py-2.5 font-medium">Tạo / cập nhật</th>
                 <th className="px-4 py-2.5 font-medium">Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {dangTai ? (
                 <tr>
-                  <td colSpan={4} className="px-4 py-10 text-center text-muted">
+                  <td colSpan={8} className="px-4 py-10 text-center text-muted">
                     Đang tải…
                   </td>
                 </tr>
               ) : danhSach.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-4 py-10 text-center text-muted">
+                  <td colSpan={8} className="px-4 py-10 text-center text-muted">
                     Chưa có bài nào ở mục này.
                   </td>
                 </tr>
@@ -286,7 +329,27 @@ export function ContentPanel({
                     <td className="px-4 py-3">
                       <Badge tone={tongMau[bai.status]}>{nhanTrangThai[bai.status]}</Badge>
                     </td>
-                    <td className="px-4 py-3 tabular-nums text-muted">{gonNgay(bai.updatedAt)}</td>
+                    <td className="px-3 py-3 text-right tabular-nums text-ink">{(bai.viewCount ?? 0).toLocaleString("vi-VN")}</td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {bai.metrics?.viewsToday ? (
+                        <span className="font-semibold text-accent">+{bai.metrics.viewsToday}</span>
+                      ) : (
+                        <span className="text-muted">0</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-3 text-right tabular-nums text-muted">{bai.metrics?.viewsWeek ?? 0}</td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      <span className="text-ink">{bai.metrics?.comments ?? 0}</span>
+                      {bai.metrics?.commentsFlagged ? (
+                        <span className="ml-1 text-xs text-lacquer" title="Bị giữ chờ duyệt">
+                          ({bai.metrics.commentsFlagged})
+                        </span>
+                      ) : null}
+                    </td>
+                    <td className="px-4 py-3 text-xs tabular-nums text-muted">
+                      <span className="block">{gonNgay(bai.createdAt)}</span>
+                      <span className="block opacity-80">↻ {gonNgay(bai.updatedAt)}</span>
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1.5">
                         <Button size="sm" variant="outline" asChild>

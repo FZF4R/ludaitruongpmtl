@@ -495,6 +495,8 @@ export type BaiTomTat = {
   reviewNote: string;
   /** Đề xuất sửa đang chờ tác giả (bài do người dùng viết). */
   pendingEdit: { byName: string; at: string; note: string; changedFields: string[] } | null;
+  /** Chỉ có ở danh sách: lượt xem hôm nay / 7 ngày, bình luận đang hiện / bị giữ. */
+  metrics?: { viewsToday: number; viewsWeek: number; comments: number; commentsFlagged: number };
 };
 
 export type DauVetBai = {
@@ -577,7 +579,11 @@ export type DanhSachBai = {
   limit: number;
   /** Số bài theo từng trạng thái, đã lọc theo `type` — để hiện số trên tab. */
   stats: Record<TrangThai, number>;
+  /** Tổng quan cả loại đang xem. */
+  overview?: { views: number; viewsToday: number; commentsToday: number };
 };
+
+export type SapXepBai = "updated" | "newest" | "oldest" | "views" | "title";
 
 export function layDanhSachBai(
   {
@@ -586,11 +592,12 @@ export function layDanhSachBai(
     q,
     page = 1,
     limit = 20,
-  }: { type?: string; status?: string; q?: string; page?: number; limit?: number },
+    sort,
+  }: { type?: string; status?: string; q?: string; page?: number; limit?: number; sort?: SapXepBai },
   locale: Locale,
 ) {
   return goiApi<DanhSachBai>("/v1/admin/content/list", {
-    query: { type, status, q, page, limit },
+    query: { type, status, q, page, limit, sort },
     locale,
   });
 }
@@ -858,4 +865,65 @@ export function layBaoCao(page: number, locale: Locale) {
 /** hide = ẩn bình luận (báo cáo đúng); dismiss = bỏ qua. */
 export function xuLyBaoCao(id: string, action: "hide" | "dismiss", locale: Locale) {
   return goiApi<{ id: string }>("/v1/admin/approval/reports/handle", { method: "POST", body: { id, action }, locale });
+}
+
+/* ------------------------------------------------------------------ */
+/* Toàn bộ hoạt động một tài khoản (/admin/user/hoat-dong)             */
+/* ------------------------------------------------------------------ */
+
+export type HoatDongNguoiDung = {
+  user: {
+    id: string;
+    username: string;
+    /** Chỉ có khi người xem có user.manage. */
+    email: string;
+    name: string;
+    dharmaName: string;
+    role: string;
+    status: number;
+    banned: boolean;
+    warningCount: number;
+    avatarUrl: string;
+    createdAt: string;
+    lastLogin: string;
+    profile: { nickname: string; hometown: { province?: string; detail?: string }; survey: Record<string, unknown> } | null;
+  };
+  merit: { total: number; today: number; byAction: Record<string, { points: number; times: number }> };
+  checkinDays: number;
+  practice: {
+    totals: { type: string; amount: number; sessions: number; last: string }[];
+    recent: { id: string; type: string; amount: number; note: string; createdAt: string }[];
+  };
+  contents: {
+    id: string;
+    type: LoaiNoiDung;
+    libraryKind: string;
+    slug: string;
+    title: string;
+    status: TrangThai;
+    viewCount: number;
+    createdAt: string;
+    approvedAt: string;
+    approvedByName: string;
+  }[];
+  comments: {
+    total: number;
+    page: number;
+    limit: number;
+    byStatus: { visible: number; hidden: number; flagged: number };
+    data: {
+      id: string;
+      body: string;
+      status: "visible" | "hidden" | "flagged";
+      flaggedWords: string[];
+      parentId: string;
+      createdAt: string;
+      content: { slug: string; title: string; type: string };
+    }[];
+  };
+  prayers: { id: string; body: string; forName: string; status: string; anonymous: boolean; createdAt: string }[];
+};
+
+export function layHoatDongNguoiDung(id: string, commentPage: number, locale: Locale) {
+  return goiApi<HoatDongNguoiDung>("/v1/admin/user/activity", { query: { id, commentPage }, locale });
 }

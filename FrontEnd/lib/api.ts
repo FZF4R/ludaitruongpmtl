@@ -259,6 +259,8 @@ export type SiteSettings = {
   practiceImages?: Partial<Record<"chantingRecitation" | "meditation" | "woodenFishMala" | "prayers", string>>;
   /** Ảnh đại diện danh mục Thư viện (lib/library-images.ts). */
   libraryImages?: Partial<Record<"anh" | "review" | "bo-tat" | "nhac-thien" | "audio-kinh", string>>;
+  /** Thứ tự danh mục Thư viện (Chế độ sửa). */
+  libraryOrder?: string[];
 };
 
 /**

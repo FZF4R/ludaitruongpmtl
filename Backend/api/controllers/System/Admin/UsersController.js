@@ -344,6 +344,14 @@ module.exports = {
                     }
                     updateObject.libraryImages = ra
                 }
+                // Thứ tự danh mục Thư viện: chỉ nhận các khoá hợp lệ, bỏ trùng; khoá thiếu nối vào cuối.
+                if (inputs.libraryOrder !== undefined) {
+                    const DM = ['anh', 'review', 'bo-tat', 'nhac-thien', 'audio-kinh']
+                    let vao = Array.isArray(inputs.libraryOrder) ? inputs.libraryOrder.map(String) : []
+                    let ra = Array.from(new Set(vao.filter(k => DM.includes(k))))
+                    DM.forEach(k => { if (!ra.includes(k)) ra.push(k) })
+                    updateObject.libraryOrder = ra
+                }
                 // Trang Về chúng tôi: HTML theo ngôn ngữ, mỗi bản tối đa 200.000 ký tự.
                 // Lọc thẻ / thuộc tính nguy hiểm làm ở FrontEnd lúc hiển thị (lib/sanitize.ts).
                 if (inputs.aboutHtml !== undefined) {
