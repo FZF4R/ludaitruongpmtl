@@ -111,7 +111,15 @@
     "description": "로그인하면 글을 저장하고 청취 진도를 기록하며 여러 기기에서 이어볼 수 있습니다.",
     "signIn": "로그인",
     "myContent": "내 글",
-    "stats": "통계 및 공덕"
+    "stats": "통계 및 공덕",
+    "contribTitle": "기여 기록",
+    "contribAll": "기여한 글",
+    "contribApproved": "승인된 글",
+    "contribEmpty": "아직 글이 없습니다.",
+    "approvedOn": "{date} 승인",
+    "approvedBy": "승인자 {name}",
+    "createdOn": "{date} 제출",
+    "manage": "글 관리"
   },
   "auth": {
     "eyebrow": "내 계정",
@@ -327,7 +335,10 @@
     "deletedByModerator": "관리자가 삭제한 댓글입니다",
     "viewDeleted": "내용 보기",
     "hideDeleted": "숨기기",
-    "deletedBy": "삭제한 사람: {name}"
+    "deletedBy": "삭제한 사람: {name}",
+    "report": "신고",
+    "reportPrompt": "이 댓글을 신고하는 이유 (선택):",
+    "reportSent": "신고가 접수되었습니다. 관리자가 검토합니다."
   },
   "homeCalendar": {
     "eyebrow": "불교 달력",
@@ -644,6 +655,13 @@
       "none": "재생 안 함",
       "tapBead": "눌러서 한 알 넘기기",
       "beads": "{n}알"
+    },
+    "journeyCal": {
+      "title": "수행 달력",
+      "meritLegend": "공덕을 쌓은 날",
+      "points": "+{n} 공덕",
+      "practiceLine": "{type}: {amount}{unit}",
+      "empty": "이 날은 활동이 없습니다."
     }
   },
   "myContent": {

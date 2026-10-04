@@ -66,7 +66,9 @@ const dinhDang = (row, { day = false } = {}) => {
         createdAt: sangISO(row.createdAt),
         updatedAt: sangISO(row.updatedAt),
         publishedAt: row.publishedAt || '',
-        hasProposal: !!(row.pendingEdit && row.pendingEdit.at)
+        hasProposal: !!(row.pendingEdit && row.pendingEdit.at),
+        approvedAt: sangISO(row.approvedAt),
+        approvedByName: row.approvedByName || ''
     }
     if (day) {
         kq.bodyHtml = row.bodyHtml || ''

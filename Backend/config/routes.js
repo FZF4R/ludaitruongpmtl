@@ -96,6 +96,8 @@ module.exports.routes = {
     'GET  /v1/user/stats': 'System.Users.MeritController.getStats',
     // Noi dung binh luan da xoa (kiem duyet vien).
     'GET  /v1/user/comments/deleted': 'System.Users.CommentController.getDeleted',
+    'POST /v1/user/comments/report': 'System.Users.CommentController.reportComment',
+    'GET  /v1/user/merit/days': 'System.Users.MeritController.getDays',
     'POST /v1/user/prayers': 'System.Users.PrayerController.addPrayer',
     'POST /v1/user/prayers/delete': 'System.Users.PrayerController.deletePrayer',
 
@@ -138,6 +140,8 @@ module.exports.routes = {
 
     //==== Phe duyet: binh luan / loi nguyen chua tu cam =====
     'GET  /v1/admin/approval': 'System.Admin.ApprovalController.listPending',
+    'GET  /v1/admin/approval/reports': 'System.Admin.ApprovalController.listReports',
+    'POST /v1/admin/approval/reports/handle': 'System.Admin.ApprovalController.handleReport',
     'POST /v1/admin/approval/approve': 'System.Admin.ApprovalController.approve',
     'POST /v1/admin/approval/reject': 'System.Admin.ApprovalController.reject',
 

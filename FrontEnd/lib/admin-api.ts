@@ -773,7 +773,7 @@ export type MucChoDuyet = {
 
 export type DanhSachChoDuyet = {
   type: "comment" | "prayer";
-  counts: { comment: number; prayer: number };
+  counts: { comment: number; prayer: number; report?: number };
   total: number;
   page: number;
   data: MucChoDuyet[];
@@ -834,4 +834,28 @@ export function luuSuKienNgay(than: SuKienNgayGui, locale: Locale) {
 
 export function xoaSuKienNgay(id: string, locale: Locale) {
   return goiApi<{ id: string }>("/v1/admin/day-events/delete", { method: "POST", body: { id }, locale });
+}
+
+/* Báo cáo bình luận (tab Phê duyệt → Báo cáo) */
+export type BinhLuanBiBaoCao = {
+  id: string;
+  body: string;
+  status: string;
+  parentId: string;
+  createdAt: string;
+  author: MucChoDuyet["author"];
+  content: { slug: string; title: string; type: string };
+  reports: { reporterName: string; reason: string; createdAt: string }[];
+};
+
+export function layBaoCao(page: number, locale: Locale) {
+  return goiApi<{ total: number; page: number; data: BinhLuanBiBaoCao[] }>("/v1/admin/approval/reports", {
+    query: { page },
+    locale,
+  });
+}
+
+/** hide = ẩn bình luận (báo cáo đúng); dismiss = bỏ qua. */
+export function xuLyBaoCao(id: string, action: "hide" | "dismiss", locale: Locale) {
+  return goiApi<{ id: string }>("/v1/admin/approval/reports/handle", { method: "POST", body: { id, action }, locale });
 }

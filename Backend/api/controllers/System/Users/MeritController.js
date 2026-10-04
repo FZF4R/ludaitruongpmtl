@@ -36,6 +36,45 @@ module.exports = {
         }
     }),
 
+    /**
+     * Công đức và tu tập theo ngày trong khoảng [from, to] (YYYY-MM-DD) - cho
+     * lịch ở trang Quá trình tu tập. Tối đa 400 ngày.
+     */
+    getDays: ({
+        inputs: sails.config.inputs.Users.Merit.getDays,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let NGAY = /^\d{4}-\d{2}-\d{2}$/
+                if (!NGAY.test(inputs.from) || !NGAY.test(inputs.to) || inputs.from > inputs.to) return ok(exits, [])
+                if ((Date.parse(inputs.to) - Date.parse(inputs.from)) / MOT_NGAY > 400) return ok(exits, [])
+                let id = String(inputs.User.id)
+                let khoang = { $gte: inputs.from, $lte: inputs.to }
+                let [diem, tuTap] = await Promise.all([
+                    bangCongDuc().aggregate([
+                        { $match: { userId: id, dayKey: khoang } },
+                        { $group: { _id: { d: '$dayKey', a: '$action' }, n: { $sum: '$points' }, lan: { $sum: 1 } } }
+                    ]).toArray(),
+                    col(PracticeLog).aggregate([
+                        { $match: { userId: id, dayKey: khoang } },
+                        { $group: { _id: { d: '$dayKey', t: '$type' }, amount: { $sum: '$amount' }, lan: { $sum: 1 } } }
+                    ]).toArray()
+                ])
+                let ngay = {}
+                const lay = d => (ngay[d] = ngay[d] || { day: d, points: 0, merit: [], practice: [] })
+                diem.forEach(x => {
+                    let n = lay(x._id.d)
+                    n.points += x.n
+                    n.merit.push({ action: x._id.a, points: x.n, times: x.lan })
+                })
+                tuTap.forEach(x => lay(x._id.d).practice.push({ type: x._id.t, amount: x.amount, sessions: x.lan }))
+                ok(exits, Object.values(ngay).sort((a, b) => (a.day < b.day ? -1 : 1)))
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
     getStats: ({
         inputs: sails.config.inputs.Users.Merit.getStats,
         exits: sails.config.responseType,

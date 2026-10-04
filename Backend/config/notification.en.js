@@ -312,6 +312,18 @@ module.exports.notificationEn = {
         prayerFlagged: {
             message: "Your prayer contains inappropriate words and is awaiting review"
         },
+        reportSelf: {
+            message: "You cannot report your own comment"
+        },
+        reportDuplicate: {
+            message: "You have already reported this comment"
+        },
+        reportLimit: {
+            message: "You have reached the limit of 20 reports today"
+        },
+        reportSent: {
+            message: "Report sent, moderators will review it"
+        },
         commentInvalid: {
             message: "Comments must be 2 to 2000 characters long"
         },

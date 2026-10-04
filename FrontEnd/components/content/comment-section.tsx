@@ -3,12 +3,12 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CornerDownRight, MessageCircle, Reply, ShieldAlert, Trash2 } from "lucide-react";
+import { CornerDownRight, Flag, MessageCircle, Reply, ShieldAlert, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { useCheDoSua } from "@/components/layout/inline-edit";
 import { LoiApi } from "@/lib/auth";
-import { guiBinhLuan, layBinhLuan, layBinhLuanDaXoa, xoaBinhLuan, type BinhLuan } from "@/lib/comments";
+import { baoCaoBinhLuan, guiBinhLuan, layBinhLuan, layBinhLuanDaXoa, xoaBinhLuan, type BinhLuan } from "@/lib/comments";
 import { layBinhLuanViPham, xoaHanBinhLuan, type BinhLuanViPham } from "@/lib/admin-api";
 import { localePath, splitLocale, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -56,6 +56,9 @@ export type NhanBinhLuan = {
   viewDeleted: string;
   hideDeleted: string;
   deletedBy: string;
+  report: string;
+  reportPrompt: string;
+  reportSent: string;
 };
 
 const DAI_TOI_DA = 2000;
@@ -176,6 +179,19 @@ export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLua
   }
 
   const coTheXoa = (bl: BinhLuan) => !bl.deleted && (bl.userId === nguoiDungId || duocKiemDuyet);
+  // Báo cáo: người đã đăng nhập, bình luận của người khác, chưa bị xoá.
+  const coTheBaoCao = (bl: BinhLuan) => !!nguoiDungId && !bl.deleted && bl.userId !== nguoiDungId;
+
+  async function baoCao(bl: BinhLuan) {
+    const lyDo = window.prompt(nhan.reportPrompt, "");
+    if (lyDo === null) return;
+    try {
+      await baoCaoBinhLuan(bl.id, lyDo.trim(), locale);
+      window.alert(nhan.reportSent);
+    } catch (err) {
+      window.alert((err instanceof LoiApi && err.thongDiep) || nhan.sendError);
+    }
+  }
   const coTheTraLoi = !!nguoiDungId && duocViet;
 
   return (
@@ -222,6 +238,7 @@ export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLua
                 coTheXoa={coTheXoa(goc)}
                 coTheTraLoi={coTheTraLoi && !goc.deleted}
                 xemLai={duocKiemDuyet}
+                onBaoCao={coTheBaoCao(goc) ? () => baoCao(goc) : undefined}
                 onTraLoi={() => setDangTraLoi(dangTraLoi === goc.id ? null : goc.id)}
                 onXoa={() => xoa(goc)}
               />
@@ -239,6 +256,7 @@ export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLua
                         coTheXoa={coTheXoa(r)}
                         coTheTraLoi={coTheTraLoi && !r.deleted}
                         xemLai={duocKiemDuyet}
+                        onBaoCao={coTheBaoCao(r) ? () => baoCao(r) : undefined}
                         onTraLoi={() => setDangTraLoi(dangTraLoi === r.id ? null : r.id)}
                         onXoa={() => xoa(r)}
                       />
@@ -314,8 +332,11 @@ function MotBinhLuan({
   xemLai = false,
   onTraLoi,
   onXoa,
+  onBaoCao,
 }: {
   bl: BinhLuan;
+  /** Có thì hiện nút Báo cáo. */
+  onBaoCao?: () => void;
   /** Kiểm duyệt viên: xem lại nội dung bình luận đã xoá. */
   xemLai?: boolean;
   nhan: NhanBinhLuan;
@@ -383,6 +404,15 @@ function MotBinhLuan({
               className="flex items-center gap-1 text-muted hover:text-lacquer"
             >
               <Trash2 className="size-3.5" aria-hidden /> {nhan.delete}
+            </button>
+          ) : null}
+          {onBaoCao ? (
+            <button
+              type="button"
+              onClick={onBaoCao}
+              className="ml-auto flex items-center gap-1 text-muted hover:text-lacquer"
+            >
+              <Flag className="size-3.5" aria-hidden /> {nhan.report}
             </button>
           ) : null}
         </div>

@@ -21,6 +21,9 @@ const CACH_NHAU_MS = 20 * 1000
  * trò không có ở đây (Kiểm duyệt viên trở lên) không bị giới hạn. Đếm cả bình
  * luận đã xoá / bị giữ lại - xoá đi viết lại không lách được giới hạn.
  */
+/** Mỗi người tối đa chừng này báo cáo bình luận mỗi ngày. */
+const BAO_CAO_TOI_DA_NGAY = 20
+
 const GIOI_HAN = {
     User: { moiBai: 5, moiNgay: 50 },
     Partner: { moiBai: 5, moiNgay: 100 }
@@ -164,6 +167,40 @@ module.exports = {
         }
     }),
 
+
+    /**
+     * Báo cáo một bình luận không phù hợp. Không báo cáo bình luận của chính
+     * mình; mỗi bình luận một lần; tối đa 20 báo cáo / ngày.
+     */
+    reportComment: ({
+        inputs: sails.config.inputs.Users.Comment.reportComment,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let { User } = inputs
+                let bl = await Comment.findOne({ id: String(inputs.id) })
+                if (!bl || bl.status !== 'visible') return baoLoi(exits, 'commentNotFound')
+                if (String(bl.userId) === String(User.id)) return baoLoi(exits, 'reportSelf')
+                if (await CommentReport.findOne({ commentId: String(bl.id), reporterId: String(User.id) })) {
+                    return baoLoi(exits, 'reportDuplicate')
+                }
+                let homNay = ngayVN()
+                if (await CommentReport.count({ reporterId: String(User.id), dayKey: homNay }) >= BAO_CAO_TOI_DA_NGAY) {
+                    return baoLoi(exits, 'reportLimit')
+                }
+                await CommentReport.create({
+                    commentId: String(bl.id),
+                    contentId: String(bl.contentId || ''),
+                    reporterId: String(User.id),
+                    reason: String(inputs.reason || '').replace(/\s+/g, ' ').trim().slice(0, 300),
+                    dayKey: homNay
+                })
+                exits.successRequest({ messageNode: 'Users', message: 'reportSent', data: { id: String(bl.id) } });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
 
     /** Nội dung bình luận đã xoá - chỉ người có `comment.moderate` (kiểm tra ở config/permissions.js). */
     getDeleted: ({

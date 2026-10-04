@@ -66,3 +66,8 @@ export function layBinhLuanDaXoa(id: string, locale: Locale) {
     locale,
   });
 }
+
+/** Báo cáo bình luận không phù hợp (tối đa 20 lần / ngày, backend chặn). */
+export function baoCaoBinhLuan(id: string, reason: string, locale: Locale) {
+  return goiApi<{ id: string }>("/v1/user/comments/report", { method: "POST", body: { id, reason }, locale });
+}

@@ -61,6 +61,7 @@ export function MonthCalendar({
   onChonNgay,
   suKien,
   quanTriTaiCho = true,
+  ghiChu,
 }: {
   thang: ThangLich[];
   /** "YYYY-MM-DD" theo giờ Việt Nam. */
@@ -77,6 +78,11 @@ export function MonthCalendar({
   suKien?: SuKienNgayDuong[];
   /** false: không hiện nút thêm / sửa / xoá trong lịch (form nằm chỗ khác). */
   quanTriTaiCho?: boolean;
+  /**
+   * Ghi chú riêng từng ngày (vd. công đức, tu tập ở trang Quá trình tu tập):
+   * `nhanO` hiện nhỏ ở góc ô, `dong` hiện ở khung chi tiết khi chọn ngày.
+   */
+  ghiChu?: Record<string, { nhanO?: string; dong: string[] }>;
 }) {
   const { locale } = splitLocale(usePathname());
   const [iRieng, setIRieng] = React.useState(0);
@@ -174,6 +180,7 @@ export function MonthCalendar({
             const dangChon = o.iso === chon && o.thuocThang;
             const coSuKien = o.suKien.length > 0;
             const skNgay = o.thuocThang ? (theoNgay.get(o.iso) ?? []) : [];
+            const gc = o.thuocThang ? ghiChu?.[o.iso] : undefined;
             const cot = idx % 7;
             // Thẻ Card cắt phần tràn: hai hàng đầu cho tooltip xuống dưới ô, các hàng sau lên trên.
             const xuongDuoi = Math.floor(idx / 7) < 2;
@@ -209,6 +216,11 @@ export function MonthCalendar({
                 >
                   {o.am === 1 ? `${o.am}/${o.thangAm}` : o.am}
                 </span>
+                {gc?.nhanO ? (
+                  <span className="absolute right-0.5 top-0.5 rounded bg-accent-soft px-0.5 text-[9px] font-bold leading-tight text-accent tabular-nums">
+                    {gc.nhanO}
+                  </span>
+                ) : null}
                 {/* Chấm ở chân ô: xanh = ngày Trai, vàng = có sự kiện. */}
                 <span className="absolute bottom-1 flex gap-0.5">
                   {o.trai ? <span className="size-1.5 rounded-full bg-emerald-600" /> : null}
@@ -254,6 +266,11 @@ export function MonthCalendar({
             {ngayChon.trai ? (
               <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400">● {nhan.traiDay}</span>
             ) : null}
+            {ghiChu?.[ngayChon.iso]?.dong.map((d, k) => (
+              <span key={k} className="text-xs font-medium text-accent">
+                ✦ {d}
+              </span>
+            ))}
             {skChon.map((e) => (
               <SuKienNgayChiTiet
                 key={e.id}
@@ -281,7 +298,7 @@ export function MonthCalendar({
                   <span className="text-muted"> · {nhan.eventKind[s.kind] ?? s.kind}</span>
                 </span>
               ))
-            ) : !ngayChon.trai && !skChon.length ? (
+            ) : !ngayChon.trai && !skChon.length && !ghiChu?.[ngayChon.iso] ? (
               <span className="text-xs text-muted">{nhan.noEventDay}</span>
             ) : null}
             {quanTri ? (

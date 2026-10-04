@@ -235,6 +235,19 @@ module.exports.inputs = {
                 "User": {
                     "type": "json"
                 }
+            },
+            "getDays": {
+                "User": {
+                    "type": "json"
+                },
+                "from": {
+                    "type": "string",
+                    "defaultsTo": ""
+                },
+                "to": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
             }
         },
         "Practice": {
@@ -420,6 +433,19 @@ module.exports.inputs = {
                 "id": {
                     "type": "string",
                     "required": true
+                }
+            },
+            "reportComment": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "reason": {
+                    "type": "string",
+                    "defaultsTo": ""
                 }
             }
         },
@@ -639,6 +665,29 @@ module.exports.inputs = {
             }
         },
         "Approval": {
+            "listReports": {
+                "User": {
+                    "type": "json"
+                },
+                "page": {
+                    "type": "number",
+                    "defaultsTo": 1,
+                    "min": 1
+                }
+            },
+            "handleReport": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "action": {
+                    "type": "string",
+                    "required": true
+                }
+            },
             "listPending": {
                 "User": {
                     "type": "json"

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container, SectionHeading } from "@/components/ui/primitives";
 import { Breadcrumbs } from "@/components/content/navigation";
 import { AccountPanel } from "@/components/auth/account-panel";
+import { ContributionHistory } from "@/components/account/contribution-history";
 import { getDictionary } from "@/lib/dictionary";
 
 /**
@@ -39,6 +40,7 @@ export default async function AccountPage() {
       />
 
       <AccountPanel nhanAuth={dict.auth} nhanHoSo={dict.onboarding} nhanTaiKhoan={dict.account} />
+      <ContributionHistory nhan={dict.account} nhanBai={dict.myContent} nhanThuVien={dict.library} />
     </Container>
   );
 }

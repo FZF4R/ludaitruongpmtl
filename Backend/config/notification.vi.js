@@ -312,6 +312,18 @@ module.exports.notificationVi = {
         prayerFlagged: {
             message: "Lời nguyện chứa từ ngữ chưa phù hợp, đang chờ ban quản trị duyệt"
         },
+        reportSelf: {
+            message: "Không thể báo cáo bình luận của chính bạn"
+        },
+        reportDuplicate: {
+            message: "Bạn đã báo cáo bình luận này rồi"
+        },
+        reportLimit: {
+            message: "Bạn đã báo cáo tối đa 20 bình luận hôm nay"
+        },
+        reportSent: {
+            message: "Đã gửi báo cáo, ban kiểm duyệt sẽ xem xét"
+        },
         commentInvalid: {
             message: "Bình luận phải dài từ 2 đến 2000 ký tự"
         },

@@ -111,7 +111,15 @@
     "description": "Sign in to save readings, keep your listening progress, and sync across devices.",
     "signIn": "Sign in",
     "myContent": "My posts",
-    "stats": "Stats & merit"
+    "stats": "Stats & merit",
+    "contribTitle": "Contribution history",
+    "contribAll": "Contributed",
+    "contribApproved": "Approved",
+    "contribEmpty": "No posts yet.",
+    "approvedOn": "Approved {date}",
+    "approvedBy": "by {name}",
+    "createdOn": "Submitted {date}",
+    "manage": "Manage posts"
   },
   "auth": {
     "eyebrow": "Your account",
@@ -327,7 +335,10 @@
     "deletedByModerator": "Comment removed by a moderator",
     "viewDeleted": "View content",
     "hideDeleted": "Hide",
-    "deletedBy": "Deleted by: {name}"
+    "deletedBy": "Deleted by: {name}",
+    "report": "Report",
+    "reportPrompt": "Why are you reporting this comment? (optional)",
+    "reportSent": "Report sent, moderators will review it."
   },
   "homeCalendar": {
     "eyebrow": "Buddhist calendar",
@@ -644,6 +655,13 @@
       "none": "None",
       "tapBead": "Tap to move a bead",
       "beads": "{n} beads"
+    },
+    "journeyCal": {
+      "title": "Practice calendar",
+      "meritLegend": "Merit earned",
+      "points": "+{n} merit",
+      "practiceLine": "{type}: {amount} {unit}",
+      "empty": "No activity on this day."
     }
   },
   "myContent": {

@@ -111,7 +111,15 @@
     "description": "Đăng nhập để lưu bài, đánh dấu tiến độ nghe và đồng bộ giữa các thiết bị.",
     "signIn": "Đăng nhập",
     "myContent": "Bài viết của tôi",
-    "stats": "Thống kê & công đức"
+    "stats": "Thống kê & công đức",
+    "contribTitle": "Lịch sử đóng góp",
+    "contribAll": "Đã đóng góp",
+    "contribApproved": "Đã được duyệt",
+    "contribEmpty": "Chưa có bài đăng nào.",
+    "approvedOn": "Duyệt {date}",
+    "approvedBy": "bởi {name}",
+    "createdOn": "Gửi {date}",
+    "manage": "Quản lý bài viết"
   },
   "auth": {
     "eyebrow": "Khu vực cá nhân",
@@ -327,7 +335,10 @@
     "deletedByModerator": "Bình luận đã bị quản trị viên xoá",
     "viewDeleted": "Xem nội dung",
     "hideDeleted": "Ẩn",
-    "deletedBy": "Người xoá: {name}"
+    "deletedBy": "Người xoá: {name}",
+    "report": "Báo cáo",
+    "reportPrompt": "Lý do báo cáo bình luận này (không bắt buộc):",
+    "reportSent": "Đã gửi báo cáo, ban kiểm duyệt sẽ xem xét."
   },
   "homeCalendar": {
     "eyebrow": "Lịch Phật giáo",
@@ -644,6 +655,13 @@
       "none": "Không phát",
       "tapBead": "Chạm để lần hạt",
       "beads": "{n} hạt"
+    },
+    "journeyCal": {
+      "title": "Lịch tu tập",
+      "meritLegend": "Có công đức",
+      "points": "+{n} công đức",
+      "practiceLine": "{type}: {amount} {unit}",
+      "empty": "Chưa có hoạt động ngày này."
     }
   },
   "myContent": {

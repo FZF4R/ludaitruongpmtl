@@ -111,7 +111,15 @@
     "description": "登录后可收藏文章、记录收听进度，并在多台设备间同步。",
     "signIn": "登录",
     "myContent": "我的文章",
-    "stats": "统计与功德"
+    "stats": "统计与功德",
+    "contribTitle": "投稿记录",
+    "contribAll": "已投稿",
+    "contribApproved": "已通过审核",
+    "contribEmpty": "暂无文章。",
+    "approvedOn": "{date} 通过审核",
+    "approvedBy": "审核人 {name}",
+    "createdOn": "{date} 提交",
+    "manage": "管理文章"
   },
   "auth": {
     "eyebrow": "个人中心",
@@ -327,7 +335,10 @@
     "deletedByModerator": "评论已被管理员删除",
     "viewDeleted": "查看内容",
     "hideDeleted": "隐藏",
-    "deletedBy": "删除者：{name}"
+    "deletedBy": "删除者：{name}",
+    "report": "举报",
+    "reportPrompt": "举报这条评论的原因（可选）：",
+    "reportSent": "举报已提交，管理员将会审核。"
   },
   "homeCalendar": {
     "eyebrow": "佛历",
@@ -644,6 +655,13 @@
       "none": "不播放",
       "tapBead": "点击拨一颗珠",
       "beads": "{n} 颗"
+    },
+    "journeyCal": {
+      "title": "修行日历",
+      "meritLegend": "获得功德",
+      "points": "+{n} 功德",
+      "practiceLine": "{type}：{amount} {unit}",
+      "empty": "这一天暂无活动。"
     }
   },
   "myContent": {

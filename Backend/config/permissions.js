@@ -32,6 +32,8 @@ const actionPermissions = {
   'POST /v1/user/comments': 'comment.write',
   'POST /v1/user/comments/delete': 'comment.write',
   'GET /v1/user/comments/deleted': 'comment.moderate',
+  // Báo cáo bình luận: ai viết được bình luận thì báo cáo được (giới hạn 20/ngày trong action).
+  'POST /v1/user/comments/report': 'comment.write',
 
   //==== Bài viết của tôi + tải tệp (quyền theo loại kiểm tiếp trong action) =====
   'GET /v1/user/content/mine': VIET_BAI,
@@ -77,6 +79,8 @@ const actionPermissions = {
 
   //==== Phê duyệt bình luận / lời nguyện chứa từ cấm (Kiểm duyệt viên trở lên) =====
   'GET /v1/admin/approval': 'comment.moderate',
+  'GET /v1/admin/approval/reports': 'comment.moderate',
+  'POST /v1/admin/approval/reports/handle': 'comment.moderate',
   'POST /v1/admin/approval/approve': 'comment.moderate',
   'POST /v1/admin/approval/reject': 'comment.moderate',
 

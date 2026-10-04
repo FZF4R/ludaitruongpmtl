@@ -610,6 +610,30 @@ module.exports.notification = {
                 messageVNI: "Lời nguyện chứa từ ngữ chưa phù hợp, đang chờ ban quản trị duyệt"
             }
         },
+        reportSelf: {
+            message: {
+                messageEN: "You cannot report your own comment",
+                messageVNI: "Không thể báo cáo bình luận của chính bạn"
+            }
+        },
+        reportDuplicate: {
+            message: {
+                messageEN: "You have already reported this comment",
+                messageVNI: "Bạn đã báo cáo bình luận này rồi"
+            }
+        },
+        reportLimit: {
+            message: {
+                messageEN: "You have reached the limit of 20 reports today",
+                messageVNI: "Bạn đã báo cáo tối đa 20 bình luận hôm nay"
+            }
+        },
+        reportSent: {
+            message: {
+                messageEN: "Report sent, moderators will review it",
+                messageVNI: "Đã gửi báo cáo, ban kiểm duyệt sẽ xem xét"
+            }
+        },
         commentInvalid: {
             message: {
                 messageEN: "Comments must be 2 to 2000 characters long",

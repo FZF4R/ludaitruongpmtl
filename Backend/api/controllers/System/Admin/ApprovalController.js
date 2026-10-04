@@ -41,6 +41,96 @@ const thongTinNguoiViet = async ids => {
 
 module.exports = {
 
+    /**
+     * Bình luận đang bị báo cáo (còn báo cáo chờ xử lý), nhiều báo cáo nhất
+     * trước. Mỗi mục: bình luận, người viết, bài, danh sách người báo cáo + lý do.
+     */
+    listReports: ({
+        inputs: sails.config.inputs.Admin.Approval.listReports,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let bang = CommentReport.getDatastore().manager.collection(CommentReport.tableName)
+                let nhom = await bang.aggregate([
+                    { $match: { status: 'pending' } },
+                    { $group: { _id: '$commentId', n: { $sum: 1 }, last: { $max: '$createdAt' } } },
+                    { $sort: { n: -1, last: -1 } },
+                    { $skip: (inputs.page - 1) * 30 },
+                    { $limit: 30 }
+                ]).toArray()
+                let tong = (await bang.distinct('commentId', { status: 'pending' })).length
+                let ids = nhom.map(x => x._id)
+                let [bl, bc] = await Promise.all([
+                    ids.length ? Comment.find({ id: { in: ids } }) : [],
+                    ids.length ? CommentReport.find({ commentId: { in: ids }, status: 'pending' }) : []
+                ])
+                let nguoi = await thongTinNguoiViet([...bl.map(b => b.userId), ...bc.map(r => r.reporterId)])
+                let baiIds = Array.from(new Set(bl.map(b => b.contentId)))
+                let dsBai = baiIds.length ? await Content.find({ id: { in: baiIds } }) : []
+                let bai = {}
+                dsBai.forEach(b => { bai[String(b.id)] = { slug: b.slug, title: b.title, type: b.type } })
+                let theoId = {}
+                bl.forEach(b => { theoId[String(b.id)] = b })
+
+                ok(exits, {
+                    total: tong,
+                    page: inputs.page,
+                    data: nhom.filter(x => theoId[x._id]).map(x => {
+                        let b = theoId[x._id]
+                        return {
+                            id: String(b.id),
+                            body: b.body,
+                            status: b.status,
+                            parentId: b.parentId || '',
+                            createdAt: new Date(b.createdAt).toISOString(),
+                            author: nguoi[String(b.userId)] || { userId: String(b.userId), name: '', username: '', role: 'User', warningCount: 0, banned: false, avatarUrl: '' },
+                            content: bai[b.contentId] || { slug: '', title: '', type: '' },
+                            reports: bc.filter(r => r.commentId === x._id).map(r => ({
+                                reporterName: (nguoi[r.reporterId] || {}).name || '',
+                                reason: r.reason || '',
+                                createdAt: new Date(r.createdAt).toISOString()
+                            }))
+                        }
+                    })
+                })
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    /** `action`: hide = ẩn bình luận (báo cáo đúng); dismiss = bỏ qua (báo cáo sai). Đóng mọi báo cáo của bình luận. */
+    handleReport: ({
+        inputs: sails.config.inputs.Admin.Approval.handleReport,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                if (!['hide', 'dismiss'].includes(inputs.action)) return baoLoi(exits, 'commentNotFound')
+                let bl = await Comment.findOne({ id: String(inputs.id) })
+                if (!bl) return baoLoi(exits, 'commentNotFound')
+                let bayGio = Date.now()
+                if (inputs.action === 'hide' && bl.status === 'visible') {
+                    await Comment.updateOne({ id: bl.id }).set({
+                        status: 'hidden', hiddenBy: String(inputs.User.id), hiddenByModerator: true, deletedAt: bayGio
+                    })
+                }
+                await CommentReport.update({ commentId: String(bl.id), status: 'pending' }).set({
+                    status: inputs.action === 'hide' ? 'resolved' : 'dismissed',
+                    handledBy: String(inputs.User.id),
+                    handledAt: bayGio
+                })
+                await ModerationLog.create({
+                    targetUserId: String(bl.userId), action: inputs.action === 'hide' ? 'reject' : 'approve',
+                    commentId: String(bl.id), commentBody: String(bl.body || '').slice(0, 2000), reason: `report-${inputs.action}`,
+                    actorId: String(inputs.User.id), actorName: inputs.User.fullName || inputs.User.username || '', ip: layIp(this.req)
+                }).catch(() => {})
+                ok(exits, { id: String(bl.id) })
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
     listPending: ({
         inputs: sails.config.inputs.Admin.Approval.listPending,
         exits: sails.config.responseType,
@@ -48,10 +138,11 @@ module.exports = {
             try {
                 let loai = LOAI.includes(inputs.type) ? inputs.type : 'comment'
                 let model = loai === 'comment' ? Comment : Prayer
-                let [ds, demBl, demLn] = await Promise.all([
+                let [ds, demBl, demLn, demBc] = await Promise.all([
                     model.find({ where: { status: 'flagged' }, sort: 'createdAt DESC', skip: (inputs.page - 1) * 30, limit: 30 }),
                     Comment.count({ status: 'flagged' }),
-                    Prayer.count({ status: 'flagged' })
+                    Prayer.count({ status: 'flagged' }),
+                    CommentReport.getDatastore().manager.collection(CommentReport.tableName).distinct('commentId', { status: 'pending' })
                 ])
                 let nguoi = await thongTinNguoiViet(ds.map(x => x.userId))
 
@@ -64,7 +155,7 @@ module.exports = {
 
                 ok(exits, {
                     type: loai,
-                    counts: { comment: demBl, prayer: demLn },
+                    counts: { comment: demBl, prayer: demLn, report: demBc.length },
                     total: loai === 'comment' ? demBl : demLn,
                     page: inputs.page,
                     data: ds.map(x => ({

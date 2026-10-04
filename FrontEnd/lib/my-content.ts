@@ -25,6 +25,9 @@ export type BaiCuaToi = {
   updatedAt: string;
   publishedAt: string;
   hasProposal: boolean;
+  /** Lần duyệt đăng gần nhất (ISO, rỗng nếu chưa) và người duyệt. */
+  approvedAt: string;
+  approvedByName: string;
 };
 
 export type ThayDoi = { field: string; before: unknown; after: unknown };
@@ -154,4 +157,16 @@ export type ThongTinUngHo = {
 
 export function layUngHo(locale: Locale) {
   return goiApi<ThongTinUngHo>("/v1/public/donate", { locale });
+}
+
+/** Công đức và tu tập theo ngày (lịch trang Quá trình tu tập). `from`, `to`: YYYY-MM-DD. */
+export type NgayCongDuc = {
+  day: string;
+  points: number;
+  merit: { action: string; points: number; times: number }[];
+  practice: { type: string; amount: number; sessions: number }[];
+};
+
+export function layCongDucTheoNgay(from: string, to: string, locale: Locale) {
+  return goiApi<NgayCongDuc[]>("/v1/user/merit/days", { query: { from, to }, locale });
 }
