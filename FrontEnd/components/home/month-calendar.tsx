@@ -57,6 +57,10 @@ export function MonthCalendar({
   className,
   thangDangXem,
   onDoiThang,
+  chonNgay,
+  onChonNgay,
+  suKien,
+  quanTriTaiCho = true,
 }: {
   thang: ThangLich[];
   /** "YYYY-MM-DD" theo giờ Việt Nam. */
@@ -66,6 +70,13 @@ export function MonthCalendar({
   /** Điều khiển từ ngoài (HomeCalendar): chỉ số tháng đang xem trong `thang`. */
   thangDangXem?: number;
   onDoiThang?: (i: number) => void;
+  /** Điều khiển từ ngoài: ngày đang chọn ("YYYY-MM-DD") - trang quản trị đặt form bên phải lịch. */
+  chonNgay?: string;
+  onChonNgay?: (iso: string) => void;
+  /** Có thì dùng danh sách này (bên ngoài tự tải / cập nhật), không tự tải. */
+  suKien?: SuKienNgayDuong[];
+  /** false: không hiện nút thêm / sửa / xoá trong lịch (form nằm chỗ khác). */
+  quanTriTaiCho?: boolean;
 }) {
   const { locale } = splitLocale(usePathname());
   const [iRieng, setIRieng] = React.useState(0);
@@ -75,18 +86,24 @@ export function MonthCalendar({
     setIRieng(moi);
     onDoiThang?.(moi);
   };
-  const [chon, setChon] = React.useState<string>(homNay);
+  const [chonRieng, setChonRieng] = React.useState<string>(homNay);
+  const chon = chonNgay ?? chonRieng;
+  const setChon = (iso: string) => {
+    setChonRieng(iso);
+    onChonNgay?.(iso);
+  };
   const t = thang[i];
   const ngayChon: ONgay | undefined = t?.o.find((o) => o.iso === chon && o.thuocThang);
 
   // Sự kiện ngày dương của cả khoảng lịch (mọi tháng trong `thang`), tải một lần.
   const { quyen } = useCheDoSua();
-  const quanTri = quyen.includes("calendar.manage");
-  const [suKienNgay, setSuKienNgay] = React.useState<SuKienNgayDuong[]>([]);
+  const quanTri = quanTriTaiCho && quyen.includes("calendar.manage");
+  const [suKienRieng, setSuKienNgay] = React.useState<SuKienNgayDuong[]>([]);
+  const suKienNgay = suKien ?? suKienRieng;
   const tu = thang[0]?.o[0]?.iso ?? "";
   const den = thang.at(-1)?.o.at(-1)?.iso ?? "";
   React.useEffect(() => {
-    if (!tu || !den) return;
+    if (!tu || !den || suKien) return;
     let song = true;
     laySuKienNgay(tu, den, locale)
       .then((ds) => song && setSuKienNgay(ds))
@@ -94,7 +111,7 @@ export function MonthCalendar({
     return () => {
       song = false;
     };
-  }, [tu, den, locale]);
+  }, [tu, den, locale, suKien]);
   const theoNgay = React.useMemo(() => {
     const m = new Map<string, SuKienNgayDuong[]>();
     for (const e of suKienNgay) m.set(e.date, [...(m.get(e.date) ?? []), e]);
@@ -312,7 +329,7 @@ export function MonthCalendar({
 const loiCua = (err: unknown) => (err instanceof LoiApi && err.thongDiep) || "Không lưu được, vui lòng thử lại.";
 
 /** Một sự kiện ngày trong khung chi tiết: ảnh, tiêu đề, nội dung chính. Quản trị: sửa / xoá tại chỗ. */
-function SuKienNgayChiTiet({
+export function SuKienNgayChiTiet({
   e,
   quanTri,
   locale,
@@ -415,7 +432,7 @@ function ThemSuKienNgay({
   );
 }
 
-function FormSuKienNgay({
+export function FormSuKienNgay({
   date,
   goc,
   locale,
@@ -426,7 +443,8 @@ function FormSuKienNgay({
   goc?: SuKienNgayDuong;
   locale: Locale;
   onXong: (moi: SuKienNgayDuong) => void;
-  onHuy: () => void;
+  /** Không có thì không hiện nút Huỷ (form luôn mở). */
+  onHuy?: () => void;
 }) {
   const [title, setTitle] = React.useState(goc?.title ?? "");
   const [imageUrl, setImageUrl] = React.useState(goc?.imageUrl ?? "");
@@ -508,9 +526,11 @@ function FormSuKienNgay({
         <Button type="submit" size="sm" disabled={dang}>
           Lưu
         </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={onHuy}>
-          Huỷ
-        </Button>
+        {onHuy ? (
+          <Button type="button" size="sm" variant="ghost" onClick={onHuy}>
+            Huỷ
+          </Button>
+        ) : null}
       </span>
     </form>
   );
