@@ -338,7 +338,14 @@
     "deletedBy": "Deleted by: {name}",
     "report": "Report",
     "reportPrompt": "Why are you reporting this comment? (optional)",
-    "reportSent": "Report sent, moderators will review it."
+    "reportSent": "Report sent, moderators will review it.",
+    "reportReasons": [
+      "Spam or advertising",
+      "Vulgar language",
+      "Insulting or abusive",
+      "Misrepresents the Dharma",
+      "Scam"
+    ]
   },
   "homeCalendar": {
     "eyebrow": "Buddhist calendar",
@@ -436,7 +443,8 @@
     "zaloChannel": "Zalo channel",
     "facebook": "Facebook",
     "tiktok": "TikTok",
-    "zaloAdmin": "Admin on Zalo"
+    "zaloAdmin": "Admin on Zalo",
+    "email": "Contact email"
   },
   "feedback": {
     "eyebrow": "Suggestions · Feedback",
@@ -787,7 +795,10 @@
     "bank": "Bank",
     "donateLink": "Official information",
     "noDonate": "No donation information yet.",
-    "signIn": "Sign in to see your stats"
+    "signIn": "Sign in to see your stats",
+    "welcomeTitle": "A peaceful new day",
+    "viewStats": "View merit",
+    "close": "Close"
   },
   "library": {
     "title": "Library",

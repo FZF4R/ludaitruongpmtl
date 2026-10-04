@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/layout/theme";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { InlineEditProvider } from "@/components/layout/inline-edit";
+import { MeritPopup } from "@/components/layout/merit-popup";
 import { getI18n } from "@/lib/dictionary";
 import { defaultLocale, isLocale, localeTags, locales, type Locale } from "@/lib/i18n";
 import { getSiteSettings } from "@/lib/api";
@@ -141,6 +142,15 @@ export default async function RootLayout({
               language={dict.language}
               thongBao={dict.notifications}
               anhTuTap={settings?.practiceImages}
+            />
+            <MeritPopup
+              nhan={{
+                welcomeTitle: dict.stats.welcomeTitle,
+                earned: dict.stats.earned,
+                streak: dict.stats.streak,
+                viewStats: dict.stats.viewStats,
+                close: dict.stats.close,
+              }}
             />
             <main id="noi-dung" className="flex-1">
               {children}

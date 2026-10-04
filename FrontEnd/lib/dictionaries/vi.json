@@ -338,7 +338,14 @@
     "deletedBy": "Người xoá: {name}",
     "report": "Báo cáo",
     "reportPrompt": "Lý do báo cáo bình luận này (không bắt buộc):",
-    "reportSent": "Đã gửi báo cáo, ban kiểm duyệt sẽ xem xét."
+    "reportSent": "Đã gửi báo cáo, ban kiểm duyệt sẽ xem xét.",
+    "reportReasons": [
+      "Spam, quảng cáo",
+      "Ngôn từ thô tục",
+      "Xúc phạm, công kích",
+      "Sai lệch chánh pháp",
+      "Lừa đảo"
+    ]
   },
   "homeCalendar": {
     "eyebrow": "Lịch Phật giáo",
@@ -436,7 +443,8 @@
     "zaloChannel": "Kênh Zalo",
     "facebook": "Facebook",
     "tiktok": "TikTok",
-    "zaloAdmin": "Zalo admin"
+    "zaloAdmin": "Zalo admin",
+    "email": "Email liên hệ"
   },
   "feedback": {
     "eyebrow": "Đề xuất · Góp ý",
@@ -787,7 +795,10 @@
     "bank": "Ngân hàng",
     "donateLink": "Xem thông tin chính thức",
     "noDonate": "Chưa có thông tin ủng hộ.",
-    "signIn": "Đăng nhập để xem thống kê của bạn"
+    "signIn": "Đăng nhập để xem thống kê của bạn",
+    "welcomeTitle": "Chào ngày mới an lành",
+    "viewStats": "Xem công đức",
+    "close": "Đóng"
   },
   "library": {
     "title": "Thư viện",

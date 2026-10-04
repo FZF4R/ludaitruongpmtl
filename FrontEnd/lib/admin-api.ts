@@ -38,15 +38,20 @@ export const nhanVaiTro: Record<string, string> = {
 /** `quyen` là mảng = có một trong các quyền là thấy tab. */
 export const tabQuanTri: { href: string; nhan: string; quyen: string | readonly string[] }[] = [
   { href: "/admin/dashboard", nhan: "Tổng quan", quyen: "system.settings" },
-  { href: "/admin/user", nhan: "Người dùng", quyen: "user.list" },
-  { href: "/admin/blog", nhan: "Bài viết", quyen: ["content.editAny", "content.review"] },
-  { href: "/admin/phe-duyet", nhan: "Phê duyệt", quyen: "comment.moderate" },
   { href: "/admin/library", nhan: "Kinh sách", quyen: "sutra.manage" },
+  { href: "/admin/blog", nhan: "Bài viết", quyen: ["content.editAny", "content.review"] },
   { href: "/admin/thu-vien", nhan: "Thư viện", quyen: "library.manage" },
+  { href: "/admin/user", nhan: "Người dùng", quyen: "user.list" },
   { href: "/admin/merit", nhan: "Công đức", quyen: "merit.manage" },
-  { href: "/admin/practice", nhan: "Âm thanh tu tập", quyen: "practice.manage" },
+  { href: "/admin/practice", nhan: "Âm thanh", quyen: "practice.manage" },
+  { href: "/admin/phe-duyet", nhan: "Phê duyệt", quyen: "comment.moderate" },
   { href: "/admin/roles", nhan: "Phân quyền", quyen: "role.permissions.manage" },
 ];
+
+/** Số việc đang chờ theo tab (khoá = phần cuối href: blog, library, thu-vien, phe-duyet). */
+export function laySoViecCho(locale: Locale) {
+  return goiApi<Record<string, number>>("/v1/admin/badges", { locale });
+}
 
 export function coQuyen(permissions: string[] | undefined, quyen: string | readonly string[]): boolean {
   return typeof quyen === "string" ? !!permissions?.includes(quyen) : quyen.some((q) => !!permissions?.includes(q));
@@ -145,6 +150,8 @@ export type CauHinh = {
   zalosupportinfo: string | null;
   zaloadminsupportinfo: string | null;
   supporttiktok: string | null;
+  /** Email liên hệ (nút email ở khung liên hệ góc dưới phải). */
+  supportemail: string | null;
   isMaintaning: boolean | null;
   articleLayout: "card" | "list" | null;
   /** Từ khoá bị cấm trong bình luận (backend lọc, không lộ ra công khai). */
@@ -739,7 +746,19 @@ export type CongDucQT = {
   rules: QuyTacCongDucQT[];
   donate: UngHoQT;
   top: { userId: string; name: string; role: string; points: number; avatarUrl: string }[];
+  /** Lời nhắn an lành trong popup chào ngày mới. */
+  greetings: string[];
+  /** true = chưa đặt, đang dùng danh sách mặc định. */
+  greetingsDefault: boolean;
 };
+
+export function luuLoiNhan(greetings: string[], locale: Locale) {
+  return goiApi<{ greetings: string[]; greetingsDefault: boolean }>("/v1/admin/merit/greetings", {
+    method: "POST",
+    body: { greetings },
+    locale,
+  });
+}
 
 export function layCongDucQT(locale: Locale) {
   return goiApi<CongDucQT>("/v1/admin/merit", { locale });

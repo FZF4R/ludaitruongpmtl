@@ -306,3 +306,54 @@
 .gioi-thieu img {
   border-radius: 0.75rem;
 }
+
+/* "+N công đức" khi tự điểm danh ngày mới (components/layout/site-header.tsx). */
+@keyframes cd-bay {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.6);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(-14px) scale(1.15);
+  }
+  25% {
+    transform: translateY(-12px) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-16px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}
+
+/* Popup chào ngày mới (components/layout/merit-popup.tsx). */
+@keyframes cd-popup {
+  from {
+    opacity: 0;
+    transform: translateX(110%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+@keyframes cd-quet {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(400%);
+  }
+}
+@keyframes cd-thoi-gian {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0;
+  }
+}

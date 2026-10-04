@@ -71,10 +71,22 @@ export async function ContentListPage({
         eyebrow={eyebrow}
         title={title}
         description={description}
-        action={adminBar}
+        action={searchPath ? undefined : adminBar}
       />
 
-      {searchPath ? <SearchBox action={searchPath} /> : null}
+      {/*
+        Ô tìm kiếm (trái) và các nút "Bài viết của tôi" / "Thêm …" (phải) cùng một
+        hàng, DÍNH ngay dưới header (cao 4rem) khi cuộn - tìm / thêm bài lúc nào cũng
+        trong tầm tay. Tràn ra mép Container (-mx) để nền mờ phủ hết bề ngang.
+      */}
+      {searchPath ? (
+        <div className="sticky top-16 z-30 -mx-5 flex flex-wrap items-center gap-3 border-b border-line/60 bg-paper/90 px-5 py-2.5 backdrop-blur sm:-mx-8 sm:px-8">
+          <div className="min-w-[16rem] flex-1">
+            <SearchBox action={searchPath} />
+          </div>
+          {adminBar}
+        </div>
+      ) : null}
 
       {result.data.length === 0 ? (
         <EmptyState title={emptyTitle} description={emptyDescription} />
@@ -85,12 +97,15 @@ export async function ContentListPage({
           ) : (
             <ContentGrid items={result.data} columns={columns} thumbnail={thumbnail} />
           )}
-          <Pagination
-            basePath={basePath}
-            page={result.page}
-            total={result.total}
-            limit={result.limit}
-          />
+          {/* Phân trang ở góc dưới bên phải. */}
+          <div className="flex justify-end">
+            <Pagination
+              basePath={basePath}
+              page={result.page}
+              total={result.total}
+              limit={result.limit}
+            />
+          </div>
         </>
       )}
 
@@ -184,7 +199,11 @@ export async function ContentSearchPage({
           </Button>
         }
       />
-      <SearchBox action={searchPath} q={tuKhoa} />
+      <div className="sticky top-16 z-30 -mx-5 flex flex-wrap items-center gap-3 border-b border-line/60 bg-paper/90 px-5 py-2.5 backdrop-blur sm:-mx-8 sm:px-8">
+        <div className="min-w-[16rem] flex-1">
+          <SearchBox action={searchPath} q={tuKhoa} />
+        </div>
+      </div>
 
       {!result || result.data.length === 0 ? (
         tuKhoa ? <EmptyState title={dict.list.searchTitle} description={dict.list.searchEmpty} /> : null
@@ -196,7 +215,7 @@ export async function ContentSearchPage({
             <ContentGrid items={result.data} columns={3} thumbnail={thumbnail} />
           )}
           {soTrang > 1 ? (
-            <nav className="flex items-center justify-center gap-3 text-sm" aria-label={dict.list.searchTitle}>
+            <nav className="flex items-center justify-end gap-3 text-sm" aria-label={dict.list.searchTitle}>
               {page > 1 ? (
                 <Button variant="outline" asChild>
                   <LocaleLink href={link(page - 1)}>← {dict.list.prev}</LocaleLink>

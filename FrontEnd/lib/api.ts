@@ -246,6 +246,7 @@ export type SiteSettings = {
   zalosupportinfo?: string;
   zaloadminsupportinfo?: string;
   supporttiktok?: string;
+  supportemail?: string;
   isMaintaning?: boolean;
   /** Kiểu hiển thị danh sách /bai-viet, admin chọn ở trang Tổng quan. */
   articleLayout?: "card" | "list";

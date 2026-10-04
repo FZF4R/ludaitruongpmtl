@@ -7,6 +7,7 @@ import {
 import { ListAdminBar } from "@/components/content/list-admin-bar";
 import { getSiteSettings } from "@/lib/api";
 import { i18nAlternates } from "@/lib/seo";
+import { getDictionary } from "@/lib/dictionary";
 
 export const revalidate = 3600;
 
@@ -35,6 +36,7 @@ export default async function ArticleListPagedPage(props: {
 }) {
   const { so } = await props.params;
   const page = parsePageNumber(so);
+  const dict = await getDictionary();
   const settings = await getSiteSettings();
   const layout = settings?.articleLayout === "list" ? "list" : "card";
 
@@ -47,9 +49,8 @@ export default async function ArticleListPagedPage(props: {
       layout={layout}
       thumbnail
       adminBar={
-        <ListAdminBar themHref="/admin/blog" themNhan="Thêm bài viết" kieuHienThi={layout} />
+        <ListAdminBar nhanCuaToi={dict.myContent.title} themHref="/admin/blog" themNhan="Thêm bài viết" kieuHienThi={layout} />
       }
-      eyebrow="Chuyên mục"
       title="Bài viết"
       description={`Trang ${page}`}
       trail={[

@@ -122,6 +122,7 @@ module.exports.routes = {
     'GET  /v1/admin/merit': 'System.Admin.MeritController.getMerit',
     'POST /v1/admin/merit/rules': 'System.Admin.MeritController.saveRules',
     'POST /v1/admin/merit/donate': 'System.Admin.MeritController.saveDonate',
+    'POST /v1/admin/merit/greetings': 'System.Admin.MeritController.saveGreetings',
 
     //==== Loi nguyen noi bat (slideshow trang chu) =====
     'POST /v1/admin/prayers/feature': 'System.Admin.PrayerController.setFeatured',
@@ -140,6 +141,8 @@ module.exports.routes = {
 
     //==== Phe duyet: binh luan / loi nguyen chua tu cam =====
     'GET  /v1/admin/approval': 'System.Admin.ApprovalController.listPending',
+    // So viec dang cho tren thanh tab Khu quan tri.
+    'GET  /v1/admin/badges': 'System.Admin.BadgeController.getBadges',
     // Toan bo hoat dong mot tai khoan (trang /admin/user/hoat-dong).
     'GET  /v1/admin/user/activity': 'System.Admin.UserActivityController.getActivity',
     'GET  /v1/admin/approval/reports': 'System.Admin.ApprovalController.listReports',

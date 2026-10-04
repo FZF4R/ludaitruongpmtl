@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, List, Plus } from "lucide-react";
+import { LayoutGrid, List, PenLine, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCheDoSua } from "@/components/layout/inline-edit";
 import { docToken } from "@/lib/auth";
@@ -27,7 +27,10 @@ export function ListAdminBar({
   themNhan,
   quyenThem = "content.editAny",
   kieuHienThi,
+  nhanCuaToi,
 }: {
+  /** Có thì hiện nút "Bài viết của tôi" (người đã đăng nhập, được viết bài) dẫn tới /tai-khoan/bai-viet. */
+  nhanCuaToi?: string;
   /** Đường dẫn khu quản trị, chưa có tiền tố ngôn ngữ, ví dụ "/admin/library". */
   themHref: string;
   themNhan: string;
@@ -36,7 +39,7 @@ export function ListAdminBar({
   /** Có thì hiện nút đổi kiểu hiển thị (chỉ trang Bài viết). */
   kieuHienThi?: "card" | "list";
 }) {
-  const { quyen, dangSua } = useCheDoSua();
+  const { quyen, dangSua, nguoiDungId } = useCheDoSua();
   const router = useRouter();
   const { locale } = splitLocale(usePathname());
   const [dangDoi, startDoi] = React.useTransition();
@@ -44,7 +47,9 @@ export function ListAdminBar({
 
   const duocThem = quyen.includes(quyenThem);
   const duocDoiKieu = !!kieuHienThi && dangSua && quyen.includes("system.settings");
-  if (!duocThem && !duocDoiKieu) return null;
+  const cuaToi =
+    !!nhanCuaToi && !!nguoiDungId && (quyen.includes("content.draft") || quyen.includes("library.write") || quyen.includes("library.manage"));
+  if (!duocThem && !duocDoiKieu && !cuaToi) return null;
 
   function doiKieu(kieu: "card" | "list") {
     if (kieu === kieuHienThi) return;
@@ -63,6 +68,13 @@ export function ListAdminBar({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
+      {cuaToi ? (
+        <Button size="sm" variant="outline" asChild>
+          <Link href={localePath(locale, "/tai-khoan/bai-viet")}>
+            <PenLine aria-hidden /> {nhanCuaToi}
+          </Link>
+        </Button>
+      ) : null}
       {duocThem ? (
         <Button size="sm" asChild>
           <Link href={`${localePath(locale, themHref)}?sua=moi`}>

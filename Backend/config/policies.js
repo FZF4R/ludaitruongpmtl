@@ -95,6 +95,9 @@ module.exports.policies = {
     'System/Admin/UserActivityController': {
         '*': ['userPolices', 'requirePermission']
     },
+    'System/Admin/BadgeController': {
+        '*': ['userPolices', 'requirePermission']
+    },
     'System/Admin/ApprovalController': {
         '*': ['userPolices', 'requirePermission']
     },

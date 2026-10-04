@@ -112,13 +112,26 @@ export function DashboardPanel() {
     <div className="flex flex-col gap-6">
       <HopLoi loi={loi} />
 
-      <KhoiChung
-        cauHinh={cauHinh}
-        dangLuu={dangLuu === "chung"}
-        daLuu={daLuu === "chung"}
-        onLuu={(phan) => luu("chung", phan)}
+      {/*
+        Sắp theo đúng thứ tự xuất hiện trên trang chủ (từ trên xuống) để admin
+        dễ hình dung: ảnh đầu trang -> dải thông báo -> lịch / sự kiện -> bài
+        viết -> lời nguyện -> khung liên hệ góc dưới; màu áp cho toàn site.
+        Phần "Khác" là những thứ không nằm trên trang chủ.
+      */}
+      <NhomKhoi so={1} tieuDe="Đầu trang chủ — ảnh nền xoay vòng" />
+      <KhoiAnhTrangChu onLoi={setLoi} />
+
+      <NhomKhoi so={2} tieuDe="Dải thông báo dưới ảnh đầu trang" />
+      <KhoiThongBao
+        danhSach={cauHinh.notify}
+        onDoi={(notify) => setCauHinh((cu) => (cu ? { ...cu, notify } : cu))}
+        onLoi={setLoi}
       />
 
+      <NhomKhoi so={3} tieuDe="Lịch Phật giáo & sự kiện" />
+      <KhoiSuKienLich />
+
+      <NhomKhoi so={4} tieuDe="Bài viết (kiểu hiển thị danh sách)" />
       <KhoiHienThi
         giaTri={cauHinh.articleLayout === "list" ? "list" : "card"}
         dangLuu={dangLuu === "hienThi"}
@@ -126,28 +139,7 @@ export function DashboardPanel() {
         onLuu={(articleLayout) => luu("hienThi", { articleLayout })}
       />
 
-      <KhoiGopY onLoi={setLoi} />
-
-      <KhoiThongBaoChung />
-
-      <KhoiSuKienLich />
-
-      <KhoiTuCam
-        giaTri={cauHinh.bannedWords ?? []}
-        dangLuu={dangLuu === "tuCam"}
-        daLuu={daLuu === "tuCam"}
-        onLuu={(bannedWords) => luu("tuCam", { bannedWords })}
-      />
-
-      <KhoiAnhTrangChu onLoi={setLoi} />
-
-      <KhoiAnhTuTap
-        giaTri={cauHinh.practiceImages ?? {}}
-        dangLuu={dangLuu === "anhTuTap"}
-        daLuu={daLuu === "anhTuTap"}
-        onLuu={(practiceImages) => luu("anhTuTap", { practiceImages })}
-      />
-
+      <NhomKhoi so={5} tieuDe="Lời nguyện cuối trang chủ" />
       <KhoiAnhTrangChu
         onLoi={setLoi}
         nhom="prayer"
@@ -156,18 +148,53 @@ export function DashboardPanel() {
         khiTrong="Chưa có ảnh nào — thẻ lời nguyện đang dùng bộ ảnh sẵn có của giao diện."
       />
 
-      <KhoiThongBao
-        danhSach={cauHinh.notify}
-        onDoi={(notify) => setCauHinh((cu) => (cu ? { ...cu, notify } : cu))}
-        onLoi={setLoi}
+      <NhomKhoi so={6} tieuDe="Tiêu đề site & khung liên hệ góc dưới phải" />
+      <KhoiChung
+        cauHinh={cauHinh}
+        dangLuu={dangLuu === "chung"}
+        daLuu={daLuu === "chung"}
+        onLuu={(phan) => luu("chung", phan)}
       />
 
+      <NhomKhoi so={7} tieuDe="Màu giao diện (toàn site)" />
       <KhoiMau
         cauHinh={cauHinh}
         dangLuu={dangLuu === "mau"}
         daLuu={daLuu === "mau"}
         onLuu={(phan) => luu("mau", phan)}
       />
+
+      <NhomKhoi tieuDe="Khác — không nằm trên trang chủ" />
+      <KhoiAnhTuTap
+        giaTri={cauHinh.practiceImages ?? {}}
+        dangLuu={dangLuu === "anhTuTap"}
+        daLuu={daLuu === "anhTuTap"}
+        onLuu={(practiceImages) => luu("anhTuTap", { practiceImages })}
+      />
+
+      <KhoiThongBaoChung />
+
+      <KhoiGopY onLoi={setLoi} />
+
+      <KhoiTuCam
+        giaTri={cauHinh.bannedWords ?? []}
+        dangLuu={dangLuu === "tuCam"}
+        daLuu={daLuu === "tuCam"}
+        onLuu={(bannedWords) => luu("tuCam", { bannedWords })}
+      />
+    </div>
+  );
+}
+
+/** Tiêu đề nhóm trên trang Tổng quan: số thứ tự = vị trí trên trang chủ (từ trên xuống). */
+function NhomKhoi({ so, tieuDe }: { so?: number; tieuDe: string }) {
+  return (
+    <div className="-mb-3 mt-2 flex items-center gap-2.5 first:mt-0">
+      {so ? (
+        <span className="flex size-6 items-center justify-center rounded-full bg-accent text-xs font-bold text-paper">{so}</span>
+      ) : null}
+      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">{tieuDe}</span>
+      <span className="h-px flex-1 bg-line" aria-hidden />
     </div>
   );
 }
@@ -715,6 +742,8 @@ function KhoiChung({
   const [zaloKenh, setZaloKenh] = React.useState(cauHinh.zalosupportinfo ?? "");
   const [zaloAdmin, setZaloAdmin] = React.useState(cauHinh.zaloadminsupportinfo ?? "");
   const [tiktok, setTiktok] = React.useState(cauHinh.supporttiktok ?? "");
+  const [email, setEmail] = React.useState(cauHinh.supportemail ?? "");
+  const emailSai = !!email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const [baoTri, setBaoTri] = React.useState(!!cauHinh.isMaintaning);
 
   return (
@@ -752,9 +781,31 @@ function KhoiChung({
           )}
         </Field>
 
-        <Field id="cf-tiktok" label="Kênh TikTok" hint="Link hoặc @tên kênh; để trống nếu chưa có">
+        <Field
+          id="cf-tiktok"
+          label="Kênh TikTok"
+          hint="Link hoặc @tên kênh. Có thì hiện nút TikTok luôn thấy ở góc dưới phải trang chủ; để trống nếu chưa có"
+        >
           {(p) => (
             <Input {...p} value={tiktok} onChange={(e) => setTiktok(e.target.value)} maxLength={200} />
+          )}
+        </Field>
+
+        <Field
+          id="cf-email"
+          label="Email liên hệ"
+          hint={emailSai ? "Email chưa đúng định dạng (vd. lienhe@tenmien.vn)" : "Hiện thành nút email cạnh nút liên hệ ở góc dưới phải trang chủ; để trống thì ẩn"}
+        >
+          {(p) => (
+            <Input
+              {...p}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              maxLength={120}
+              placeholder="lienhe@tenmien.vn"
+              aria-invalid={emailSai || undefined}
+            />
           )}
         </Field>
 
@@ -807,6 +858,7 @@ function KhoiChung({
               zalosupportinfo: zaloKenh.trim(),
               zaloadminsupportinfo: zaloAdmin.trim(),
               supporttiktok: tiktok.trim(),
+              supportemail: emailSai ? cauHinh.supportemail ?? "" : email.trim(),
               isMaintaning: baoTri,
             })
           }

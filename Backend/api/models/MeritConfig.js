@@ -20,6 +20,11 @@ module.exports = {
             defaultsTo: {},
             description: '{ [action]: { points, dailyCap, enabled } }'
         },
+        greetings: {
+            type: 'json',
+            defaultsTo: [],
+            description: 'Lời nhắn an lành hiện ngẫu nhiên trong popup chào ngày mới (mảng chuỗi). Rỗng = dùng mặc định.'
+        },
         donate: {
             type: 'json',
             defaultsTo: {},

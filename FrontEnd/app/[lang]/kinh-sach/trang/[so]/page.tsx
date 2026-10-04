@@ -6,6 +6,7 @@ import {
 } from "@/components/content/content-list-page";
 import { ListAdminBar } from "@/components/content/list-admin-bar";
 import { i18nAlternates } from "@/lib/seo";
+import { getDictionary } from "@/lib/dictionary";
 
 export const revalidate = 3600;
 
@@ -29,6 +30,7 @@ export default async function SutraListPagedPage(props: {
 }) {
   const { so } = await props.params;
   const page = parsePageNumber(so);
+  const dict = await getDictionary();
 
   return (
     <ContentListPage
@@ -36,8 +38,7 @@ export default async function SutraListPagedPage(props: {
       page={page}
       searchPath="/kinh-sach/tim-kiem"
       basePath="/kinh-sach"
-      adminBar={<ListAdminBar themHref="/admin/library" themNhan="Thêm kinh sách" quyenThem="sutra.manage" />}
-      eyebrow="Kinh, luật, luận"
+      adminBar={<ListAdminBar nhanCuaToi={dict.myContent.title} themHref="/admin/library" themNhan="Thêm kinh sách" quyenThem="sutra.manage" />}
       title="Kinh sách"
       description={`Trang ${page}`}
       trail={[

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Container, SectionHeading } from "@/components/ui/primitives";
+import { SectionHeading } from "@/components/ui/primitives";
 import { Breadcrumbs } from "@/components/content/navigation";
 import { Journey } from "@/components/practice/journey";
 import { JourneyCalendar } from "@/components/practice/journey-calendar";
@@ -20,21 +20,28 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Quá trình tu tập: tiêu đề bên trái, lịch bên phải (ngày vía, sự kiện, công
- * đức và tu tập theo ngày của người xem); bên dưới là thống kê chi tiết.
+ * Quá trình tu tập - bố cục toàn chiều ngang màn hình:
+ *   - trái: tiêu đề + lịch (ngày vía, sự kiện, công đức theo ngày), sát mép
+ *     trái, đứng yên khi cuộn (sticky dưới header cao 4rem);
+ *   - phải: thống kê tu tập, sát mép phải. Cả trang cuộn; cột thống kê luôn
+ *     cao ít nhất bằng màn hình (cao hơn cột lịch) nên lịch đứng yên suốt lúc cuộn.
+ * Màn hình hẹp: xếp dọc như bình thường (lịch trên, thống kê dưới).
  */
 export default async function Page() {
   const [dict, suKien] = await Promise.all([getDictionary(), listLunarEvents().catch(() => [])]);
   return (
-    <Container className="flex flex-col gap-8 py-12">
+    <div className="flex w-full flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
       <Breadcrumbs
         trail={[
           { name: dict.nav.home, href: "/" },
           { name: dict.nav.journey, href: HREF },
         ]}
       />
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start">
-        <div className="flex flex-col gap-4">
+      <div className="grid gap-8 lg:grid-cols-[minmax(22rem,28rem)_minmax(0,1fr)]">
+        <aside
+          aria-label={dict.practiceTools.journeyCal.title}
+          className="flex flex-col gap-4 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:self-start lg:overflow-y-auto lg:[scrollbar-width:thin]"
+        >
           <SectionHeading title={dict.practiceTools.journey.title} description={dict.nav.journeyHint} />
           <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
             <span className="flex items-center gap-1.5">
@@ -42,17 +49,17 @@ export default async function Page() {
               {dict.practiceTools.journeyCal.meritLegend}
             </span>
           </p>
-        </div>
-        <section aria-label={dict.practiceTools.journeyCal.title}>
           <JourneyCalendar
             suKien={suKien}
             nhan={{ ...dict.homeCalendar, eventKind: dict.calendar.eventKind }}
             nhanCongDuc={dict.stats.actions}
             nhanTuTap={dict.practiceTools}
           />
+        </aside>
+        <section className="min-w-0 lg:min-h-[calc(100dvh-5rem)]">
+          <Journey nhan={dict.practiceTools} />
         </section>
       </div>
-      <Journey nhan={dict.practiceTools} />
-    </Container>
+    </div>
   );
 }

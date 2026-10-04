@@ -21,7 +21,7 @@ export async function practiceMetadata(key: PracticeKey, href: string): Promise<
 }
 
 /**
- * Đầu trang công cụ tu tập: breadcrumb rồi tới ảnh đại diện của mục. Không còn
+ * Đầu trang công cụ tu tập: breadcrumb + ảnh của mục làm nền toàn trang. Không còn
  * khối tiêu đề lớn (gọn giao diện) - tên mục đã có ở breadcrumb; vẫn giữ một
  * <h1> ẩn cho trình đọc màn hình và công cụ tìm kiếm.
  */
@@ -30,36 +30,34 @@ export async function PracticeHeader({ navKey, href }: { navKey: PracticeKey; hr
   const anh = anhMucTuTap(navKey, settings?.practiceImages);
   return (
     <>
-      <Breadcrumbs
-        trail={[
-          { name: dict.nav.home, href: "/" },
-          { name: dict.nav.practice, href: "/tu-tap" },
-          { name: dict.nav[navKey], href },
-        ]}
-      />
-      <h1 className="sr-only">{dict.nav[navKey]}</h1>
-      {/* Ảnh riêng của mục (admin đổi ở Tổng quan → Ảnh các mục tu tập). */}
-      {/* Không overflow-hidden ở khung ngoài: khung "Đổi ảnh" (Chế độ sửa) cao hơn ảnh trên điện thoại. */}
-      <div className="relative -mt-2 aspect-[21/6] min-h-32 rounded-card bg-surface-2">
-        <Image
-          src={anh}
-          alt=""
-          fill
-          priority
-          sizes="(min-width: 1280px) 76rem, 100vw"
-          unoptimized={typeof anh === "string"}
-          className="rounded-card object-cover"
+      {/*
+        Ảnh riêng của mục làm NỀN TOÀN TRANG: cố định theo màn hình (-z-10,
+        nằm dưới mọi khối nội dung; nền body tràn ra canvas nên không che ảnh).
+        Lớp phủ màu nền giấy giữ chữ dễ đọc ở cả giao diện sáng và tối; các thẻ
+        công cụ có nền đặc riêng. Admin đổi ảnh ở Chế độ sửa (nút bên dưới).
+      */}
+      <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
+        <Image src={anh} alt="" fill priority sizes="100vw" unoptimized={typeof anh === "string"} className="object-cover" />
+        <span className="absolute inset-0 bg-gradient-to-b from-paper/70 via-paper/85 to-paper/95" />
+      </div>
+      <div className="relative flex min-h-9 items-center">
+        <Breadcrumbs
+          trail={[
+            { name: dict.nav.home, href: "/" },
+            { name: dict.nav.practice, href: "/tu-tap" },
+            { name: dict.nav[navKey], href },
+          ]}
         />
-        <span className="absolute inset-0 rounded-card bg-gradient-to-t from-black/35 to-transparent" aria-hidden />
         <SettingImageEditor
           truong="practiceImages"
           kind={navKey}
           ten={dict.nav[navKey]}
           daDat={settings?.practiceImages ?? {}}
           locale={locale}
-          className="right-3 top-3"
+          className="right-0 top-0"
         />
       </div>
+      <h1 className="sr-only">{dict.nav[navKey]}</h1>
     </>
   );
 }

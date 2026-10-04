@@ -338,7 +338,14 @@
     "deletedBy": "删除者：{name}",
     "report": "举报",
     "reportPrompt": "举报这条评论的原因（可选）：",
-    "reportSent": "举报已提交，管理员将会审核。"
+    "reportSent": "举报已提交，管理员将会审核。",
+    "reportReasons": [
+      "垃圾广告",
+      "粗俗用语",
+      "侮辱攻击",
+      "歪曲正法",
+      "诈骗"
+    ]
   },
   "homeCalendar": {
     "eyebrow": "佛历",
@@ -436,7 +443,8 @@
     "zaloChannel": "Zalo 频道",
     "facebook": "Facebook",
     "tiktok": "TikTok",
-    "zaloAdmin": "管理员 Zalo"
+    "zaloAdmin": "管理员 Zalo",
+    "email": "联系邮箱"
   },
   "feedback": {
     "eyebrow": "建议 · 意见",
@@ -787,7 +795,10 @@
     "bank": "银行",
     "donateLink": "查看官方信息",
     "noDonate": "暂无捐助信息。",
-    "signIn": "登录查看您的统计"
+    "signIn": "登录查看您的统计",
+    "welcomeTitle": "新的一天，吉祥平安",
+    "viewStats": "查看功德",
+    "close": "关闭"
   },
   "library": {
     "title": "图书馆",

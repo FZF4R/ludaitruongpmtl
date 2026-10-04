@@ -139,7 +139,16 @@ export function layThongKeCaNhan(locale: Locale) {
 }
 
 export function diemDanh(locale: Locale) {
-  return goiApi<{ points: number; streak: number; today: boolean; days: number }>("/v1/user/checkin", {
+  return goiApi<{
+    points: number;
+    streak: number;
+    today: boolean;
+    days: number;
+    /** Lời nhắn an lành (khi vừa được cộng điểm). */
+    message: string;
+    /** true = tài khoản Admin: luôn được cộng để kiểm thử. */
+    test: boolean;
+  }>("/v1/user/checkin", {
     method: "POST",
     locale,
   });

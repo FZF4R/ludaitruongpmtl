@@ -10,6 +10,7 @@ import { HopLoi, chuLoi, useLocale } from "@/components/admin/admin-shell";
 import { urlApi } from "@/lib/auth";
 import {
   layCongDucQT,
+  luuLoiNhan,
   luuQuyTacCongDuc,
   luuUngHo,
   nhanVaiTro,
@@ -47,6 +48,11 @@ export function MeritPanel() {
       {dl ? (
         <>
           <BangDiem rules={dl.rules} onLuu={(rules) => setDl({ ...dl, rules })} />
+          <LoiNhan
+            ds={dl.greetings}
+            macDinh={dl.greetingsDefault}
+            onLuu={(greetings, greetingsDefault) => setDl({ ...dl, greetings, greetingsDefault })}
+          />
           <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <UngHo donate={dl.donate} onLuu={(donate) => setDl({ ...dl, donate })} />
             <Card className="flex flex-col gap-3 p-5">
@@ -294,6 +300,77 @@ function UngHo({ donate, onLuu }: { donate: UngHoQT; onLuu: (d: UngHoQT) => void
           {bao ? <span className="text-sm text-muted">{bao}</span> : null}
         </div>
       </form>
+    </Card>
+  );
+}
+
+/**
+ * Lời nhắn an lành: mỗi dòng một câu. Popup "Chào ngày mới" (khi người dùng tự
+ * điểm danh lần đầu trong ngày) hiện ngẫu nhiên một câu. Để trống = dùng mặc định.
+ */
+function LoiNhan({
+  ds,
+  macDinh,
+  onLuu,
+}: {
+  ds: string[];
+  macDinh: boolean;
+  onLuu: (ds: string[], macDinh: boolean) => void;
+}) {
+  const locale = useLocale();
+  const [chu, setChu] = React.useState(ds.join("\n"));
+  const [dang, setDang] = React.useState(false);
+  const [bao, setBao] = React.useState("");
+  const daDoi = chu.trim() !== ds.join("\n").trim();
+
+  async function luu(danhSach: string[]) {
+    setDang(true);
+    setBao("");
+    try {
+      const kq = await luuLoiNhan(danhSach, locale);
+      onLuu(kq.greetings, kq.greetingsDefault);
+      setChu(kq.greetings.join("\n"));
+      setBao("Đã lưu lời nhắn.");
+    } catch (e) {
+      setBao(chuLoi(e));
+    } finally {
+      setDang(false);
+    }
+  }
+
+  const soCau = chu.split("\n").filter((d) => d.trim()).length;
+
+  return (
+    <Card className="flex flex-col gap-3 p-5">
+      <div className="flex flex-col gap-1">
+        <h2 className="font-serif text-lg font-bold">Lời nhắn chào ngày mới</h2>
+        <p className="text-sm text-muted">
+          Khi người dùng vào site lần đầu trong ngày, hệ thống tự điểm danh và hiện popup góc trên phải: “+N công đức” kèm
+          MỘT câu chọn ngẫu nhiên dưới đây. Mỗi dòng một câu (tối đa 100 câu, mỗi câu 200 ký tự). Tài khoản Admin được cộng
+          điểm và thấy popup ở MỌI lần tải trang để tiện kiểm thử.
+          {macDinh ? " Đang dùng danh sách mặc định." : ""}
+        </p>
+      </div>
+      <textarea
+        value={chu}
+        onChange={(e) => setChu(e.target.value)}
+        rows={8}
+        className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm leading-relaxed focus:border-accent focus:outline-none"
+        aria-label="Lời nhắn, mỗi dòng một câu"
+      />
+      <div className="flex flex-wrap items-center gap-3">
+        <Button
+          onClick={() => luu(chu.split("\n").map((d) => d.trim()).filter(Boolean))}
+          disabled={dang || !daDoi}
+        >
+          <Check aria-hidden /> Lưu lời nhắn
+        </Button>
+        <Button variant="ghost" onClick={() => luu([])} disabled={dang || macDinh}>
+          <RotateCcw aria-hidden /> Về danh sách mặc định
+        </Button>
+        <span className="text-xs text-muted">{soCau} câu</span>
+        {bao ? <span className="text-sm text-muted">{bao}</span> : null}
+      </div>
     </Card>
   );
 }

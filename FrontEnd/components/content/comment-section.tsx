@@ -59,6 +59,7 @@ export type NhanBinhLuan = {
   report: string;
   reportPrompt: string;
   reportSent: string;
+  reportReasons: string[];
 };
 
 const DAI_TOI_DA = 2000;
@@ -182,16 +183,9 @@ export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLua
   // Báo cáo: người đã đăng nhập, bình luận của người khác, chưa bị xoá.
   const coTheBaoCao = (bl: BinhLuan) => !!nguoiDungId && !bl.deleted && bl.userId !== nguoiDungId;
 
-  async function baoCao(bl: BinhLuan) {
-    const lyDo = window.prompt(nhan.reportPrompt, "");
-    if (lyDo === null) return;
-    try {
-      await baoCaoBinhLuan(bl.id, lyDo.trim(), locale);
-      window.alert(nhan.reportSent);
-    } catch (err) {
-      window.alert((err instanceof LoiApi && err.thongDiep) || nhan.sendError);
-    }
-  }
+  // Popup báo cáo: chọn / nhập lý do rồi gửi.
+  const [baoCaoMuc, setBaoCaoMuc] = React.useState<BinhLuan | null>(null);
+  const baoCao = (bl: BinhLuan) => setBaoCaoMuc(bl);
   const coTheTraLoi = !!nguoiDungId && duocViet;
 
   return (
@@ -228,8 +222,16 @@ export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLua
         ) : null}
 
         <ol className="flex flex-col divide-y divide-line">
-          {ds.map((goc) => (
+          {ds.map((goc) => {
+            // Bình luận đã xoá: chỉ người kiểm duyệt thấy dòng "đã xoá". Người đọc
+            // thường không thấy gì; gốc đã xoá nhưng còn câu trả lời thì vẫn hiện
+            // các câu trả lời (không hiện dòng gốc).
+            const traLoi = (goc.replies ?? []).filter((r) => duocKiemDuyet || !r.deleted);
+            const hienGoc = duocKiemDuyet || !goc.deleted;
+            if (!hienGoc && traLoi.length === 0) return null;
+            return (
             <li key={goc.id} className="flex flex-col gap-3 py-5">
+              {hienGoc ? (
               <MotBinhLuan
                 bl={goc}
                 nhan={nhan}
@@ -242,10 +244,11 @@ export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLua
                 onTraLoi={() => setDangTraLoi(dangTraLoi === goc.id ? null : goc.id)}
                 onXoa={() => xoa(goc)}
               />
+              ) : null}
 
-              {(goc.replies?.length || dangTraLoi === goc.id || goc.replies?.some((r) => r.id === dangTraLoi)) ? (
+              {(traLoi.length || dangTraLoi === goc.id || traLoi.some((r) => r.id === dangTraLoi)) ? (
                 <div className="ml-6 flex flex-col gap-3 border-l-2 border-accent-soft pl-4 sm:ml-12">
-                  {goc.replies?.map((r) => (
+                  {traLoi.map((r) => (
                     <React.Fragment key={r.id}>
                       <MotBinhLuan
                         bl={r}
@@ -283,8 +286,19 @@ export function CommentSection({ slug, nhan }: { slug: string; nhan: NhanBinhLua
                 </div>
               ) : null}
             </li>
-          ))}
+            );
+          })}
         </ol>
+
+        {baoCaoMuc ? (
+          <HopBaoCao
+            nhan={nhan}
+            onDong={() => setBaoCaoMuc(null)}
+            onGui={async (lyDo) => {
+              await baoCaoBinhLuan(baoCaoMuc.id, lyDo, locale);
+            }}
+          />
+        ) : null}
 
         {ds.length < tongGoc ? (
           <Button
@@ -480,6 +494,111 @@ function BinhLuanDaXoa({
           </div>
         ) : null}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Popup báo cáo bình luận: vài lý do có sẵn để bấm nhanh + ô nhập tự do
+ * (không bắt buộc). Gửi xong hiện lời cảm ơn rồi tự đóng.
+ */
+function HopBaoCao({
+  nhan,
+  onDong,
+  onGui,
+}: {
+  nhan: NhanBinhLuan;
+  onDong: () => void;
+  onGui: (lyDo: string) => Promise<void>;
+}) {
+  const [lyDo, setLyDo] = React.useState("");
+  const [dang, setDang] = React.useState(false);
+  const [xong, setXong] = React.useState(false);
+  const [loi, setLoi] = React.useState("");
+  const o = React.useRef<HTMLTextAreaElement>(null);
+
+  React.useEffect(() => {
+    o.current?.focus();
+    const nghe = (e: KeyboardEvent) => e.key === "Escape" && onDong();
+    window.addEventListener("keydown", nghe);
+    return () => window.removeEventListener("keydown", nghe);
+  }, [onDong]);
+
+  async function gui(e: React.FormEvent) {
+    e.preventDefault();
+    setDang(true);
+    setLoi("");
+    try {
+      await onGui(lyDo.trim());
+      setXong(true);
+      window.setTimeout(onDong, 1600);
+    } catch (err) {
+      setLoi((err instanceof LoiApi && err.thongDiep) || nhan.sendError);
+    } finally {
+      setDang(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" onClick={onDong}>
+      <form
+        role="dialog"
+        aria-modal
+        aria-label={nhan.report}
+        onSubmit={gui}
+        onClick={(e) => e.stopPropagation()}
+        className="flex w-full max-w-md flex-col gap-3 rounded-card border border-line bg-surface p-5 shadow-card-lift"
+      >
+        <h3 className="flex items-center gap-2 font-serif text-lg font-bold text-ink">
+          <Flag className="size-4 text-lacquer" aria-hidden /> {nhan.report}
+        </h3>
+        {xong ? (
+          <p className="text-sm text-accent">{nhan.reportSent}</p>
+        ) : (
+          <>
+            <label htmlFor="ly-do-bao-cao" className="text-sm text-body">
+              {nhan.reportPrompt}
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {nhan.reportReasons.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setLyDo(r)}
+                  className={cn(
+                    "rounded-full border px-2.5 py-1 text-xs transition-colors",
+                    lyDo === r ? "border-lacquer bg-lacquer/10 text-lacquer" : "border-line text-muted hover:border-line-strong hover:text-ink",
+                  )}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+            <textarea
+              id="ly-do-bao-cao"
+              ref={o}
+              value={lyDo}
+              onChange={(e) => setLyDo(e.target.value)}
+              maxLength={300}
+              rows={3}
+              className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none"
+            />
+            {loi ? (
+              <p role="alert" className="text-sm text-lacquer">
+                {loi}
+              </p>
+            ) : null}
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="ghost" size="sm" onClick={onDong}>
+                {nhan.cancel}
+              </Button>
+              <Button type="submit" size="sm" disabled={dang} className="bg-lacquer text-white hover:bg-lacquer/90">
+                <Flag aria-hidden /> {nhan.report}
+              </Button>
+            </div>
+          </>
+        )}
+      </form>
     </div>
   );
 }

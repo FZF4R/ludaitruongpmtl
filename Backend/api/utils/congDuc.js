@@ -25,6 +25,29 @@ const QUY_TAC_MAC_DINH = {
 }
 const HANH_DONG = Object.keys(QUY_TAC_MAC_DINH)
 
+/** Lời nhắn an lành mặc định trong popup chào ngày mới (admin thay ở /admin/merit). */
+const LOI_NHAN_MAC_DINH = [
+    'Chúc bạn một ngày an lành, thân tâm thường lạc.',
+    'Mỗi niệm thiện lành hôm nay là một hạt giống tốt cho ngày mai.',
+    'Hãy mỉm cười với hơi thở đầu tiên của ngày mới.',
+    'Tâm an thì cảnh an. Chúc bạn một ngày bình yên.',
+    'Sống chậm lại, thương mình và thương người nhiều hơn.',
+    'Nam Mô A Di Đà Phật — nguyện mọi điều tốt lành đến với bạn.'
+]
+
+/** Một lời nhắn ngẫu nhiên: danh sách admin đặt, trống thì dùng mặc định. */
+const loiNhanNgauNhien = async () => {
+    let ds = []
+    try {
+        let cauHinh = await MeritConfig.findOne({ key: 'default' })
+        ds = (cauHinh && Array.isArray(cauHinh.greetings) ? cauHinh.greetings : []).filter(Boolean)
+    } catch (err) {
+        // dùng mặc định
+    }
+    if (!ds.length) ds = LOI_NHAN_MAC_DINH
+    return ds[Math.floor(Math.random() * ds.length)]
+}
+
 let boNho = null
 let napLuc = 0
 
@@ -63,7 +86,7 @@ const bangCongDuc = () => MeritLog.getDatastore().manager.collection(MeritLog.ta
  * Cộng điểm. `soLan` nhân điểm (vd. bài vượt 2 mốc 100 lượt xem cùng lúc).
  * Trả số điểm đã cộng (0 nếu không cộng: tắt, trùng, chạm trần ngày).
  */
-const ghiCongDuc = async (userId, action, { refId = '', soLan = 1 } = {}) => {
+const ghiCongDuc = async (userId, action, { refId = '', soLan = 1, boQuaTran = false } = {}) => {
     try {
         let id = String(userId || '')
         if (!id || !QUY_TAC_MAC_DINH[action]) return 0
@@ -74,7 +97,7 @@ const ghiCongDuc = async (userId, action, { refId = '', soLan = 1 } = {}) => {
 
         let diem = quyTac.points * Math.max(1, Math.floor(soLan))
         let ngay = ngayVN()
-        if (quyTac.dailyCap > 0) {
+        if (quyTac.dailyCap > 0 && !boQuaTran) {
             let [tong] = await bangCongDuc().aggregate([
                 { $match: { userId: id, action, dayKey: ngay } },
                 { $group: { _id: null, n: { $sum: '$points' } } }
@@ -125,4 +148,4 @@ const tongCongDuc = async userId => {
     }
 }
 
-module.exports = { QUY_TAC_MAC_DINH, HANH_DONG, layQuyTac, xoaBoNho, ghiCongDuc, congDucLuotXem, tongCongDuc, bangCongDuc }
+module.exports = { LOI_NHAN_MAC_DINH, loiNhanNgauNhien, QUY_TAC_MAC_DINH, HANH_DONG, layQuyTac, xoaBoNho, ghiCongDuc, congDucLuotXem, tongCongDuc, bangCongDuc }

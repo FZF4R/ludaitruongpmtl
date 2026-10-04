@@ -3,7 +3,7 @@
  * cá nhân (/tai-khoan/thong-ke) - công đức, tu tập, bài viết, bình luận,
  * đóng góp thư viện, lời nguyện.
  */
-const { ghiCongDuc, tongCongDuc, layQuyTac, bangCongDuc } = require('../../../utils/congDuc')
+const { ghiCongDuc, tongCongDuc, layQuyTac, bangCongDuc, loiNhanNgauNhien } = require('../../../utils/congDuc')
 const { ngayVN } = require('../../../utils/loiNguyen')
 
 const MOT_NGAY = 24 * 3600 * 1000
@@ -28,8 +28,16 @@ module.exports = {
         fn: async function (inputs, exits) {
             try {
                 // refId = ngày: mỗi ngày chỉ cộng một lần dù bấm nhiều lần.
-                let diem = await ghiCongDuc(inputs.User.id, 'checkin', { refId: ngayVN() })
-                ok(exits, Object.assign({ points: diem }, await chuoiDiemDanh(inputs.User.id)))
+                // Admin: LUÔN được cộng mỗi lần gọi (bỏ chống trùng và trần ngày) để
+                // kiểm thử popup chào ngày mới - mỗi lần tải trang là một lần cộng.
+                let laAdmin = inputs.User.role === 'Admin'
+                let diem = await ghiCongDuc(inputs.User.id, 'checkin', laAdmin
+                    ? { refId: `${ngayVN()}:${Date.now()}`, boQuaTran: true }
+                    : { refId: ngayVN() })
+                ok(exits, Object.assign(
+                    { points: diem, message: diem > 0 ? await loiNhanNgauNhien() : '', test: laAdmin },
+                    await chuoiDiemDanh(inputs.User.id)
+                ))
             } catch (err) {
                 sails.checkErrorOutput(err, exits);
             }

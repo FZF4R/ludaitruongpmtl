@@ -19,7 +19,7 @@ const path = require('path');
 const TRUONG_QUAN_TRI = [
     'title', 'warning', 'note',
     'supportphonenumber', 'pagefacebookinfo', 'supportfacebook', 'supporttelegram',
-    'zalosupportinfo', 'zaloadminsupportinfo', 'supporttiktok',
+    'zalosupportinfo', 'zaloadminsupportinfo', 'supporttiktok', 'supportemail',
     'isMaintaning', 'langLib', 'theme', 'themeDark', 'articleLayout', 'bannedWords',
     'practiceImages', 'libraryImages', 'libraryOrder', 'aboutHtml'
 ]

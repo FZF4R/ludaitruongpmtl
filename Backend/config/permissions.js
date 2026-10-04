@@ -48,6 +48,7 @@ const actionPermissions = {
   'GET /v1/admin/merit': 'merit.manage',
   'POST /v1/admin/merit/rules': 'merit.manage',
   'POST /v1/admin/merit/donate': 'merit.manage',
+  'POST /v1/admin/merit/greetings': 'merit.manage',
 
   //==== Cầu an / cầu siêu =====
   // Xoá lời của người khác cần thêm `comment.moderate` (kiểm tra trong action).
@@ -79,6 +80,8 @@ const actionPermissions = {
 
   //==== Phê duyệt bình luận / lời nguyện chứa từ cấm (Kiểm duyệt viên trở lên) =====
   'GET /v1/admin/approval': 'comment.moderate',
+  // Số trên thanh tab: có một trong các quyền xử lý nội dung là gọi được (đếm theo quyền trong action).
+  'GET /v1/admin/badges': [...CUA_NOI_DUNG, 'comment.moderate'],
   // Hoạt động một tài khoản: ai xem được danh sách người dùng thì xem được; email chỉ trả khi có user.manage.
   'GET /v1/admin/user/activity': 'user.list',
   'GET /v1/admin/approval/reports': 'comment.moderate',

@@ -43,9 +43,8 @@ export default async function ArticleListPage() {
       layout={layout}
       thumbnail
       adminBar={
-        <ListAdminBar themHref="/admin/blog" themNhan="Thêm bài viết" kieuHienThi={layout} />
+        <ListAdminBar nhanCuaToi={dict.myContent.title} themHref="/admin/blog" themNhan="Thêm bài viết" kieuHienThi={layout} />
       }
-      eyebrow={dict.footer.categories}
       title={dict.nav.articles}
       description={dict.list.articlesDesc}
       trail={trail}

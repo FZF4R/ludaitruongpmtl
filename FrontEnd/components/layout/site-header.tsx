@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, Search, X } from "lucide-react";
+import { ChevronDown, Menu, Search, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mainNav, site, type NavItem } from "@/lib/site";
 import { Button } from "@/components/ui/button";
@@ -307,7 +307,13 @@ export function SiteHeader({
  * chưa biết (đang đọc token) và chưa đăng nhập thì giữ nút chữ như cũ.
  */
 function NutTaiKhoan({ href, nhan }: { href: string; nhan: string }) {
-  const { nguoiDung } = useCheDoSua();
+  const { nguoiDung, congDucMoi, xoaCongDucMoi } = useCheDoSua();
+  // Hiệu ứng "+N công đức" bay lên khi vừa tự điểm danh ngày mới; tự tắt sau 4 giây.
+  React.useEffect(() => {
+    if (!congDucMoi) return;
+    const t = window.setTimeout(xoaCongDucMoi, 8000);
+    return () => window.clearTimeout(t);
+  }, [congDucMoi, xoaCongDucMoi]);
   if (!nguoiDung) {
     return (
       <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
@@ -319,10 +325,22 @@ function NutTaiKhoan({ href, nhan }: { href: string; nhan: string }) {
     <Link
       href={href}
       title={nguoiDung.name || nhan}
-      className="hidden items-center gap-2 rounded-full border border-line py-0.5 pl-0.5 pr-3 text-sm font-medium text-ink transition-colors hover:border-line-strong hover:bg-surface-2 sm:inline-flex"
+      className={cn(
+        "relative hidden items-center gap-2 rounded-full border py-0.5 pl-0.5 pr-3 text-sm font-medium text-ink transition-colors hover:border-line-strong hover:bg-surface-2 sm:inline-flex",
+        congDucMoi ? "border-brass shadow-[0_0_0_3px_rgba(197,139,74,0.25)]" : "border-line",
+      )}
     >
       <Avatar src={nguoiDung.avatarUrl} name={nguoiDung.name} size={28} />
       <span className="max-w-[9rem] truncate">{nguoiDung.name || nhan}</span>
+      {congDucMoi ? (
+        <span
+          role="status"
+          className="pointer-events-none absolute -top-1 right-1 flex items-center gap-0.5 rounded-full bg-brass px-2 py-0.5 text-xs font-bold text-white shadow-md"
+          style={{ animation: "cd-bay 4s ease-out forwards" }}
+        >
+          <Sparkles className="size-3" aria-hidden /> +{congDucMoi}
+        </span>
+      ) : null}
     </Link>
   );
 }

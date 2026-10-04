@@ -294,6 +294,7 @@ export default async function HomePage() {
         zaloKenh={settings?.zalosupportinfo}
         facebook={settings?.supportfacebook}
         tiktok={settings?.supporttiktok}
+        email={settings?.supportemail}
         zaloAdmin={settings?.zaloadminsupportinfo}
         nhan={dict.contact}
       />

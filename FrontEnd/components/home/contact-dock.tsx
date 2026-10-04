@@ -1,13 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { MessageCircle, UserRound, X } from "lucide-react";
+import { Mail, MessageCircle, UserRound, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Khung liên hệ nổi ở góc dưới bên phải trang chủ: Kênh Zalo, Facebook,
- * TikTok, Zalo admin. Admin nhập ở /admin/dashboard (Thông tin chung); mục
- * nào để trống thì không hiện, cả bốn trống thì không hiện gì.
+ * Khung liên hệ nổi ở góc dưới bên phải trang chủ. Admin nhập ở
+ * /admin/dashboard (Thông tin chung); mục nào để trống thì không hiện.
+ *   - Kênh Zalo, Facebook, Zalo admin: trong khung xổ ra từ nút tròn chính.
+ *   - Email và TikTok: LUÔN HIỆN thành nút riêng cạnh nút chính (hàng dưới cùng).
  *
  * Màn hình rộng mở sẵn; điện thoại thu gọn thành một nút để khỏi che nội
  * dung, bấm mới bung ra. Mọi liên kết mở tab mới.
@@ -21,6 +22,7 @@ export type NhanLienHe = {
   facebook: string;
   tiktok: string;
   zaloAdmin: string;
+  email: string;
 };
 
 /** Giá trị admin nhập (link đầy đủ hoặc dạng rút gọn) -> URL mở được. */
@@ -65,14 +67,18 @@ export function ContactDock({
   facebook,
   tiktok,
   zaloAdmin,
+  email,
   nhan,
 }: {
   zaloKenh?: string;
   facebook?: string;
   tiktok?: string;
   zaloAdmin?: string;
+  email?: string;
   nhan: NhanLienHe;
 }) {
+  const thuDien = email?.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ? email.trim() : "";
+  const linkTiktok = tiktok?.trim() ? chuanLink.tiktok(tiktok.trim()) : "";
   const muc = [
     zaloKenh?.trim() && {
       key: "zalo",
@@ -87,13 +93,6 @@ export function ContactDock({
       href: chuanLink.facebook(facebook.trim()),
       mau: "bg-[#1877F2] text-white",
       icon: <IconFacebook />,
-    },
-    tiktok?.trim() && {
-      key: "tiktok",
-      nhan: nhan.tiktok,
-      href: chuanLink.tiktok(tiktok.trim()),
-      mau: "bg-black text-white ring-1 ring-white/20",
-      icon: <IconTiktok />,
     },
     zaloAdmin?.trim() && {
       key: "zalo-admin",
@@ -116,14 +115,14 @@ export function ContactDock({
     setMo(window.matchMedia("(min-width: 640px)").matches);
   }, []);
 
-  if (!muc.length) return null;
+  if (!muc.length && !thuDien && !linkTiktok) return null;
 
   return (
     <aside
       aria-label={nhan.title}
       className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2.5 sm:bottom-6 sm:right-6"
     >
-      {mo ? (
+      {mo && muc.length ? (
         <ul className="flex flex-col items-end gap-2.5">
           {muc.map((m) => (
             <li key={m.key}>
@@ -152,15 +151,48 @@ export function ContactDock({
         </ul>
       ) : null}
 
-      <button
-        type="button"
-        onClick={() => setMo((x) => !x)}
-        aria-expanded={mo}
-        aria-label={mo ? nhan.close : nhan.open}
-        className="flex size-12 items-center justify-center rounded-full bg-accent text-paper shadow-card-lift transition-transform hover:scale-105"
-      >
-        {mo ? <X className="size-5" aria-hidden /> : <MessageCircle className="size-5" aria-hidden />}
-      </button>
+      {/* Hàng dưới cùng: email, TikTok (luôn hiện) + nút mở khung liên hệ. */}
+      <div className="flex items-center gap-2.5">
+        {thuDien ? (
+          <a
+            href={`mailto:${thuDien}`}
+            aria-label={`${nhan.email}: ${thuDien}`}
+            title={thuDien}
+            className="group flex h-11 items-center gap-2 rounded-full bg-surface pl-1 pr-1 shadow-card-lift ring-1 ring-line transition-colors hover:ring-accent sm:pr-4"
+          >
+            <span className="flex size-9 items-center justify-center rounded-full bg-lacquer text-white transition-transform group-hover:scale-110">
+              <Mail className="size-[18px]" aria-hidden />
+            </span>
+            {/* Địa chỉ email: hiện trên màn hình rộng, điện thoại chỉ còn biểu tượng. */}
+            <span className="hidden max-w-[14rem] truncate text-xs font-medium text-ink group-hover:text-accent sm:inline">
+              {thuDien}
+            </span>
+          </a>
+        ) : null}
+        {linkTiktok ? (
+          <a
+            href={linkTiktok}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={nhan.tiktok}
+            title={nhan.tiktok}
+            className="flex size-11 items-center justify-center rounded-full bg-black text-white shadow-card-lift ring-1 ring-white/20 transition-transform hover:scale-110"
+          >
+            <IconTiktok />
+          </a>
+        ) : null}
+        {muc.length ? (
+          <button
+            type="button"
+            onClick={() => setMo((x) => !x)}
+            aria-expanded={mo}
+            aria-label={mo ? nhan.close : nhan.open}
+            className="flex size-12 items-center justify-center rounded-full bg-accent text-paper shadow-card-lift transition-transform hover:scale-105"
+          >
+            {mo ? <X className="size-5" aria-hidden /> : <MessageCircle className="size-5" aria-hidden />}
+          </button>
+        ) : null}
+      </div>
     </aside>
   );
 }

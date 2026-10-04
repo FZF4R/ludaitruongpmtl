@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { localePath, splitLocale, type Locale } from "@/lib/i18n";
 import { docToken, layHoSo, LoiApi, type HoSo } from "@/lib/auth";
-import { coQuyen, nhanVaiTro, tabQuanTri, tabQuanTriDau } from "@/lib/admin-api";
+import { coQuyen, laySoViecCho, nhanVaiTro, tabQuanTri, tabQuanTriDau } from "@/lib/admin-api";
 import { cn } from "@/lib/utils";
 
 /**
@@ -72,6 +72,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const lp = (href: string) => localePath(locale, href);
 
   const [trangThai, setTrangThai] = React.useState<TrangThai>("dangTai");
+  /** Số việc chờ theo tab (bài chờ duyệt, bình luận / lời nguyện bị giữ, báo cáo). */
+  const [soViec, setSoViec] = React.useState<Record<string, number>>({});
   const [hoSo, setHoSo] = React.useState<HoSo | null>(null);
 
   React.useEffect(() => {
@@ -96,6 +98,22 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       conSong = false;
     };
   }, [locale]);
+
+  // Số việc chờ trên thanh tab: tải khi vào khu quản trị, khi chuyển tab, và mỗi 60 giây.
+  React.useEffect(() => {
+    if (trangThai !== "san") return;
+    let song = true;
+    const nap = () =>
+      laySoViecCho(locale)
+        .then((kq) => song && setSoViec(kq))
+        .catch(() => {});
+    nap();
+    const t = window.setInterval(nap, 60_000);
+    return () => {
+      song = false;
+      window.clearInterval(t);
+    };
+  }, [trangThai, locale, path]);
 
   if (trangThai === "dangTai") {
     return <p className="py-12 text-sm text-muted">Đang tải…</p>;
@@ -167,6 +185,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               )}
             >
               {muc.nhan}
+              {soViec[muc.href.split("/").pop() ?? ""] ? (
+                <span
+                  className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-lacquer px-1.5 text-[11px] font-bold leading-5 text-white"
+                  aria-label={`${soViec[muc.href.split("/").pop() ?? ""]} việc đang chờ`}
+                >
+                  {soViec[muc.href.split("/").pop() ?? ""]}
+                </span>
+              ) : null}
             </Link>
           );
         })}

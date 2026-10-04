@@ -338,7 +338,14 @@
     "deletedBy": "삭제한 사람: {name}",
     "report": "신고",
     "reportPrompt": "이 댓글을 신고하는 이유 (선택):",
-    "reportSent": "신고가 접수되었습니다. 관리자가 검토합니다."
+    "reportSent": "신고가 접수되었습니다. 관리자가 검토합니다.",
+    "reportReasons": [
+      "스팸·광고",
+      "저속한 표현",
+      "모욕·공격",
+      "정법 왜곡",
+      "사기"
+    ]
   },
   "homeCalendar": {
     "eyebrow": "불교 달력",
@@ -436,7 +443,8 @@
     "zaloChannel": "Zalo 채널",
     "facebook": "Facebook",
     "tiktok": "TikTok",
-    "zaloAdmin": "관리자 Zalo"
+    "zaloAdmin": "관리자 Zalo",
+    "email": "연락 이메일"
   },
   "feedback": {
     "eyebrow": "제안 · 의견",
@@ -787,7 +795,10 @@
     "bank": "은행",
     "donateLink": "공식 정보 보기",
     "noDonate": "후원 정보가 없습니다.",
-    "signIn": "로그인하고 내 통계 보기"
+    "signIn": "로그인하고 내 통계 보기",
+    "welcomeTitle": "평안한 새 하루",
+    "viewStats": "공덕 보기",
+    "close": "닫기"
   },
   "library": {
     "title": "자료실",

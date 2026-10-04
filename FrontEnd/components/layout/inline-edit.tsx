@@ -6,6 +6,11 @@ import { Check, Pencil, RotateCcw, X } from "lucide-react";
 import { docToken, layHoSo } from "@/lib/auth";
 import { splitLocale } from "@/lib/i18n";
 import { luuChuGiaoDien } from "@/lib/site-text-action";
+import { diemDanh } from "@/lib/my-content";
+
+/** Ngày hôm nay theo giờ Việt Nam (YYYY-MM-DD). */
+const ngayVN = () => new Date(Date.now() + 7 * 3600 * 1000).toISOString().slice(0, 10);
+const KHOA_DIEM_DANH = "sv_diem_danh";
 import { cn } from "@/lib/utils";
 
 /**
@@ -34,6 +39,11 @@ type TrangThaiSua = {
   coQuyen: boolean;
   dangSua: boolean;
   doiCheDo: () => void;
+  /** Công đức vừa được cộng do tự điểm danh ngày mới (0 = không) - header hiện hiệu ứng. */
+  congDucMoi: number;
+  /** Lời nhắn an lành + chuỗi ngày điểm danh đi kèm lần cộng điểm đó (popup góc trên phải). */
+  loiChao: { message: string; streak: number; test: boolean } | null;
+  xoaCongDucMoi: () => void;
 };
 
 const SuaContext = React.createContext<TrangThaiSua>({
@@ -44,6 +54,9 @@ const SuaContext = React.createContext<TrangThaiSua>({
   coQuyen: false,
   dangSua: false,
   doiCheDo: () => {},
+  congDucMoi: 0,
+  loiChao: null,
+  xoaCongDucMoi: () => {},
 });
 
 const KHOA_CHE_DO = "sv_che_do_sua";
@@ -54,6 +67,12 @@ export function InlineEditProvider({ children }: { children: React.ReactNode }) 
   const [nguoiDungId, setNguoiDungId] = React.useState<string | null>(null);
   const [nguoiDung, setNguoiDung] = React.useState<{ name: string; avatarUrl: string } | null>(null);
   const [daBiet, setDaBiet] = React.useState(false);
+  const [congDucMoi, setCongDucMoi] = React.useState(0);
+  const [loiChao, setLoiChao] = React.useState<TrangThaiSua["loiChao"]>(null);
+  const xoaCongDucMoi = React.useCallback(() => {
+    setCongDucMoi(0);
+    setLoiChao(null);
+  }, []);
   const coQuyen = quyen.includes("site.text.edit");
   const [dangSua, setDangSua] = React.useState(false);
 
@@ -71,6 +90,28 @@ export function InlineEditProvider({ children }: { children: React.ReactNode }) 
         setQuyen(hoSo.permissions ?? []);
         setNguoiDungId(hoSo.id || null);
         setNguoiDung({ name: hoSo.fullName || hoSo.username, avatarUrl: hoSo.avatarUrl || "" });
+        // Ngày mới: tự điểm danh (cộng công đức), mỗi trình duyệt gọi một lần / ngày;
+        // máy chủ cũng chỉ cộng một lần / ngày nên gọi trùng không sao.
+        try {
+          // Admin: luôn gọi (máy chủ cũng luôn cộng) để kiểm thử popup mỗi lần tải trang.
+          if (hoSo.role === "Admin" || window.localStorage.getItem(KHOA_DIEM_DANH) !== ngayVN()) {
+            diemDanh(locale)
+              .then((kq) => {
+                try {
+                  window.localStorage.setItem(KHOA_DIEM_DANH, ngayVN());
+                } catch {
+                  // bỏ qua
+                }
+                if (conSong && kq.points > 0) {
+                  setCongDucMoi(kq.points);
+                  setLoiChao({ message: kq.message, streak: kq.streak, test: kq.test });
+                }
+              })
+              .catch(() => {});
+          }
+        } catch {
+          // localStorage bị chặn: bỏ qua, điểm danh ở trang Thống kê.
+        }
         if (!hoSo.permissions?.includes("site.text.edit")) return;
         try {
           setDangSua(window.sessionStorage.getItem(KHOA_CHE_DO) === "1");
@@ -100,7 +141,7 @@ export function InlineEditProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   return (
-    <SuaContext.Provider value={{ quyen, nguoiDungId, nguoiDung, daBiet, coQuyen, dangSua, doiCheDo }}>
+    <SuaContext.Provider value={{ quyen, nguoiDungId, nguoiDung, daBiet, coQuyen, dangSua, doiCheDo, congDucMoi, loiChao, xoaCongDucMoi }}>
       {children}
       {coQuyen ? (
         <button

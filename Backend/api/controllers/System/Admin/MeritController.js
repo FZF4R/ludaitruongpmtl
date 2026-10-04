@@ -2,7 +2,7 @@
  * MeritController (quản trị, quyền `merit.manage`): bảng điểm công đức, bảng
  * xếp hạng và thông tin ủng hộ (mã QR) hiện ở trang thống kê người dùng.
  */
-const { QUY_TAC_MAC_DINH, HANH_DONG, layQuyTac, xoaBoNho, bangCongDuc } = require('../../../utils/congDuc')
+const { QUY_TAC_MAC_DINH, HANH_DONG, layQuyTac, xoaBoNho, bangCongDuc, LOI_NHAN_MAC_DINH } = require('../../../utils/congDuc')
 const { layAvatarUrls } = require('../../../utils/avatar')
 
 const QR_TOI_DA = 1.5 * 1024 * 1024
@@ -45,6 +45,8 @@ module.exports = {
                 ok(exits, {
                     rules: HANH_DONG.map(a => Object.assign({ action: a, defaultPoints: QUY_TAC_MAC_DINH[a].points, defaultDailyCap: QUY_TAC_MAC_DINH[a].dailyCap }, quyTac[a])),
                     donate: dinhDangUngHo(cauHinh.donate || {}, cauHinh.updatedAt),
+                    greetings: Array.isArray(cauHinh.greetings) && cauHinh.greetings.length ? cauHinh.greetings : LOI_NHAN_MAC_DINH,
+                    greetingsDefault: !(Array.isArray(cauHinh.greetings) && cauHinh.greetings.length),
                     top: xepHang.map(x => Object.assign({ userId: x._id, points: x.n, avatarUrl: avatar[x._id] || '' }, ten[x._id] || { name: '', role: '' }))
                 })
             } catch (err) {
@@ -75,6 +77,24 @@ module.exports = {
                 xoaBoNho()
                 let quyTac = await layQuyTac()
                 ok(exits, { rules: HANH_DONG.map(a => Object.assign({ action: a, defaultPoints: QUY_TAC_MAC_DINH[a].points, defaultDailyCap: QUY_TAC_MAC_DINH[a].dailyCap }, quyTac[a])) })
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    /** Lời nhắn an lành cho popup chào ngày mới: tối đa 100 câu, mỗi câu ≤ 200 ký tự. Rỗng = dùng mặc định. */
+    saveGreetings: ({
+        inputs: sails.config.inputs.Admin.Merit.saveGreetings,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let ds = Array.from(new Set((Array.isArray(inputs.greetings) ? inputs.greetings : [])
+                    .map(x => String(x || '').replace(/\s+/g, ' ').trim().slice(0, 200))
+                    .filter(Boolean))).slice(0, 100)
+                let cauHinh = await layCauHinh()
+                await MeritConfig.updateOne({ id: cauHinh.id }).set({ greetings: ds, updatedBy: inputs.User.username || '' })
+                ok(exits, { greetings: ds.length ? ds : LOI_NHAN_MAC_DINH, greetingsDefault: !ds.length })
             } catch (err) {
                 sails.checkErrorOutput(err, exits);
             }

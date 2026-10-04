@@ -959,16 +959,30 @@ function TrinhSoan({
         <KhoiChuong chuong={chuong} onDoi={setChuong} />
       ) : null}
 
-      <div className="flex flex-wrap items-center gap-3">
+      {/*
+        Thanh nút dính đáy màn hình: form dài (thân bài, chương kinh) vẫn bấm lưu
+        được ngay mà không phải cuộn xuống cuối.
+      */}
+      <div className="sticky bottom-0 z-20 -mx-4 flex flex-wrap items-center gap-3 border-t border-line bg-surface/95 px-4 py-3 shadow-[0_-6px_16px_-12px_rgba(0,0,0,0.25)] backdrop-blur sm:-mx-6 sm:px-6">
         <Button type="submit" size="lg" disabled={dangLuu}>
-          {dangLuu ? "Đang lưu…" : goc?.ownerIsUser ? "Gửi đề xuất sửa cho tác giả" : goc ? "Lưu thay đổi" : "Tạo bài (ở dạng nháp)"}
+          {dangLuu
+            ? "Đang lưu…"
+            : goc?.ownerIsUser
+              ? "Gửi đề xuất sửa cho tác giả"
+              : goc
+                ? "Lưu thay đổi"
+                : laKinh
+                  ? "Thêm kinh sách"
+                  : type === "library"
+                    ? "Thêm nội dung thư viện"
+                    : "Thêm bài viết"}
         </Button>
         <Button type="button" variant="ghost" onClick={onThoat}>
           Huỷ
         </Button>
         {!goc ? (
           <p className="text-xs text-muted">
-            Bài mới luôn ở dạng nháp. Duyệt để đăng ở màn hình danh sách.
+            Bài mới lưu ở dạng nháp. Duyệt để đăng ở màn hình danh sách.
           </p>
         ) : null}
       </div>

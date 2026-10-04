@@ -575,6 +575,10 @@ module.exports.inputs = {
                 "zaloadminsupportinfo": {
                     "type": "string"
                 },
+                "supportemail": {
+                    "type": "string",
+                    "maxLength": 120
+                },
                 "supporttiktok": {
                     "type": "string"
                 },
@@ -791,6 +795,13 @@ module.exports.inputs = {
                 }
             }
         },
+        "Badge": {
+            "getBadges": {
+                "User": {
+                    "type": "json"
+                }
+            }
+        },
         "UserActivity": {
             "getActivity": {
                 "User": {
@@ -833,6 +844,15 @@ module.exports.inputs = {
                     "type": "json"
                 },
                 "rules": {
+                    "type": "json",
+                    "required": true
+                }
+            },
+            "saveGreetings": {
+                "User": {
+                    "type": "json"
+                },
+                "greetings": {
                     "type": "json",
                     "required": true
                 }

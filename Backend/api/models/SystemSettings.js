@@ -40,6 +40,11 @@ module.exports = {
             type: 'string',
             description: 'Zalo admin - so dien thoai hoac link zalo.me/...'
         },
+        supportemail: {
+            type: 'string',
+            defaultsTo: '',
+            description: 'Email liên hệ - nút email ở khung liên hệ góc dưới phải trang chủ'
+        },
         supporttiktok: {
             type: 'string',
             description: 'Kenh TikTok - link hoac @ten'
