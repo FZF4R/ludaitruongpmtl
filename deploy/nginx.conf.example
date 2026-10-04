@@ -1,0 +1,42 @@
+# Mẫu cấu hình Nginx: một domain, dùng chung cho cả FrontEnd và Backend.
+# /v1/*  -> Backend (Sails, cổng 1337)
+# còn lại -> FrontEnd (Next.js, cổng 3000)
+#
+# Nhờ cùng domain nên Backend KHÔNG cần cấu hình CORS (FRONTEND_URL trong
+# Backend/.env để trống cũng chạy được).
+#
+# Cài đặt:
+#   sudo cp deploy/nginx.conf.example /etc/nginx/sites-available/example.com
+#   sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+#   sudo nginx -t && sudo systemctl reload nginx
+#   sudo certbot --nginx -d example.com -d www.example.com   # bật HTTPS
+#
+# Nhớ đổi "example.com" thành domain thật ở MỌI chỗ dưới đây.
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name example.com www.example.com;
+
+    client_max_body_size 8m;  # khớp giới hạn upload của Backend (config/http.js)
+
+    location /v1/ {
+        proxy_pass http://127.0.0.1:1337;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

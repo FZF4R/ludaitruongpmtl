@@ -138,19 +138,17 @@ module.exports = {
 
     /***************************************************************************
     *                                                                          *
-    * If this app has CORS enabled (see `config/security.js`) with the         *
-    * `allowCredentials` setting enabled, then you should uncomment the        *
-    * `allowOrigins` whitelist below.  This sets which "origins" are allowed   *
-    * to send cross-domain (CORS) requests to your Sails app.                  *
+    * Domain FrontEnd được phép gọi CORS sang API này. Nếu FrontEnd và         *
+    * Backend cùng một domain (đi qua Nginx reverse proxy, route /v1/* sang    *
+    * backend — xem deploy/nginx.conf.example) thì KHÔNG cần CORS, danh sách   *
+    * này để trống cũng không sao.                                             *
     *                                                                          *
-    * > Replace "https://example.com" with the URL of your production server.  *
-    * > Be sure to use the right protocol!  ("http://" vs. "https://")         *
+    * Set FRONTEND_URL trong .env nếu FrontEnd chạy ở domain/subdomain khác.   *
+    * Nhiều domain thì phân tách bằng dấu phẩy.                                 *
     *                                                                          *
     ***************************************************************************/
     cors: {
-      // allowOrigins: [
-      //   'https://example.com',
-      // ]
+      allowOrigins: (process.env.FRONTEND_URL || '').split(',').map(s => s.trim()).filter(Boolean),
     },
 
   },
@@ -292,7 +290,7 @@ module.exports = {
   *                                                                         *
   ***************************************************************************/
   log: {
-    level: 'debug'
+    level: process.env.LOG_LEVEL || 'info'
   },
 
 
@@ -312,20 +310,13 @@ module.exports = {
 
     /***************************************************************************
     *                                                                          *
-    * Proxy settings                                                           *
-    *                                                                          *
-    * If your app will be deployed behind a proxy/load balancer - for example, *
-    * on a PaaS like Heroku - then uncomment the `trustProxy` setting below.   *
-    * This tells Sails/Express how to interpret X-Forwarded headers.           *
-    *                                                                          *
-    * This setting is especially important if you are using secure cookies     *
-    * (see the `cookies: secure` setting under `session` above) or if your app *
-    * relies on knowing the original IP address that a request came from.      *
-    *                                                                          *
-    * (https://sailsjs.com/config/http)                                        *
+    * App chạy sau Nginx reverse proxy (xem deploy/nginx.conf.example) nên     *
+    * phải trustProxy = true, nếu không req.ip sẽ luôn là 127.0.0.1 — sai cho  *
+    * rate-limit, log kiểm duyệt, chặn IP (api/utils/rateLimiterRedis.js và    *
+    * các Controller đọc req.ip).                                              *
     *                                                                          *
     ***************************************************************************/
-    // trustProxy: true,
+    trustProxy: true,
 
   },
 
@@ -333,14 +324,11 @@ module.exports = {
 
   /**************************************************************************
   *                                                                         *
-  * Lift the server on port 80.                                             *
-  * (if deploying behind a proxy, or to a PaaS like Heroku or Deis, you     *
-  * probably don't need to set a port here, because it is oftentimes        *
-  * handled for you automatically.  If you are not sure if you need to set  *
-  * this, just try deploying without setting it and see if it works.)       *
+  * App chạy sau Nginx (reverse proxy lo port 80/443 + SSL), nên port ở     *
+  * đây là cổng NỘI BỘ — đổi qua PORT trong .env nếu 1337 bị trùng.         *
   *                                                                         *
   ***************************************************************************/
-  // port: 80,
+  port: process.env.PORT || 1337,
 
 
 
@@ -373,24 +361,10 @@ module.exports = {
   * > See config/custom.js for more info on how to configure these options. *
   *                                                                         *
   ***************************************************************************/
-  custom: {
-    baseUrl: 'https://example.com',
-    internalEmailAddress: 'support@example.com',
-
-    // sendgridSecret: 'SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU',
-    // stripeSecret: 'sk_prod__fake_Nfgh82401348jaDa3lkZ0d9Hm',
-    //--------------------------------------------------------------------------
-    // /\   OR, to avoid checking them in to version control, you might opt to
-    // ||   set sensitive credentials like these using environment variables.
-    //
-    // For example:
-    // ```
-    // sendgridSecret=SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU
-    // sails_custom__stripeSecret=sk_prod__fake_Nfgh82401348jaDa3lkZ0d9Hm
-    // ```
-    //--------------------------------------------------------------------------
-
-  },
+  // Không có override nào cho config/custom.js ở production — các giá trị
+  // thật (chuTuCamEmail...) đã đọc trực tiếp từ biến môi trường trong chính
+  // config/custom.js, xem .env.example.
+  custom: {},
 
 
 

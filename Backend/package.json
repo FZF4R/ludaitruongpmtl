@@ -12,6 +12,7 @@
         "babel-runtime": "^6.26.0",
         "crypto": "^1.0.1",
         "crypto-js": "^4.1.1",
+        "dotenv": "^18.0.5",
         "esm": "^3.2.25",
         "grunt": "1.0.4",
         "jquery-param": "^1.1.8",

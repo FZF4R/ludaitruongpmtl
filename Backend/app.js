@@ -26,6 +26,10 @@
 // > Note: This is not required in order to lift, but it is a convenient default.
 process.chdir(__dirname);
 
+// Nạp biến môi trường từ `.env` (nếu có) TRƯỚC khi sails/config nào được
+// require — config/env.js, config/datastores.js... đọc process.env lúc load.
+require('dotenv').config();
+
 
 
 // Attempt to import `sails` dependency, as well as `rc` (for loading `.sailsrc` files).

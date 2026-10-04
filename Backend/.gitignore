@@ -46,10 +46,17 @@
 ################################################
 
 config/local.js
-config/env.js
-config/datastores.js
 config/security.js
-config/bootstrap.js
+
+# config/env.js, config/datastores.js, config/bootstrap.js: không còn bị
+# ignore — cả 3 file đều chỉ đọc giá trị từ biến môi trường (xem .env.example),
+# không chứa secret nào, nên commit được để clone về là chạy ngay. Secret thật
+# nằm trong `.env` (đã gitignore ở dưới), không nằm trong các file này.
+
+# Biến môi trường thật (secret) — copy từ .env.example rồi điền giá trị thật.
+.env
+.env.*
+!.env.example
 
 
 
