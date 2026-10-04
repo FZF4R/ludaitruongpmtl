@@ -1,23 +1,21 @@
 "use client";
 
 import * as React from "react";
-import { Bell, Minus, Plus, RotateCcw } from "lucide-react";
+import { Bell, Minus, Pause, Play, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/primitives";
 import { useAmThanhNgan, useGiuManHinh, useLuaChonNho } from "@/components/practice/use-sound";
 import {
+  AmNen,
   ChonAmThanh,
   CongTac,
   DanhSachBaiNghe,
   NutLuuNhatKy,
   ThanhTruot,
-  VongLan,
   dien,
-  rung,
   useAmThanhDaChon,
   useDsAmThanh,
   useNhipTuDong,
-  usePhimCach,
   type NhanTuTap,
 } from "@/components/practice/common";
 import type { BanKinh } from "@/app/[lang]/tu-tap/tung-kinh-niem-phat/actions";
@@ -40,7 +38,9 @@ export function Chanting({
   const { ds } = useDsAmThanh("tung-kinh");
   const { ds: dsMo } = useDsAmThanh("go-mo");
   const am = useAmThanhNgan();
-  // Mỗi lúc chỉ dựng MỘT bộ đếm: cả ba đều nghe phím Cách, dựng cùng lúc thì một lần bấm đếm ba nơi.
+  // Ba tab dùng chung phím Cách để gõ/lần hạt: "niem-phat" dựng cả Mõ + Chuỗi hạt (một lần
+  // bấm tính cả hai, như trang /tu-tap/go-mo-chuoi-hat), hai tab còn lại dựng một mình nó -
+  // không bao giờ dựng cả ba cùng lúc, nếu không một lần bấm sẽ đếm nhảy vào cả ba nơi.
   const [boDem, setBoDem] = useLuaChonNho<"niem-phat" | "go-mo" | "chuoi-hat">("tung-kinh_bo-dem", "niem-phat");
   return (
     <div className="flex flex-col gap-6">
@@ -63,131 +63,64 @@ export function Chanting({
         ) : boDem === "chuoi-hat" ? (
           <ChuoiHat nhan={nhan} ds={dsMo} am={am} />
         ) : (
-          <NiemPhat nhan={nhan} ds={ds} am={am} />
+          <NiemPhat nhan={nhan} dsTungKinh={ds} dsMo={dsMo} am={am} kinh={kinh} docKinh={docKinh} />
         )}
       </div>
-      <DocKinh nhan={nhan} ds={ds} am={am} kinh={kinh} docKinh={docKinh} />
     </div>
   );
 }
 
-const MUC_TIEU = [108, 500, 1000, 3000, 10000];
-
-function NiemPhat({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) {
+/**
+ * "Niệm Phật": mõ bên trái, tụng kinh ở giữa, chuỗi hạt bên phải - gõ mõ và
+ * lần hạt cùng lúc (xem GoMo/ChuoiHat - cả hai cùng nghe phím Cách), kèm
+ * nhạc niệm Phật phát nền.
+ */
+function NiemPhat({
+  nhan,
+  dsTungKinh,
+  dsMo,
+  am,
+  kinh,
+  docKinh,
+}: {
+  nhan: NhanTuTap;
+  dsTungKinh: Ds;
+  dsMo: Ds;
+  am: Am;
+  kinh: { slug: string; title: string }[];
+  docKinh: (slug: string) => Promise<BanKinh | null>;
+}) {
   const n = nhan.recitation;
-  const [cau, setCau] = useLuaChonNho("niem-phat_cau", 0);
-  const [mucTieu, setMucTieu] = useLuaChonNho("niem-phat_muc-tieu", 108);
-  const [moMoiLan, setMoMoiLan] = useLuaChonNho("niem-phat_mo", true);
-  const mo = useAmThanhDaChon("tung-kinh", "mo", ds);
-  const chuong = useAmThanhDaChon("tung-kinh", "chuong", ds);
-  const [dem, setDem] = React.useState(0);
-
-  React.useEffect(() => {
-    if (mo.amThanh) void am.nap(mo.amThanh.src);
-  }, [mo.amThanh, am]);
-
-  const cauNiem = n.phrases[cau] ?? n.phrases[0];
-
-  function demMot() {
-    const moi = dem + 1;
-    setDem(moi);
-    if (moMoiLan && mo.amThanh) void am.phat(mo.amThanh.src);
-    if (moi === mucTieu) {
-      if (chuong.amThanh) void am.phat(chuong.amThanh.src);
-      rung([40, 80, 40]);
-    } else rung(8);
-  }
-  usePhimCach(demMot);
-
-  const tiLe = Math.min(1, dem / mucTieu);
-  const chuVi = 2 * Math.PI * 92;
+  const nhac = useAmThanhDaChon("tung-kinh", "am-nen", dsTungKinh);
+  const [dangPhat, setDangPhat] = React.useState(false);
+  const [amLuong, setAmLuong] = useLuaChonNho("niem-phat_am-luong", 0.5);
 
   return (
-    <Card className="grid gap-6 p-5 md:grid-cols-[minmax(0,1fr)_18rem]">
-      <div className="flex flex-col items-center gap-4">
-        <div className="flex w-full items-baseline justify-between gap-3">
-          <h2 className="font-serif text-xl font-bold text-ink">{n.title}</h2>
-          <span className="text-sm tabular-nums text-muted">
-            {dem >= mucTieu ? <span className="font-medium text-accent">{dien(n.goalReached, { n: mucTieu })}</span> : `${dem} / ${mucTieu}`}
-          </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={demMot}
-          aria-label={n.tap}
-          className="relative grid aspect-square w-full max-w-[16rem] touch-manipulation select-none place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-        >
-          <svg viewBox="0 0 200 200" className="absolute inset-0 size-full -rotate-90" aria-hidden>
-            <circle cx="100" cy="100" r="92" fill="none" strokeWidth="7" className="stroke-line" />
-            <circle
-              cx="100"
-              cy="100"
-              r="92"
-              fill="none"
-              strokeWidth="7"
-              strokeLinecap="round"
-              strokeDasharray={chuVi}
-              strokeDashoffset={chuVi * (1 - tiLe)}
-              className="stroke-accent transition-[stroke-dashoffset] duration-200"
-            />
-          </svg>
-          <span className="relative grid size-[78%] place-items-center rounded-full bg-accent-soft/60">
-            <VongLan lan={dem} />
-            <span className="flex flex-col items-center gap-1 px-4 text-center">
-              <span className="text-5xl font-bold tabular-nums text-ink">{dem}</span>
-              <span className="font-serif text-sm leading-snug text-accent">{cauNiem}</span>
-            </span>
-          </span>
-        </button>
-        <p className="text-center text-xs text-muted">{n.tap}</p>
-      </div>
-
-      <div className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1.5">
-          <span className="text-xs font-medium text-muted">{n.phrase}</span>
-          <select
-            value={cau}
-            onChange={(e) => setCau(Number(e.target.value))}
-            className="h-9 rounded-md border border-line bg-surface px-2.5 text-sm text-ink focus:border-accent focus:outline-none"
-          >
-            {n.phrases.map((p, i) => (
-              <option key={p} value={i}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-medium text-muted">{n.goal}</span>
-          <div className="flex flex-wrap gap-1.5">
-            {MUC_TIEU.map((m) => (
-              <Button key={m} type="button" size="sm" variant={mucTieu === m ? "solid" : "outline"} onClick={() => setMucTieu(m)}>
-                {m.toLocaleString()}
-              </Button>
-            ))}
-          </div>
-        </div>
-        <CongTac checked={moMoiLan} onChange={setMoMoiLan}>
-          {n.moEach}
-        </CongTac>
-        <ChonAmThanh
-          nhan={nhan}
-          label={nhan.woodenFish.moSound}
-          cungLoai={mo.cungLoai}
-          value={mo.id}
-          onChange={mo.chon}
-          coTat={false}
-          onNghe={mo.amThanh ? () => void am.phat(mo.amThanh!.src) : undefined}
-        />
-        <div className="mt-auto flex flex-wrap items-center gap-3 border-t border-line pt-4">
-          <NutLuuNhatKy nhan={nhan} type="niem-phat" amount={dem} note={cauNiem} onDaLuu={() => setDem(0)} />
-          <Button variant="ghost" size="sm" onClick={() => setDem(0)} disabled={dem === 0} className="ml-auto">
-            <RotateCcw className="size-4" aria-hidden /> {nhan.reset}
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4">
+        <AmNen src={nhac.amThanh?.src ?? null} chay={dangPhat} amLuong={amLuong} />
+        <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end">
+          <ChonAmThanh nhan={nhan} label={n.music} cungLoai={nhac.cungLoai} value={nhac.id} onChange={nhac.chon} coTat={false} />
+          <ThanhTruot
+            label={nhan.meditation.volume}
+            giaTri={Math.round(amLuong * 100)}
+            hienThi={`${Math.round(amLuong * 100)}%`}
+            min={0}
+            max={100}
+            onChange={(v) => setAmLuong(v / 100)}
+          />
+          <Button type="button" size="sm" variant="outline" disabled={!nhac.amThanh} onClick={() => setDangPhat(!dangPhat)}>
+            {dangPhat ? <Pause className="size-4" aria-hidden /> : <Play className="size-4" aria-hidden />}
+            {dangPhat ? nhan.pause : nhan.start}
           </Button>
         </div>
       </div>
-    </Card>
+      <div className="grid gap-6 lg:grid-cols-3 lg:items-start">
+        <GoMo nhan={nhan} ds={dsMo} am={am} />
+        <DocKinh nhan={nhan} ds={dsTungKinh} am={am} kinh={kinh} docKinh={docKinh} />
+        <ChuoiHat nhan={nhan} ds={dsMo} am={am} />
+      </div>
+    </div>
   );
 }
 

@@ -252,29 +252,6 @@ export function MeditationTimer({ nhan }: { nhan: NhanTuTap }) {
       <AmNen src={nen.amThanh?.src ?? null} chay={chay} amLuong={cfg.amLuong} />
       <AmNen src={kinh.amThanh?.src ?? null} chay={chay} amLuong={cfg.amLuong} lap={false} />
 
-      <KhoiCauHinh
-        nhan={nhan}
-        cfg={cfg}
-        onApDung={(c) => setCfgLuu(chuanHoa(c))}
-        khoa={khoaChon}
-        tomTat={[
-          [m.duration, dien(m.minutes, { n: cfg.phut })],
-          [m.bell, chuong.amThanh?.title ?? nhan.soundOff],
-          [m.interval, cfg.nhacGiua ? dien(m.intervalEvery, { n: cfg.nhacGiua }) : m.intervalNone],
-          [nhan.medExtra.music, nen.amThanh?.title ?? nhan.soundOff],
-          [nhan.medExtra.sutra, kinh.amThanh?.title ?? nhan.medExtra.none],
-          [m.volume, `${Math.round(cfg.amLuong * 100)}%`],
-          [
-            nhan.medExtra.mo,
-            cfg.moBat ? `${mo.amThanh?.title ?? "—"} · ${dien(nhan.woodenFish.bpm, { n: cfg.moBpm })}` : nhan.presets.off,
-          ],
-          [
-            nhan.medExtra.mala,
-            cfg.chuoiBat ? `${dien(nhan.mala.beadsOf, { n: cfg.soHat })} · ${tiengHat.amThanh?.title ?? nhan.soundOff}` : nhan.presets.off,
-          ],
-        ]}
-      />
-
       <Card className="grid gap-6 p-5 md:grid-cols-[minmax(0,1fr)_21rem]">
         <div className="flex flex-col items-center justify-center gap-5 py-4">
           <div className="relative grid aspect-square w-full max-w-[16rem] place-items-center">
@@ -343,7 +320,28 @@ export function MeditationTimer({ nhan }: { nhan: NhanTuTap }) {
         </div>
 
         <fieldset disabled={khoaChon} className="flex flex-col gap-4 disabled:opacity-70">
-          <h2 className="font-serif text-xl font-bold text-ink">{m.title}</h2>
+          <KhoiCauHinh
+            nhan={nhan}
+            cfg={cfg}
+            onApDung={(c) => setCfgLuu(chuanHoa(c))}
+            khoa={khoaChon}
+            tomTat={[
+              [m.duration, dien(m.minutes, { n: cfg.phut })],
+              [m.bell, chuong.amThanh?.title ?? nhan.soundOff],
+              [m.interval, cfg.nhacGiua ? dien(m.intervalEvery, { n: cfg.nhacGiua }) : m.intervalNone],
+              [nhan.medExtra.music, nen.amThanh?.title ?? nhan.soundOff],
+              [nhan.medExtra.sutra, kinh.amThanh?.title ?? nhan.medExtra.none],
+              [m.volume, `${Math.round(cfg.amLuong * 100)}%`],
+              [
+                nhan.medExtra.mo,
+                cfg.moBat ? `${mo.amThanh?.title ?? "—"} · ${dien(nhan.woodenFish.bpm, { n: cfg.moBpm })}` : nhan.presets.off,
+              ],
+              [
+                nhan.medExtra.mala,
+                cfg.chuoiBat ? `${dien(nhan.mala.beadsOf, { n: cfg.soHat })} · ${tiengHat.amThanh?.title ?? nhan.soundOff}` : nhan.presets.off,
+              ],
+            ]}
+          />
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium text-muted">{m.duration}</span>
             <div className="flex flex-wrap gap-1.5">
@@ -554,19 +552,21 @@ function KhoiCauHinh({
       .catch(() => setDs([]));
   }, [daBiet, nguoiDungId, locale]);
 
-  if (!daBiet) return null;
+  // Chưa rõ đã đăng nhập hay chưa: giữ tiêu đề cũ, tránh nhấp nháy đổi qua đổi lại.
+  if (!daBiet) return <h2 className="font-serif text-xl font-bold text-ink">{nhan.meditation.title}</h2>;
   if (!nguoiDungId) {
     return (
-      <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
+      <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm text-muted">{p.hint}</span>
-        <Button size="sm" variant="outline" asChild>
+        <Button size="sm" variant="outline" asChild className="ml-auto">
           <Link href={localePath(locale, "/dang-nhap")}>{p.signIn}</Link>
         </Button>
-      </Card>
+      </div>
     );
   }
 
   const boHienTai = ds.find((b) => b.id === dangDung);
+  const daDoi = !boHienTai || JSON.stringify(cfg) !== JSON.stringify(chuanHoa(boHienTai.config));
 
   async function apDung(b: BoCauHinh) {
     onApDung(b.config);
@@ -614,50 +614,45 @@ function KhoiCauHinh({
   }
 
   return (
-    <Card className="flex flex-col gap-3 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h2 className="font-serif text-lg font-bold text-ink">{p.title}</h2>
-          <p className="text-xs text-muted">{p.hint}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button size="sm" disabled={khoa} onClick={() => setMoPopup(true)}>
-            <Save aria-hidden /> {p.save}
-          </Button>
-        </div>
-      </div>
-      {ds.length === 0 ? (
-        <p className="text-sm text-muted">{p.empty}</p>
-      ) : (
-        <ul className="flex flex-wrap gap-2">
+    <div className="flex flex-col gap-1.5">
+      <div className="flex flex-wrap items-center gap-2">
+        <select
+          aria-label={p.title}
+          disabled={khoa}
+          value={dangDung}
+          onChange={(e) => {
+            const b = ds.find((x) => x.id === e.target.value);
+            if (b) void apDung(b);
+            else setDangDung("");
+          }}
+          className="h-9 min-w-0 flex-1 rounded-md border border-line bg-surface px-2.5 text-sm font-medium text-ink focus:border-accent focus:outline-none disabled:opacity-60"
+        >
+          <option value="">{ds.length === 0 ? p.empty : p.title}</option>
           {ds.map((b) => (
-            <li key={b.id} className="flex items-center">
-              <button
-                type="button"
-                disabled={khoa}
-                onClick={() => apDung(b)}
-                aria-pressed={dangDung === b.id}
-                className={cn(
-                  "rounded-l-full border px-3.5 py-1.5 text-sm transition-colors disabled:opacity-60",
-                  dangDung === b.id ? "border-accent bg-accent-soft font-medium text-accent" : "border-line text-body hover:border-line-strong",
-                )}
-              >
-                {b.name}
-              </button>
-              <button
-                type="button"
-                disabled={khoa}
-                onClick={() => xoa(b)}
-                aria-label={`${p.delete}: ${b.name}`}
-                className="rounded-r-full border border-l-0 border-line px-2 py-1.5 text-muted hover:text-lacquer disabled:opacity-60"
-              >
-                <X className="size-3.5" aria-hidden />
-              </button>
-            </li>
+            <option key={b.id} value={b.id}>
+              {b.name}
+            </option>
           ))}
-        </ul>
-      )}
-      {boHienTai ? <p className="text-xs text-accent">{dien(p.using, { name: boHienTai.name })}</p> : null}
+        </select>
+        {boHienTai ? (
+          <Button
+            type="button"
+            size="icon"
+            variant="outline"
+            className="size-9 shrink-0"
+            disabled={khoa}
+            onClick={() => xoa(boHienTai)}
+            aria-label={`${p.delete}: ${boHienTai.name}`}
+          >
+            <X className="size-4" aria-hidden />
+          </Button>
+        ) : null}
+        {daDoi ? (
+          <Button type="button" size="sm" disabled={khoa} onClick={() => setMoPopup(true)} className="shrink-0">
+            <Save className="size-4" aria-hidden /> {p.save}
+          </Button>
+        ) : null}
+      </div>
       {moPopup ? (
         <PopupLuuCauHinh
           nhan={nhan}
@@ -669,11 +664,11 @@ function KhoiCauHinh({
         />
       ) : null}
       {loi ? (
-        <p role="alert" className="text-sm text-lacquer">
+        <p role="alert" className="text-xs text-lacquer">
           {loi}
         </p>
       ) : null}
-    </Card>
+    </div>
   );
 }
 

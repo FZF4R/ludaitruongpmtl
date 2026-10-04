@@ -23,12 +23,12 @@ export default async function Page() {
       <PracticeHeader navKey="prayers" href={HREF} />
 
       <section className="flex flex-col gap-5">
-        {/* Tiêu đề bên trái, khung âm nền + âm lượng (dọc) sát phải. */}
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <SectionHeading title={dict.prayers.title} description={dict.prayers.description} />
+        <SectionHeading title={dict.prayers.title} description={dict.prayers.description} />
+        {/* Form lời nguyện bên trái, khung nhạc tĩnh tâm rộng sát bên phải. */}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_26rem] lg:items-start">
+          <PrayerWall nhan={dict.prayers} />
           <PrayerSounds nhan={dict.practiceTools} />
         </div>
-        <PrayerWall nhan={dict.prayers} />
       </section>
 
       <HuongDanSuaDuoc nhom="prayers" />

@@ -500,19 +500,7 @@
     },
     "recitation": {
       "title": "念佛",
-      "phrase": "佛号",
-      "phrases": [
-        "南无阿弥陀佛",
-        "南无本师释迦牟尼佛",
-        "南无大慈大悲观世音菩萨",
-        "南无药师琉璃光如来",
-        "南无地藏王菩萨"
-      ],
-      "goal": "目标",
-      "count": "{n} 声",
-      "tap": "点击计数（或按空格键）",
-      "moEach": "每次计数敲木鱼",
-      "goalReached": "已满 {n} 声"
+      "music": "念佛音乐"
     },
     "reader": {
       "title": "诵经",
@@ -648,14 +636,13 @@
     "presets": {
       "title": "我的配置",
       "hint": "将时长、禅修音乐、木鱼、念珠、诵经音频保存为一组配置，每天一键选用。",
-      "save": "保存当前设置",
+      "save": "保存配置",
       "update": "更新「{name}」",
       "namePrompt": "配置名称（如：晨间禅修）",
       "delete": "删除",
       "confirmDelete": "删除配置「{name}」？",
       "signIn": "登录后保存配置",
       "empty": "暂无配置。",
-      "using": "正在使用：{name}",
       "popupTitle": "保存禅修配置",
       "summary": "当前配置",
       "saveNew": "另存为新配置",

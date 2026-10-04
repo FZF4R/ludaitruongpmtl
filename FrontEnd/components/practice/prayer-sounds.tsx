@@ -32,7 +32,8 @@ const dongHo = (giay: number) => {
 };
 
 /**
- * Âm nền khi đọc / viết lời nguyện (trang Cầu an / Cầu siêu) - khung sát phải.
+ * Âm nền khi đọc / viết lời nguyện (trang Cầu an / Cầu siêu) - khung cột phải,
+ * sát bên form viết lời nguyện (xem app/.../cau-an-cau-sieu/page.tsx).
  *
  * - Nguồn nhạc: âm nền có sẵn (admin quản lý, mục cau-an) hoặc NHẠC RIÊNG của
  *   tài khoản (tải lên máy chủ, tối đa 10 tệp).
@@ -173,7 +174,7 @@ export function PrayerSounds({ nhan }: { nhan: NhanTuTap }) {
   const daDangNhap = daBiet && !!nguoiDungId;
 
   return (
-    <div className="ml-auto flex w-full max-w-2xl gap-4 rounded-lg border border-line bg-surface p-4 shadow-card">
+    <div className="flex w-full gap-4 rounded-lg border border-line bg-surface p-4 shadow-card">
       <AmNen src={src} chay={chay} amLuong={amLuong} />
 
       <div className="flex min-w-0 flex-1 flex-col gap-3">

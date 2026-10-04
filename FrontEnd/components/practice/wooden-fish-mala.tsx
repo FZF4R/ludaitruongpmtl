@@ -235,7 +235,7 @@ export function GoMo({
     <Card className="flex h-full flex-col gap-5 p-5">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="font-serif text-xl font-bold text-ink">{nhan.woodenFish.title}</h2>
-        <span className="text-2xl font-bold tabular-nums text-accent">{dien(nhan.woodenFish.strikes, { n: dem })}</span>
+        <span className="text-base font-semibold tabular-nums text-accent">{dien(nhan.woodenFish.strikes, { n: dem })}</span>
       </div>
 
       <button
@@ -390,16 +390,35 @@ export function ChuoiHat({
   const R = 128;
   const C = 150;
   const banKinh = Math.min(9, ((Math.PI * 2 * R) / soHat) * 0.42);
+  // Làm tròn 3 số lẻ: Math.cos/sin có thể lệch vài bit cuối giữa máy chủ (Node) và
+  // trình duyệt, khác nhau từng ấy thì React coi là lệch HTML lúc hydrate.
   const toaDo = (i: number) => {
     const goc = -Math.PI / 2 + ((i + 1) / (soHat + 1)) * Math.PI * 2;
-    return [C + R * Math.cos(goc), C + R * Math.sin(goc)] as const;
+    return [Math.round((C + R * Math.cos(goc)) * 1000) / 1000, Math.round((C + R * Math.sin(goc)) * 1000) / 1000] as const;
   };
 
   return (
     <Card className="flex h-full flex-col gap-5 p-5">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="font-serif text-xl font-bold text-ink">{nhan.mala.title}</h2>
-        <span className="text-2xl font-bold tabular-nums text-accent">{dien(nhan.mala.rounds, { n: vong })}</span>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="font-serif text-xl font-bold text-ink">{nhan.mala.title}</h2>
+          <select
+            aria-label={nhan.mala.beads}
+            value={soHat}
+            onChange={(e) => {
+              setSoHat(Number(e.target.value));
+              lamLai();
+            }}
+            className="h-8 rounded-md border border-line bg-surface px-2 text-sm text-ink focus:border-accent focus:outline-none"
+          >
+            {LOAI_CHUOI.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+        <span className="text-base font-semibold tabular-nums text-accent">{dien(nhan.mala.rounds, { n: vong })}</span>
       </div>
 
       <button
@@ -448,25 +467,6 @@ export function ChuoiHat({
       <NhacCham hien={nhip.nhanh} nhan={nhan} />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-medium text-muted">{nhan.mala.beads}</span>
-          <div className="flex flex-wrap gap-1.5">
-            {LOAI_CHUOI.map((n) => (
-              <Button
-                key={n}
-                type="button"
-                size="sm"
-                variant={soHat === n ? "solid" : "outline"}
-                onClick={() => {
-                  setSoHat(n);
-                  lamLai();
-                }}
-              >
-                {n}
-              </Button>
-            ))}
-          </div>
-        </div>
         <ChonAmThanh
           nhan={nhan}
           label={nhan.mala.lapBell}

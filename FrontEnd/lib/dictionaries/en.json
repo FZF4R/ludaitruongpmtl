@@ -500,19 +500,7 @@
     },
     "recitation": {
       "title": "Buddha recitation",
-      "phrase": "Phrase",
-      "phrases": [
-        "Namo Amitabha Buddha",
-        "Namo Shakyamuni Buddha",
-        "Namo Great Compassionate Avalokiteshvara Bodhisattva",
-        "Namo Medicine Master Buddha",
-        "Namo Ksitigarbha Bodhisattva"
-      ],
-      "goal": "Goal",
-      "count": "{n} recitations",
-      "tap": "Tap to count (or press Space)",
-      "moEach": "Wooden fish on each count",
-      "goalReached": "Reached {n} recitations"
+      "music": "Recitation music"
     },
     "reader": {
       "title": "Sutra chanting",
@@ -648,14 +636,13 @@
     "presets": {
       "title": "My presets",
       "hint": "Save duration, meditation music, wooden fish, mala and sutra audio as a preset to pick again each day with one tap.",
-      "save": "Save current settings",
+      "save": "Save preset",
       "update": "Update “{name}”",
       "namePrompt": "Preset name (e.g. Morning meditation)",
       "delete": "Delete",
       "confirmDelete": "Delete preset “{name}”?",
       "signIn": "Sign in to save presets",
       "empty": "No presets yet.",
-      "using": "Using: {name}",
       "popupTitle": "Save meditation settings",
       "summary": "Current settings",
       "saveNew": "Save as a new preset",

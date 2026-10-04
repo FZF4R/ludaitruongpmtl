@@ -500,19 +500,7 @@
     },
     "recitation": {
       "title": "Niệm Phật",
-      "phrase": "Câu niệm",
-      "phrases": [
-        "Nam Mô A Di Đà Phật",
-        "Nam Mô Bổn Sư Thích Ca Mâu Ni Phật",
-        "Nam Mô Đại Từ Đại Bi Quán Thế Âm Bồ Tát",
-        "Nam Mô Dược Sư Lưu Ly Quang Vương Phật",
-        "Nam Mô Địa Tạng Vương Bồ Tát"
-      ],
-      "goal": "Mục tiêu",
-      "count": "{n} câu",
-      "tap": "Chạm để đếm (hoặc phím Cách)",
-      "moEach": "Tiếng mõ mỗi lần đếm",
-      "goalReached": "Đã đủ {n} câu"
+      "music": "Nhạc niệm Phật"
     },
     "reader": {
       "title": "Tụng kinh",
@@ -648,14 +636,13 @@
     "presets": {
       "title": "Bộ cấu hình của tôi",
       "hint": "Lưu thời gian, nhạc thiền, mõ, chuỗi hạt, bài kinh thành một bộ để mỗi ngày chọn lại bằng một lần bấm.",
-      "save": "Lưu cấu hình hiện tại",
+      "save": "Lưu cấu hình",
       "update": "Cập nhật “{name}”",
       "namePrompt": "Tên bộ cấu hình (vd. Thiền sáng)",
       "delete": "Xoá",
       "confirmDelete": "Xoá bộ cấu hình “{name}”?",
       "signIn": "Đăng nhập để lưu bộ cấu hình",
       "empty": "Chưa có bộ cấu hình nào.",
-      "using": "Đang dùng: {name}",
       "popupTitle": "Lưu cấu hình thiền",
       "summary": "Cấu hình hiện tại",
       "saveNew": "Lưu thành bộ mới",

@@ -20,7 +20,7 @@ export default async function Page() {
     .catch(() => []);
 
   return (
-    <Container className="flex flex-col gap-8 py-12">
+    <Container className="flex max-w-none flex-col gap-8 py-12">
       <PracticeHeader navKey="chantingRecitation" href={HREF} />
       <Chanting nhan={dict.practiceTools} kinh={kinh} docKinh={docKinh} />
       <HuongDanSuaDuoc nhom="chanting" />
