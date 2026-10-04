@@ -574,6 +574,15 @@ module.exports.inputs = {
                     "type": "string",
                     "isIn": ["card", "list"]
                 },
+                "practiceImages": {
+                    "type": "json"
+                },
+                "libraryImages": {
+                    "type": "json"
+                },
+                "aboutHtml": {
+                    "type": "json"
+                },
                 "bannedWords": {
                     "type": "json"
                 },
@@ -1473,6 +1482,12 @@ module.exports.inputs = {
             }
         },
         "getSettings": {},
+        "getAbout": {
+            "lang": {
+                "type": "string",
+                "defaultsTo": "vi"
+            }
+        },
         "DayEvent": {
             "listEvents": {
                 "from": {

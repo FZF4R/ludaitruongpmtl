@@ -9,6 +9,9 @@ import { chuLoi, useLocale, useQuyen } from "@/components/admin/admin-shell";
 import { FormSuKienNgay, MonthCalendar, SuKienNgayChiTiet, type NhanLichThang } from "@/components/home/month-calendar";
 import { cacThangToi, homNayVN, sangChuoiNgay } from "@/lib/buddhist-events";
 import { laySuKienNgay, type SuKienNgayDuong } from "@/lib/day-events";
+import { anhMacDinhTuTap } from "@/lib/practice-images";
+import { taiTep } from "@/lib/my-content";
+import type { PracticeKey } from "@/lib/site";
 import { guiThongBaoChung, layThongBaoChung, type ThongBaoChung } from "@/lib/admin-api";
 
 /**
@@ -185,7 +188,7 @@ export function KhoiSuKienLich() {
         </p>
       </div>
       {lich ? (
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <MonthCalendar
             thang={lich.thang}
             homNay={lich.homNay}
@@ -196,8 +199,13 @@ export function KhoiSuKienLich() {
             quanTriTaiCho={false}
           />
 
-          {/* Khung nhập: bên phải lịch trên màn hình rộng, xuống dưới lịch trên điện thoại. */}
-          <div className="flex flex-col gap-3 rounded-lg border border-line p-4 lg:sticky lg:top-24">
+          {/*
+            Khung nhập: bên phải lịch trên màn hình rộng, xuống dưới lịch trên điện thoại.
+            Lịch quyết định chiều cao hàng; khung này nằm tuyệt đối trong ô của nó
+            (lg:absolute inset-0) nên cao đúng bằng lịch, dài hơn thì cuộn.
+          */}
+          <div className="relative">
+          <div className="flex flex-col gap-3 rounded-lg border border-line p-4 lg:absolute lg:inset-0 lg:overflow-y-auto lg:[scrollbar-width:thin]">
             <div className="flex items-baseline justify-between gap-2">
               <h3 className="font-serif text-lg font-bold text-ink">Ngày {ngayHien}</h3>
               <span className="text-xs text-muted">{cuaNgay.length}/10 sự kiện</span>
@@ -230,8 +238,114 @@ export function KhoiSuKienLich() {
               />
             ) : null}
           </div>
+          </div>
         </div>
       ) : null}
+    </Card>
+  );
+}
+
+const MUC_TU_TAP: { key: PracticeKey; ten: string }[] = [
+  { key: "chantingRecitation", ten: "Tụng kinh / Niệm Phật" },
+  { key: "meditation", ten: "Thiền định" },
+  { key: "woodenFishMala", ten: "Gõ mõ / Chuỗi hạt" },
+  { key: "prayers", ten: "Cầu an / Cầu siêu" },
+];
+
+/**
+ * Ảnh riêng từng mục Tu tập: hiện ở menu thả xuống "Tu tập" trên header, thẻ ở
+ * trang /tu-tap và đầu trang chi tiết. Để trống = dùng ảnh có sẵn.
+ */
+export function KhoiAnhTuTap({
+  giaTri,
+  dangLuu,
+  daLuu,
+  onLuu,
+}: {
+  giaTri: Record<string, string>;
+  dangLuu: boolean;
+  daLuu: boolean;
+  onLuu: (anh: Record<string, string>) => Promise<boolean>;
+}) {
+  const locale = useLocale();
+  const [anh, setAnh] = React.useState<Record<string, string>>(giaTri);
+  const [dangTai, setDangTai] = React.useState<string | null>(null);
+  const [loi, setLoi] = React.useState("");
+  const daDoi = JSON.stringify(anh) !== JSON.stringify(giaTri);
+
+  async function taiLen(key: string, f: File | undefined) {
+    if (!f) return;
+    setDangTai(key);
+    setLoi("");
+    try {
+      const kq = await taiTep(f, locale);
+      setAnh((cu) => ({ ...cu, [key]: kq.url }));
+    } catch (err) {
+      setLoi(chuLoi(err, "Không tải được ảnh lên."));
+    } finally {
+      setDangTai(null);
+    }
+  }
+
+  return (
+    <Card className="flex flex-col gap-5 p-6">
+      <div className="flex flex-col gap-1">
+        <h2 className="font-serif text-xl font-bold">Ảnh các mục tu tập</h2>
+        <p className="text-sm text-muted">
+          Mỗi mục một ảnh riêng, hiện ở menu thả xuống “Tu tập” trên đầu trang, thẻ ở trang Tu tập và đầu trang chi tiết
+          của mục. Để trống thì dùng ảnh có sẵn. Nên dùng ảnh ngang (tỉ lệ khoảng 16:9 hoặc rộng hơn).
+        </p>
+      </div>
+      <ul className="grid gap-4 sm:grid-cols-2">
+        {MUC_TU_TAP.map(({ key, ten }) => {
+          const u = anh[key] ?? "";
+          const xem = u || anhMacDinhTuTap[key].src;
+          return (
+            <li key={key} className="flex flex-col gap-2 rounded-md border border-line p-3">
+              <span className="text-sm font-semibold text-ink">{ten}</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={xem} alt="" className="aspect-[16/7] w-full rounded object-cover" />
+              <span className="text-xs text-muted">{u ? "Ảnh đã đặt" : "Đang dùng ảnh có sẵn"}</span>
+              <div className="flex gap-2">
+                <Input
+                  value={u}
+                  onChange={(e) => setAnh((cu) => ({ ...cu, [key]: e.target.value }))}
+                  placeholder="https://…"
+                  aria-label={`Đường dẫn ảnh ${ten}`}
+                  className="min-w-0 flex-1"
+                />
+                <label className="inline-flex cursor-pointer items-center rounded-md border border-line px-3 text-sm hover:bg-surface-2">
+                  {dangTai === key ? "Đang tải…" : "Tải ảnh"}
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => taiLen(key, e.target.files?.[0])} />
+                </label>
+              </div>
+              {u ? (
+                <button
+                  type="button"
+                  onClick={() => setAnh((cu) => ({ ...cu, [key]: "" }))}
+                  className="w-fit text-xs text-muted hover:text-lacquer"
+                >
+                  Dùng ảnh có sẵn
+                </button>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
+      {loi ? (
+        <p role="alert" className="text-sm text-lacquer">
+          {loi}
+        </p>
+      ) : null}
+      <div className="flex items-center gap-3">
+        <Button
+          disabled={dangLuu || !daDoi}
+          onClick={() => onLuu(Object.fromEntries(Object.entries(anh).filter(([, v]) => v.trim())))}
+        >
+          {dangLuu ? "Đang lưu…" : "Lưu ảnh"}
+        </Button>
+        {daLuu ? <span className="text-sm text-accent">Đã lưu.</span> : null}
+      </div>
     </Card>
   );
 }

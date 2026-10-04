@@ -14,6 +14,7 @@ module.exports.routes = {
     'GET  /v1/public/notify': 'System.Public.PublicController.getNotify',
     'GET  /v1/public/get2fa': 'System.Public.PublicController.get2FA',
     'GET  /v1/public/settings': 'System.Public.PublicController.getSettings',
+    'GET  /v1/public/about': 'System.Public.PublicController.getAbout',
     'GET  /v1/public/settings/warning': 'System.Public.PublicController.getSystemWarning',
 
     //==== Noi dung (khong can dang nhap) =====

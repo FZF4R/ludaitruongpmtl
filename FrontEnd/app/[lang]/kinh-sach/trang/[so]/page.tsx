@@ -34,6 +34,7 @@ export default async function SutraListPagedPage(props: {
     <ContentListPage
       filter={{ type: "sutra" }}
       page={page}
+      searchPath="/kinh-sach/tim-kiem"
       basePath="/kinh-sach"
       adminBar={<ListAdminBar themHref="/admin/library" themNhan="Thêm kinh sách" quyenThem="sutra.manage" />}
       eyebrow="Kinh, luật, luận"

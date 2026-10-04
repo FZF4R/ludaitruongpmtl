@@ -74,6 +74,21 @@ module.exports = {
             defaultsTo: 'card',
             description: 'Kieu hien thi danh sach /bai-viet: card (luoi the) hoac list (danh sach doc).'
         },
+        practiceImages: {
+            type: 'json',
+            defaultsTo: {},
+            description: 'Anh tung muc Tu tap (menu tha xuong + dau trang): { chantingRecitation, meditation, woodenFishMala, prayers } -> URL. Trong thi FrontEnd dung anh co san.'
+        },
+        libraryImages: {
+            type: 'json',
+            defaultsTo: {},
+            description: 'Anh dai dien tung danh muc Thu vien (/thu-vien): { anh, review, bo-tat, nhac-thien, audio-kinh } -> URL. Admin doi o Che do sua ngay tren trang.'
+        },
+        aboutHtml: {
+            type: 'json',
+            defaultsTo: {},
+            description: 'Noi dung trang Ve chung toi (HTML, FrontEnd loc lai truoc khi hien): { vi, en, zh, ko }. Thieu ngon ngu nao thi dung ban vi, thieu ca thi dung mau. KHONG tra o /v1/public/settings (doc qua /v1/public/about).'
+        },
         themeDark: {
             type: 'json',
             defaultsTo: {},

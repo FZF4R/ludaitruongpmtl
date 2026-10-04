@@ -127,8 +127,23 @@ const dungDieuKien = ({ type, category, q, libraryKind }) => {
     }
 
     if (q) {
-        // searchText đã bỏ dấu lúc ghi, nên bỏ dấu từ khoá rồi mới so.
-        dieuKien.searchText = { $regex: thoatRegex(boDau(q)), $options: 'i' }
+        let tuKhoa = String(q).trim()
+        if (tuKhoa.startsWith('#') && tuKhoa.length > 1) {
+            // "#thien": đúng thẻ (không phân biệt hoa thường).
+            dieuKien.tags = { $regex: `^${thoatRegex(tuKhoa.slice(1).trim())}$`, $options: 'i' }
+        } else {
+            // Tiêu đề / tóm tắt / thẻ (searchText đã bỏ dấu lúc ghi, nên bỏ dấu từ
+            // khoá rồi mới so) HOẶC tên tác giả, pháp danh, dịch giả (so như gõ,
+            // không phân biệt hoa thường).
+            let coDau = { $regex: thoatRegex(tuKhoa), $options: 'i' }
+            dieuKien.$or = [
+                { searchText: { $regex: thoatRegex(boDau(tuKhoa)), $options: 'i' } },
+                { 'author.name': coDau },
+                { 'author.dharmaName': coDau },
+                { 'translator.name': coDau },
+                { createdByName: coDau }
+            ]
+        }
     }
 
     return dieuKien

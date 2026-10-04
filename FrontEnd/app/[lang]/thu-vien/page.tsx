@@ -1,17 +1,29 @@
 import type { Metadata } from "next";
-import { Headphones, Images, PenLine } from "lucide-react";
+import { AudioLines, Flower2, Headphones, Images, Landmark, Music, PenLine, type LucideIcon } from "lucide-react";
 import { LocaleLink as Link } from "@/components/ui/locale-link";
 import { Badge, Card, Container, SectionHeading } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/components/content/navigation";
 import { ContentThumb } from "@/components/content/content-thumb";
-import { listContent } from "@/lib/api";
-import { getDictionary } from "@/lib/dictionary";
+import Image from "next/image";
+import { getSiteSettings, listContent } from "@/lib/api";
+import { getDictionary, getLocale } from "@/lib/dictionary";
+import { anhDanhMucThuVien } from "@/lib/library-images";
+import { LibraryImageEditor } from "@/components/library/library-image-editor";
 import { i18nAlternates } from "@/lib/seo";
 import { libraryKinds, type LibraryKind } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 
 const MOI_TRANG = 24;
+
+/** Biểu tượng từng danh mục thư viện. */
+const ICON_DANH_MUC: Record<LibraryKind, LucideIcon> = {
+  anh: Images,
+  review: Landmark,
+  "bo-tat": Flower2,
+  "nhac-thien": Music,
+  "audio-kinh": AudioLines,
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const dict = await getDictionary();
@@ -31,7 +43,8 @@ export default async function LibraryPage(props: { searchParams: Promise<{ muc?:
   const sp = await props.searchParams;
   const muc = libraryKinds.includes(sp.muc as LibraryKind) ? (sp.muc as LibraryKind) : undefined;
   const trang = Math.max(1, Number(sp.trang) || 1);
-  const dict = await getDictionary();
+  const [dict, locale, settings] = await Promise.all([getDictionary(), getLocale(), getSiteSettings().catch(() => null)]);
+  const anhDaDat = settings?.libraryImages ?? {};
   const kq = await listContent({ type: "library", libraryKind: muc, page: trang, limit: MOI_TRANG }).catch(() => null);
   const ds = kq?.data ?? [];
   const soTrang = kq ? Math.max(1, Math.ceil(kq.total / MOI_TRANG)) : 1;
@@ -60,22 +73,63 @@ export default async function LibraryPage(props: { searchParams: Promise<{ muc?:
         </Button>
       </div>
 
-      <nav aria-label={dict.library.title} className="flex flex-wrap gap-1.5">
-        {[undefined, ...libraryKinds].map((k) => (
-          <Link
-            key={k ?? "all"}
-            href={link(k)}
-            aria-current={muc === k ? "page" : undefined}
-            className={cn(
-              "rounded-full border px-3.5 py-1.5 text-sm transition-colors",
-              muc === k
-                ? "border-accent bg-accent-soft font-medium text-accent"
-                : "border-line text-body hover:border-line-strong hover:text-ink",
-            )}
-          >
-            {k ? dict.library.kinds[k] : dict.library.all}
+      {/* Danh mục dạng thẻ có biểu tượng; bấm lại thẻ đang chọn để xem tất cả. */}
+      <nav aria-label={dict.library.title} className="flex flex-col gap-3">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {libraryKinds.map((k) => {
+            const Icon = ICON_DANH_MUC[k];
+            const dangChon = muc === k;
+            return (
+              <li key={k} className="relative">
+                <Link
+                  href={dangChon ? link() : link(k)}
+                  aria-current={dangChon ? "page" : undefined}
+                  className={cn(
+                    "group flex h-full flex-col overflow-hidden rounded-card border transition-all hover:-translate-y-0.5 hover:shadow-card-lift",
+                    dangChon ? "border-accent bg-accent-soft" : "border-line bg-surface hover:border-line-strong",
+                  )}
+                >
+                  {/* Ảnh đại diện danh mục (đổi ở Chế độ sửa) + biểu tượng đè góc dưới. */}
+                  <span className="relative block aspect-[4/3] overflow-hidden bg-surface-2">
+                    {(() => {
+                      const anh = anhDanhMucThuVien(k, anhDaDat);
+                      return (
+                        <Image
+                          src={anh}
+                          alt=""
+                          fill
+                          sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+                          unoptimized={typeof anh === "string"}
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      );
+                    })()}
+                    <span
+                      className={cn(
+                        "absolute bottom-2 left-2 flex size-10 items-center justify-center rounded-full shadow-sm transition-colors",
+                        dangChon ? "bg-accent text-paper" : "bg-surface text-accent group-hover:bg-accent group-hover:text-paper",
+                      )}
+                    >
+                      <Icon className="size-5" aria-hidden />
+                    </span>
+                  </span>
+                  <span className="flex flex-1 flex-col gap-1.5 p-3.5">
+                    <span className={cn("font-serif text-base font-bold leading-snug", dangChon ? "text-accent" : "text-ink")}>
+                      {dict.library.kinds[k]}
+                    </span>
+                    <span className="text-xs leading-relaxed text-muted">{dict.library.kindHints[k]}</span>
+                  </span>
+                </Link>
+                <LibraryImageEditor kind={k} ten={dict.library.kinds[k]} daDat={anhDaDat} locale={locale} />
+              </li>
+            );
+          })}
+        </ul>
+        {muc ? (
+          <Link href={link()} className="w-fit text-sm text-accent hover:underline">
+            ← {dict.library.all}
           </Link>
-        ))}
+        ) : null}
       </nav>
 
       {ds.length === 0 ? (

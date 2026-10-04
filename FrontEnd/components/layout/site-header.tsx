@@ -14,6 +14,8 @@ import { localePath, splitLocale } from "@/lib/i18n";
 import { NotificationBell, type NhanThongBao } from "@/components/layout/notification-bell";
 import { useCheDoSua } from "@/components/layout/inline-edit";
 import { Avatar } from "@/components/ui/avatar";
+import Image from "next/image";
+import { anhMucTuTap, type AnhTuTap } from "@/lib/practice-images";
 
 /**
  * Header là Client Component (menu mobile và menu thả xuống đều có state) nên
@@ -49,11 +51,13 @@ function NavWithSubmenu({
   dict,
   lp,
   isActive,
+  anhTuTap,
 }: {
   item: NavItem & { children: NonNullable<NavItem["children"]> };
   dict: NavDict;
   lp: (href: string) => string;
   isActive: (href: string) => boolean;
+  anhTuTap?: AnhTuTap;
 }) {
   const [mo, setMo] = React.useState(false);
   const boc = React.useRef<HTMLDivElement>(null);
@@ -108,24 +112,41 @@ function NavWithSubmenu({
 
       {mo ? (
         <div className="absolute left-0 top-full z-50 pt-1">
-          <ul className="min-w-52 overflow-hidden rounded-md border border-line bg-surface py-1 shadow-lg">
-            {item.children.map((con) => (
-              <li key={con.href}>
-                <Link
-                  href={lp(con.href)}
-                  onClick={() => setMo(false)}
-                  aria-current={isActive(con.href) ? "page" : undefined}
-                  className={cn(
-                    "block px-3 py-2 text-sm transition-colors",
-                    isActive(con.href)
-                      ? "font-medium text-accent"
-                      : "text-body hover:bg-surface-2 hover:text-ink",
-                  )}
-                >
-                  {dict[con.key]}
-                </Link>
-              </li>
-            ))}
+          {/* Mỗi mục một ảnh riêng (admin đổi ở Tổng quan) + dòng mô tả ngắn. */}
+          <ul className="grid w-[30rem] grid-cols-2 gap-1 overflow-hidden rounded-md border border-line bg-surface p-2 shadow-lg">
+            {item.children.map((con) => {
+              const anh = anhMucTuTap(con.key, anhTuTap);
+              return (
+                <li key={con.href}>
+                  <Link
+                    href={lp(con.href)}
+                    onClick={() => setMo(false)}
+                    aria-current={isActive(con.href) ? "page" : undefined}
+                    className={cn(
+                      "group flex flex-col gap-2 rounded-md p-2 transition-colors",
+                      isActive(con.href) ? "bg-accent-soft" : "hover:bg-surface-2",
+                    )}
+                  >
+                    <span className="relative block aspect-[16/9] overflow-hidden rounded bg-surface-2">
+                      <Image
+                        src={anh}
+                        alt=""
+                        fill
+                        sizes="14rem"
+                        unoptimized={typeof anh === "string"}
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </span>
+                    <span className={cn("text-sm font-semibold", isActive(con.href) ? "text-accent" : "text-ink")}>
+                      {dict[con.key]}
+                    </span>
+                    {dict[`${con.key}Hint`] ? (
+                      <span className="line-clamp-2 text-xs leading-snug text-muted">{dict[`${con.key}Hint`]}</span>
+                    ) : null}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ) : null}
@@ -135,12 +156,15 @@ function NavWithSubmenu({
 
 export function SiteHeader({
   dict,
+  anhTuTap,
   language,
   thongBao,
 }: {
   dict: NavDict;
   language: { label: string; choose: string };
   thongBao: NhanThongBao;
+  /** Ảnh từng mục Tu tập (cấu hình site). */
+  anhTuTap?: AnhTuTap;
 }) {
   const { nguoiDung } = useCheDoSua();
   const pathname = usePathname();
@@ -178,6 +202,7 @@ export function SiteHeader({
           {mainNav.map((item) =>
             item.children ? (
               <NavWithSubmenu
+                anhTuTap={anhTuTap}
                 key={item.href}
                 item={item as NavItem & { children: NonNullable<NavItem["children"]> }}
                 dict={dict}

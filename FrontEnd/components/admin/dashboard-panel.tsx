@@ -1,6 +1,6 @@
 "use client";
 
-import { KhoiSuKienLich, KhoiThongBaoChung } from "@/components/admin/dashboard-extra";
+import { KhoiAnhTuTap, KhoiSuKienLich, KhoiThongBaoChung } from "@/components/admin/dashboard-extra";
 import * as React from "react";
 import {
   Trash2,
@@ -50,7 +50,7 @@ import {
  * người lưu sau xoá sạch việc của người lưu trước.
  */
 
-type Khoi = "chung" | "thongBao" | "mau" | "hienThi" | "tuCam";
+type Khoi = "chung" | "thongBao" | "mau" | "hienThi" | "tuCam" | "anhTuTap";
 
 /** Xoá cache cấu hình + ảnh trang chủ của Next sau khi lưu, để trang công khai đổi ngay. */
 async function lamMoiTrangCongKhai() {
@@ -140,6 +140,13 @@ export function DashboardPanel() {
       />
 
       <KhoiAnhTrangChu onLoi={setLoi} />
+
+      <KhoiAnhTuTap
+        giaTri={cauHinh.practiceImages ?? {}}
+        dangLuu={dangLuu === "anhTuTap"}
+        daLuu={daLuu === "anhTuTap"}
+        onLuu={(practiceImages) => luu("anhTuTap", { practiceImages })}
+      />
 
       <KhoiAnhTrangChu
         onLoi={setLoi}

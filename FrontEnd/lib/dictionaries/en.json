@@ -278,7 +278,15 @@
     "talksDesc": "Audio and video teachings, each with a full transcript.",
     "emptyArticles": "No articles yet",
     "emptySutras": "No sutras yet",
-    "emptyTalks": "No talks yet"
+    "emptyTalks": "No talks yet",
+    "searchPlaceholder": "Search by title, author or #tag…",
+    "searchSubmit": "Search",
+    "searchTitle": "Search results",
+    "searchResults": "{n} results for “{q}”",
+    "searchEmpty": "No matching results. Try another keyword, an author name or a #tag.",
+    "searchClear": "View all",
+    "prev": "Previous",
+    "next": "Next"
   },
   "comingSoon": {
     "title": "Coming soon",
@@ -778,6 +786,13 @@
     "contribute": "Contribute",
     "photos": "{n} photos",
     "listen": "Listen",
-    "contributor": "Contributed by"
+    "contributor": "Contributed by",
+    "kindHints": {
+      "anh": "Photos of temples, festivals, statues and paintings",
+      "review": "Reviews and introductions of temples and shrines",
+      "bo-tat": "Images and introductions of Buddhas and Bodhisattvas",
+      "nhac-thien": "Gentle music for meditation and relaxation",
+      "audio-kinh": "Sutra chanting and recitation to listen along"
+    }
   }
 }

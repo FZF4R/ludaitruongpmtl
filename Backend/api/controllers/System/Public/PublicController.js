@@ -97,6 +97,25 @@ module.exports = {
 
 
 
+    /** Nội dung trang Về chúng tôi theo ngôn ngữ (thiếu thì bản vi; trống = FrontEnd dùng mẫu). */
+    getAbout: ({
+        inputs: sails.config.inputs.Public.getAbout,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let cauHinh = await sails.config.siteSettings.docHoacTao()
+                let ds = (cauHinh && cauHinh.aboutHtml) || {}
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: { html: ds[inputs.lang] || ds.vi || '', lang: ds[inputs.lang] ? inputs.lang : (ds.vi ? 'vi' : '') }
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
     getSettings: ({
         inputs: sails.config.inputs.Public.getSettings,
         exits: sails.config.responseType,
@@ -115,6 +134,8 @@ module.exports = {
             }
 
             delete systemSettings.adminSystem
+            // Trang Về chúng tôi có thể dài vài chục KB: đọc riêng qua /v1/public/about.
+            delete systemSettings.aboutHtml
             delete systemSettings.accountSessionUrl
             delete systemSettings.followServiceUrl
             delete systemSettings.jsessionId

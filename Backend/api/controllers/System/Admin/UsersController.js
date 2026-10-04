@@ -324,6 +324,36 @@ module.exports = {
                 if (inputs.langLib !== undefined) {
                     updateObject.langLib = sails.Ultils.normalizeLangLib(inputs.langLib, sails.Ultils.langLibFields('systemSettings'))
                 }
+                // Ảnh các mục Tu tập: chỉ 4 khoá, mỗi giá trị là link http(s) hoặc rỗng.
+                if (inputs.practiceImages !== undefined) {
+                    let vao = inputs.practiceImages && typeof inputs.practiceImages === 'object' ? inputs.practiceImages : {}
+                    let ra = {}
+                    for (let k of ['chantingRecitation', 'meditation', 'woodenFishMala', 'prayers']) {
+                        let u = String(vao[k] || '').trim().slice(0, 500)
+                        if (u && /^https?:\/\//i.test(u)) ra[k] = u
+                    }
+                    updateObject.practiceImages = ra
+                }
+                // Ảnh đại diện từng danh mục Thư viện: 5 khoá, link http(s) hoặc bỏ.
+                if (inputs.libraryImages !== undefined) {
+                    let vao = inputs.libraryImages && typeof inputs.libraryImages === 'object' ? inputs.libraryImages : {}
+                    let ra = {}
+                    for (let k of ['anh', 'review', 'bo-tat', 'nhac-thien', 'audio-kinh']) {
+                        let u = String(vao[k] || '').trim().slice(0, 500)
+                        if (u && /^https?:\/\//i.test(u)) ra[k] = u
+                    }
+                    updateObject.libraryImages = ra
+                }
+                // Trang Về chúng tôi: HTML theo ngôn ngữ, mỗi bản tối đa 200.000 ký tự.
+                // Lọc thẻ / thuộc tính nguy hiểm làm ở FrontEnd lúc hiển thị (lib/sanitize.ts).
+                if (inputs.aboutHtml !== undefined) {
+                    let vao = inputs.aboutHtml && typeof inputs.aboutHtml === 'object' ? inputs.aboutHtml : {}
+                    let ra = {}
+                    for (let k of ['vi', 'en', 'zh', 'ko']) {
+                        if (typeof vao[k] === 'string' && vao[k].trim()) ra[k] = vao[k].slice(0, 200000)
+                    }
+                    updateObject.aboutHtml = ra
+                }
                 return sails.dataProcess.updateDocument(SystemSettings, { condition, updateObject })
             }).then((result) => {
                 exits.successRequest({

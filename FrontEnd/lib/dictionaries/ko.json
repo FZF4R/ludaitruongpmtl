@@ -278,7 +278,15 @@
     "talksDesc": "오디오와 영상 법문, 전문을 함께 실었습니다.",
     "emptyArticles": "아직 글이 없습니다",
     "emptySutras": "아직 경전이 없습니다",
-    "emptyTalks": "아직 법문이 없습니다"
+    "emptyTalks": "아직 법문이 없습니다",
+    "searchPlaceholder": "제목, 작성자 또는 #태그로 검색…",
+    "searchSubmit": "검색",
+    "searchTitle": "검색 결과",
+    "searchResults": "“{q}” 검색 결과 {n}건",
+    "searchEmpty": "일치하는 결과가 없습니다. 다른 검색어, 작성자 이름 또는 #태그로 찾아 보세요.",
+    "searchClear": "전체 보기",
+    "prev": "이전",
+    "next": "다음"
   },
   "comingSoon": {
     "title": "준비 중",
@@ -778,6 +786,13 @@
     "contribute": "기여하기",
     "photos": "사진 {n}장",
     "listen": "듣기",
-    "contributor": "기여자"
+    "contributor": "기여자",
+    "kindHints": {
+      "anh": "사찰, 법회, 불상과 불화 사진",
+      "review": "사찰·전각·유적 소개와 후기",
+      "bo-tat": "불보살의 모습과 소개",
+      "nhac-thien": "명상과 휴식을 위한 잔잔한 음악",
+      "audio-kinh": "따라 들을 수 있는 독경·염불 음원"
+    }
   }
 }

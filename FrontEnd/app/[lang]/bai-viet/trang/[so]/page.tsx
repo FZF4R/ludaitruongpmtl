@@ -42,6 +42,7 @@ export default async function ArticleListPagedPage(props: {
     <ContentListPage
       filter={{ type: [...filter.type] }}
       page={page}
+      searchPath="/bai-viet/tim-kiem"
       basePath="/bai-viet"
       layout={layout}
       thumbnail

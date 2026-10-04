@@ -278,7 +278,15 @@
     "talksDesc": "音频与视频法音，皆附全文。",
     "emptyArticles": "暂无文章",
     "emptySutras": "暂无经书",
-    "emptyTalks": "暂无开示"
+    "emptyTalks": "暂无开示",
+    "searchPlaceholder": "按标题、作者或 #标签 搜索…",
+    "searchSubmit": "搜索",
+    "searchTitle": "搜索结果",
+    "searchResults": "“{q}” 共 {n} 条结果",
+    "searchEmpty": "没有找到相符的结果。请换个关键词、作者名或 #标签。",
+    "searchClear": "查看全部",
+    "prev": "上一页",
+    "next": "下一页"
   },
   "comingSoon": {
     "title": "建设中",
@@ -778,6 +786,13 @@
     "contribute": "投稿",
     "photos": "{n} 张图片",
     "listen": "收听",
-    "contributor": "投稿者"
+    "contributor": "投稿者",
+    "kindHints": {
+      "anh": "寺院、法会、佛像与佛画图片",
+      "review": "寺庙、殿堂、古迹的介绍与心得",
+      "bo-tat": "诸佛菩萨的图像与介绍",
+      "nhac-thien": "适合禅修与放松的轻柔音乐",
+      "audio-kinh": "诵经、念佛音频，可跟随聆听"
+    }
   }
 }

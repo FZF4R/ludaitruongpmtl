@@ -136,7 +136,12 @@ export default async function RootLayout({
             {dict.nav.skipToContent}
           </a>
           <InlineEditProvider>
-            <SiteHeader dict={dict.nav} language={dict.language} thongBao={dict.notifications} />
+            <SiteHeader
+              dict={dict.nav}
+              language={dict.language}
+              thongBao={dict.notifications}
+              anhTuTap={settings?.practiceImages}
+            />
             <main id="noi-dung" className="flex-1">
               {children}
             </main>

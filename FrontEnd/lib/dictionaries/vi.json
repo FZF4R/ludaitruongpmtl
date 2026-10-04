@@ -278,7 +278,15 @@
     "talksDesc": "Pháp thoại audio và video, kèm toàn văn.",
     "emptyArticles": "Chưa có bài viết nào",
     "emptySutras": "Chưa có kinh sách nào",
-    "emptyTalks": "Chưa có bài giảng nào"
+    "emptyTalks": "Chưa có bài giảng nào",
+    "searchPlaceholder": "Tìm theo tiêu đề, tác giả hoặc #thẻ…",
+    "searchSubmit": "Tìm",
+    "searchTitle": "Kết quả tìm kiếm",
+    "searchResults": "{n} kết quả cho “{q}”",
+    "searchEmpty": "Không tìm thấy kết quả phù hợp. Thử từ khoá khác, tên tác giả hoặc #thẻ.",
+    "searchClear": "Xem tất cả",
+    "prev": "Trang trước",
+    "next": "Trang sau"
   },
   "comingSoon": {
     "title": "Đang xây dựng",
@@ -778,6 +786,13 @@
     "contribute": "Đóng góp nội dung",
     "photos": "{n} ảnh",
     "listen": "Nghe",
-    "contributor": "Người đóng góp"
+    "contributor": "Người đóng góp",
+    "kindHints": {
+      "anh": "Hình ảnh chùa chiền, lễ hội, tranh tượng",
+      "review": "Cảm nhận, giới thiệu chùa, đền, di tích",
+      "bo-tat": "Hình ảnh và giới thiệu chư Phật, Bồ Tát",
+      "nhac-thien": "Nhạc nhẹ nhàng cho thiền định, thư giãn",
+      "audio-kinh": "Bản tụng kinh, niệm Phật để nghe theo"
+    }
   }
 }

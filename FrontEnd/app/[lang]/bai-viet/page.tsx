@@ -38,6 +38,7 @@ export default async function ArticleListPage() {
     <ContentListPage
       filter={{ type: ["article", "blog"] }}
       page={1}
+      searchPath="/bai-viet/tim-kiem"
       basePath="/bai-viet"
       layout={layout}
       thumbnail

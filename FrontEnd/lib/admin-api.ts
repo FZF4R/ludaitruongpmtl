@@ -152,6 +152,10 @@ export type CauHinh = {
   langLib: unknown;
   theme: Record<string, string> | null;
   themeDark: Record<string, string> | null;
+  /** Ảnh từng mục Tu tập: { chantingRecitation, meditation, woodenFishMala, prayers } -> URL. */
+  practiceImages: Record<string, string> | null;
+  /** Trang Về chúng tôi: HTML theo ngôn ngữ. */
+  aboutHtml: Record<string, string> | null;
 };
 
 /* ------------------------------------------------------------------ */

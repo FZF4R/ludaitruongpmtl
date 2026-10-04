@@ -20,7 +20,8 @@ const TRUONG_QUAN_TRI = [
     'title', 'warning', 'note',
     'supportphonenumber', 'pagefacebookinfo', 'supportfacebook', 'supporttelegram',
     'zalosupportinfo', 'zaloadminsupportinfo', 'supporttiktok',
-    'isMaintaning', 'langLib', 'theme', 'themeDark', 'articleLayout', 'bannedWords'
+    'isMaintaning', 'langLib', 'theme', 'themeDark', 'articleLayout', 'bannedWords',
+    'practiceImages', 'libraryImages', 'aboutHtml'
 ]
 
 /** Bản ghi cấu hình -> đúng những gì trang quản trị cần, không thừa một cột. */

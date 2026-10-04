@@ -255,6 +255,10 @@ export type SiteSettings = {
    */
   theme?: Record<string, unknown>;
   themeDark?: Record<string, unknown>;
+  /** Ảnh từng mục Tu tập (lib/practice-images.ts). */
+  practiceImages?: Partial<Record<"chantingRecitation" | "meditation" | "woodenFishMala" | "prayers", string>>;
+  /** Ảnh đại diện danh mục Thư viện (lib/library-images.ts). */
+  libraryImages?: Partial<Record<"anh" | "review" | "bo-tat" | "nhac-thien" | "audio-kinh", string>>;
 };
 
 /**
@@ -332,5 +336,22 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   } catch {
     // Cấu hình phụ trợ: hỏng thì trang vẫn phải lên, chỉ mất banner.
     return null;
+  }
+}
+
+/**
+ * Nội dung trang Về chúng tôi (HTML admin soạn) theo ngôn ngữ; rỗng = dùng mẫu
+ * (lib/about-template.ts). Cùng tag `settings` nên lưu ở trình sửa là làm mới ngay.
+ */
+export async function getAbout(lang: string): Promise<string> {
+  if (isMock) return "";
+  try {
+    return await get("/v1/public/about", (raw) => String((raw as { html?: string }).html ?? ""), {
+      query: { lang },
+      revalidate: revalidate.home,
+      tags: [tags.settings],
+    });
+  } catch {
+    return "";
   }
 }

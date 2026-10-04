@@ -28,6 +28,7 @@ export default async function SutraListPage() {
     <ContentListPage
       filter={{ type: "sutra" }}
       page={1}
+      searchPath="/kinh-sach/tim-kiem"
       basePath="/kinh-sach"
       adminBar={<ListAdminBar themHref="/admin/library" themNhan="Thêm kinh sách" quyenThem="sutra.manage" />}
       eyebrow={dict.footer.categories}
