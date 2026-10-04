@@ -294,7 +294,9 @@
     "searchEmpty": "일치하는 결과가 없습니다. 다른 검색어, 작성자 이름 또는 #태그로 찾아 보세요.",
     "searchClear": "전체 보기",
     "prev": "이전",
-    "next": "다음"
+    "next": "다음",
+    "translatedSutras": "번역한 경전",
+    "translatedEmpty": "아직 게시된 번역 경전이 없습니다."
   },
   "comingSoon": {
     "title": "준비 중",
@@ -492,7 +494,7 @@
       "beadsOf": "{n}알",
       "progress": "{i}/{t}번째 알",
       "rounds": "{n}바퀴",
-      "tap": "눌러서 한 알 넘기기",
+      "tap": "누르거나 + 키로 한 알 넘기기",
       "lapBell": "한 바퀴마다 종소리",
       "total": "모두 {n}알"
     },
@@ -621,7 +623,7 @@
         },
         {
           "title": "여기서 해 보기",
-          "body": "목탁이나 염주 알을 누르거나 스페이스 키를 누르세요. “자동 박자”를 켜면 독경할 때 박자를 맞출 수 있습니다."
+          "body": "목탁이나 염주 알을 누르세요. 컴퓨터에서는 스페이스 키로 목탁, + 키로 염주를 넘겨 둘을 함께 할 수 있습니다. “자동 박자”를 켜면 독경할 때 박자를 맞출 수 있습니다."
         }
       ],
       "prayers": [
@@ -653,7 +655,15 @@
       "confirmDelete": "“{name}” 설정을 삭제할까요?",
       "signIn": "로그인하고 설정 저장하기",
       "empty": "저장된 설정이 없습니다.",
-      "using": "사용 중: {name}"
+      "using": "사용 중: {name}",
+      "popupTitle": "명상 설정 저장",
+      "summary": "현재 설정",
+      "saveNew": "새 설정으로 저장",
+      "name": "설정 이름",
+      "confirm": "저장",
+      "cancel": "취소",
+      "on": "켬",
+      "off": "끔"
     },
     "medExtra": {
       "music": "명상 음악 / 배경음",
@@ -670,7 +680,30 @@
       "points": "+{n} 공덕",
       "practiceLine": "{type}: {amount}{unit}",
       "empty": "이 날은 활동이 없습니다."
-    }
+    },
+    "prayerPrep": {
+      "prepTitle": "발원 전 마음을 고요히 하는 음악",
+      "prepTime": "시간",
+      "start": "시작",
+      "stop": "정지",
+      "remaining": "{t} 남음",
+      "done": "이제 발원할 시간입니다 🙏",
+      "doneHint": "아래에 발원을 적어 주세요.",
+      "systemMusic": "기본 배경음",
+      "myMusic": "내 음악",
+      "upload": "내 음악 올리기",
+      "uploading": "올리는 중…",
+      "uploadHint": "MP3, M4A, WAV, OGG ≤ 10 MB · 최대 10개",
+      "deleteMusic": "이 음악 파일을 삭제할까요?",
+      "presets": "발원 설정",
+      "savePreset": "설정 저장",
+      "presetName": "설정 이름 (예: 저녁 기도)",
+      "noPresets": "저장된 설정이 없습니다.",
+      "signIn": "로그인하고 설정 저장과 음악 올리기",
+      "saved": "설정을 저장했습니다"
+    },
+    "autoSaveHint": "3초 동안 멈추면 일지에 자동 저장됩니다",
+    "autoSaving": "저장 중…"
   },
   "myContent": {
     "title": "내 글",

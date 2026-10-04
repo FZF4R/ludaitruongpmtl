@@ -294,7 +294,9 @@
     "searchEmpty": "Không tìm thấy kết quả phù hợp. Thử từ khoá khác, tên tác giả hoặc #thẻ.",
     "searchClear": "Xem tất cả",
     "prev": "Trang trước",
-    "next": "Trang sau"
+    "next": "Trang sau",
+    "translatedSutras": "Kinh sách đã dịch",
+    "translatedEmpty": "Chưa có kinh sách nào do bạn dịch được đăng."
   },
   "comingSoon": {
     "title": "Đang xây dựng",
@@ -405,7 +407,7 @@
     "loadError": "Không tải được lời nguyện.",
     "sendError": "Không gửi được, vui lòng thử lại.",
     "all": "Tất cả",
-    "featuredTitle": "Lời nguyện được chọn",
+    "featuredTitle": "Lời nguyện của phật tử",
     "prev": "Trước",
     "next": "Sau",
     "feature": "Chọn làm lời nguyện nổi bật",
@@ -492,7 +494,7 @@
       "beadsOf": "{n} hạt",
       "progress": "Hạt {i}/{t}",
       "rounds": "{n} vòng",
-      "tap": "Chạm để lần hạt",
+      "tap": "Chạm hoặc nhấn phím + để lần hạt",
       "lapBell": "Chuông hết vòng",
       "total": "Tổng {n} hạt"
     },
@@ -543,7 +545,7 @@
       "breathe": "Thở vào… thở ra…"
     },
     "prayersPage": {
-      "cta": "Viết lời nguyện của bạn",
+      "cta": "Lời nguyện của bạn",
       "ambient": "Âm nền khi đọc lời nguyện",
       "calendarLink": "Xem các ngày lễ, ngày vía sắp tới"
     },
@@ -621,7 +623,7 @@
         },
         {
           "title": "Gõ ở đây",
-          "body": "Chạm vào mõ hoặc hạt, hay nhấn phím Cách. Bật “Tự gõ theo nhịp” để giữ nhịp khi tụng theo."
+          "body": "Chạm vào mõ hoặc hạt. Trên máy tính: phím Cách để gõ mõ, phím + để lần hạt — gõ mõ và lần chuỗi cùng lúc được. Bật “Tự gõ theo nhịp” để giữ nhịp khi tụng theo."
         }
       ],
       "prayers": [
@@ -653,7 +655,15 @@
       "confirmDelete": "Xoá bộ cấu hình “{name}”?",
       "signIn": "Đăng nhập để lưu bộ cấu hình",
       "empty": "Chưa có bộ cấu hình nào.",
-      "using": "Đang dùng: {name}"
+      "using": "Đang dùng: {name}",
+      "popupTitle": "Lưu cấu hình thiền",
+      "summary": "Cấu hình hiện tại",
+      "saveNew": "Lưu thành bộ mới",
+      "name": "Tên bộ cấu hình",
+      "confirm": "Lưu",
+      "cancel": "Huỷ",
+      "on": "Bật",
+      "off": "Tắt"
     },
     "medExtra": {
       "music": "Nhạc thiền / âm nền",
@@ -670,7 +680,30 @@
       "points": "+{n} công đức",
       "practiceLine": "{type}: {amount} {unit}",
       "empty": "Chưa có hoạt động ngày này."
-    }
+    },
+    "prayerPrep": {
+      "prepTitle": "Nghe nhạc tĩnh tâm trước khi phát tâm cầu nguyện",
+      "prepTime": "Thời gian",
+      "start": "Bắt đầu",
+      "stop": "Dừng",
+      "remaining": "Còn {t}",
+      "done": "Đã đến lúc phát tâm cầu nguyện 🙏",
+      "doneHint": "Hãy viết lời nguyện của bạn ở bên dưới.",
+      "systemMusic": "Âm nền có sẵn",
+      "myMusic": "Nhạc của tôi",
+      "upload": "Tải nhạc của bạn",
+      "uploading": "Đang tải…",
+      "uploadHint": "MP3, M4A, WAV, OGG ≤ 10 MB · tối đa 10 tệp",
+      "deleteMusic": "Xoá tệp nhạc này?",
+      "presets": "Cấu hình cầu nguyện",
+      "savePreset": "Lưu cấu hình",
+      "presetName": "Tên cấu hình (vd. Cầu an buổi tối)",
+      "noPresets": "Chưa có cấu hình nào.",
+      "signIn": "Đăng nhập để lưu cấu hình và tải nhạc riêng",
+      "saved": "Đã lưu cấu hình"
+    },
+    "autoSaveHint": "Tự lưu vào nhật ký sau 3 giây ngừng gõ / lần hạt",
+    "autoSaving": "Đang lưu…"
   },
   "myContent": {
     "title": "Bài viết của tôi",
@@ -809,7 +842,7 @@
       "review": "Review chùa, đền",
       "bo-tat": "Phật - Bồ Tát",
       "nhac-thien": "Nhạc thiền",
-      "audio-kinh": "Audio kinh"
+      "audio-kinh": "Audio kinh phật"
     },
     "empty": "Chưa có nội dung nào trong mục này.",
     "contribute": "Đóng góp nội dung",

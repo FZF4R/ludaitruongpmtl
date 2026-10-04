@@ -111,6 +111,8 @@ export type ListParams = {
   sort?: "newest" | "popular";
   /** Lọc danh mục thư viện (type = library). */
   libraryKind?: string;
+  /** Kinh sách do người dùng này dịch (translator.userId). */
+  translatorId?: string;
 };
 
 export async function listContent(
@@ -131,6 +133,7 @@ export async function listContent(
         limit: params.limit ?? 12,
         sort: params.sort,
         libraryKind: params.libraryKind,
+        translatorId: params.translatorId,
       },
       revalidate: revalidate.list,
       tags: [tags.content],

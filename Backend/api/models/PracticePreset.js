@@ -17,8 +17,9 @@ module.exports = {
         },
         kind: {
             type: 'string',
-            isIn: ['thien'],
+            isIn: ['thien', 'cau-an'],
             defaultsTo: 'thien',
+            description: 'thien = Đồng hồ thiền; cau-an = âm nền khi cầu nguyện (trang Cầu an / Cầu siêu)'
         },
         name: {
             type: 'string',

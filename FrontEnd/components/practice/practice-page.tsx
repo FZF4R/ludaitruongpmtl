@@ -3,7 +3,8 @@ import Image from "next/image";
 import { getSiteSettings } from "@/lib/api";
 import { anhMucTuTap } from "@/lib/practice-images";
 import { Breadcrumbs } from "@/components/content/navigation";
-import { getDictionary, getLocale, type Dictionary } from "@/lib/dictionary";
+import { getDictionary, getI18n, getLocale, type Dictionary } from "@/lib/dictionary";
+import { ThemMucHuongDan, XoaMucHuongDan } from "@/components/practice/guide-editor";
 import { EditableText } from "@/components/layout/inline-edit";
 import { HuongDan } from "@/components/practice/common";
 import { SettingImageEditor } from "@/components/library/library-image-editor";
@@ -68,15 +69,33 @@ export async function PracticeHeader({ navKey, href }: { navKey: PracticeKey; hr
  * `practiceTools.guides.<nhom>.<i>.title|body`, lưu theo từng ngôn ngữ.
  */
 export async function HuongDanSuaDuoc({ nhom }: { nhom: keyof Dictionary["practiceTools"]["guides"] }) {
-  const dict = await getDictionary();
+  const { dict, texts } = await getI18n();
   const ds = dict.practiceTools.guides[nhom];
+  // Mục admin thêm ở Chế độ sửa: chỉ số sau các mục có sẵn, đọc thẳng từ chữ
+  // giao diện đã lưu (từ điển không có các khoá này). Mục đã xoá để lại khoảng
+  // trống chỉ số - quét tới 50 chỉ số sau mục cuối.
+  const khoa = (i: number, t: "title" | "body") => `practiceTools.guides.${nhom}.${i}.${t}`;
+  const them: { i: number; title: string; body: string }[] = [];
+  for (let i = ds.length; i < ds.length + 50; i++) {
+    const title = texts[khoa(i, "title")];
+    if (title) them.push({ i, title, body: texts[khoa(i, "body")] ?? "" });
+  }
+  const chiSoMoi = Math.max(ds.length, ...them.map((m) => m.i + 1));
   return (
     <HuongDan
       tieuDe={<EditableText k="practiceTools.guideTitle" value={dict.practiceTools.guideTitle} />}
-      muc={ds.map((m, i) => ({
-        title: <EditableText k={`practiceTools.guides.${nhom}.${i}.title`} value={m.title} />,
-        body: <EditableText k={`practiceTools.guides.${nhom}.${i}.body`} value={m.body} multiline />,
-      }))}
+      muc={[
+        ...ds.map((m, i) => ({
+          title: <EditableText k={khoa(i, "title")} value={m.title} />,
+          body: <EditableText k={khoa(i, "body")} value={m.body} multiline />,
+        })),
+        ...them.map((m) => ({
+          title: <EditableText k={khoa(m.i, "title")} value={m.title} />,
+          body: <EditableText k={khoa(m.i, "body")} value={m.body} multiline />,
+          phu: <XoaMucHuongDan nhom={nhom} chiSo={m.i} />,
+        })),
+      ]}
+      cuoi={<ThemMucHuongDan nhom={nhom} chiSoMoi={chiSoMoi} />}
     />
   );
 }

@@ -198,6 +198,7 @@ export function PrayerWall({ nhan }: { nhan: NhanLoiNguyen }) {
       ) : (
         <form onSubmit={gui} className="flex flex-col gap-3">
           <textarea
+            id="o-viet-loi-nguyen"
             value={noiDung}
             onChange={(e) => setNoiDung(e.target.value)}
             placeholder={nhan.placeholder}

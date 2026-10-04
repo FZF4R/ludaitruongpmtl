@@ -92,7 +92,6 @@ export const footerNav: {
     titleKey: "about",
     items: [
       { href: "/ve-chung-toi", key: "about" },
-      { href: "/tim-kiem", key: "search" },
       { href: "/tai-khoan", key: "account" },
       { href: "/rss.xml", label: "RSS" },
     ],

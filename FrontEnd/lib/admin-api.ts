@@ -445,7 +445,7 @@ export const nhanDanhMucThuVien: Record<string, string> = {
   review: "Review chùa, đền",
   "bo-tat": "Phật - Bồ Tát",
   "nhac-thien": "Nhạc thiền",
-  "audio-kinh": "Audio kinh",
+  "audio-kinh": "Audio kinh phật",
 };
 
 export const trangThai = ["draft", "pending", "published", "archived"] as const;

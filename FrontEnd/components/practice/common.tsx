@@ -280,8 +280,18 @@ export function AmNen({ src, chay, amLuong, lap = true }: { src: string | null; 
   return <audio ref={ref} src={src} loop={lap} preload="none" className="hidden" />;
 }
 
-/** Phím Cách để gõ / đếm - bỏ qua khi đang gõ chữ hay đang ở một nút khác (nút tự xử lý phím Cách). */
-export function usePhimCach(fn: () => void, bat = true) {
+/**
+ * Phím tắt cho công cụ đếm (máy tính): phím Cách gõ mõ / đếm, phím "+" lần hạt.
+ *
+ * Bỏ qua khi đang gõ chữ (input, textarea...) hoặc đang đứng ở một nút / link
+ * khác (để Cách / Enter bấm nút đó như bình thường). NGOẠI LỆ: các nút chạm
+ * của công cụ (gắn `data-phim-tat`) - sau khi bấm chuột vào mõ, con trỏ bàn
+ * phím nằm trên nút mõ; nếu để mặc định thì phím Cách / Enter sẽ "bấm" lại nút
+ * đó. Ở các nút này, phím tắt chặn hành vi mặc định và chạy đúng việc của nó.
+ *
+ * "Plus": phím + ở cụm phím số, phím + (Shift + =) và cả phím = (không cần Shift).
+ */
+export function usePhimTat(phim: "Space" | "Enter" | "Plus", fn: () => void, bat = true) {
   const ref = React.useRef(fn);
   React.useEffect(() => {
     ref.current = fn;
@@ -289,16 +299,28 @@ export function usePhimCach(fn: () => void, bat = true) {
   React.useEffect(() => {
     if (!bat) return;
     function nghe(e: KeyboardEvent) {
+      const dung =
+        phim === "Enter"
+          ? e.code === "Enter" || e.code === "NumpadEnter"
+          : phim === "Plus"
+            ? e.code === "NumpadAdd" || e.key === "+" || e.key === "="
+            : e.code === "Space";
       // isTrusted = false: sự kiện do script tạo ra (tool tự bấm) - không tính.
-      if (e.code !== "Space" || e.repeat || !e.isTrusted || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (!dung || e.repeat || !e.isTrusted || e.ctrlKey || e.metaKey || e.altKey) return;
       const t = e.target as HTMLElement | null;
-      if (t && (t.closest("input, textarea, select, button, a, [contenteditable=true]") || t.isContentEditable)) return;
+      const laNutCongCu = !!t?.closest("[data-phim-tat]");
+      if (!laNutCongCu && t && (t.closest("input, textarea, select, button, a, [contenteditable=true]") || t.isContentEditable)) return;
       e.preventDefault();
       ref.current();
     }
     window.addEventListener("keydown", nghe);
     return () => window.removeEventListener("keydown", nghe);
-  }, [bat]);
+  }, [phim, bat]);
+}
+
+/** Phím Cách để gõ / đếm (xem usePhimTat). */
+export function usePhimCach(fn: () => void, bat = true) {
+  usePhimTat("Space", fn, bat);
 }
 
 /**
@@ -400,10 +422,13 @@ export function VongLan({ lan, className }: { lan: number; className?: string })
 export function HuongDan({
   tieuDe,
   muc,
+  cuoi,
 }: {
   /** Chuỗi, hoặc <EditableText> để sửa được ở Chế độ sửa (xem HuongDanSuaDuoc). */
   tieuDe: React.ReactNode;
-  muc: { title: React.ReactNode; body: React.ReactNode }[];
+  muc: { title: React.ReactNode; body: React.ReactNode; phu?: React.ReactNode }[];
+  /** Phần thêm dưới lưới (vd. nút "Thêm mục" ở Chế độ sửa). */
+  cuoi?: React.ReactNode;
 }) {
   return (
     <section aria-label={typeof tieuDe === "string" ? tieuDe : undefined} className="flex flex-col gap-4">
@@ -413,9 +438,11 @@ export function HuongDan({
           <div key={i} className="rounded-lg border border-line bg-surface p-4">
             <h3 className="font-semibold text-ink">{m.title}</h3>
             <p className="mt-1.5 text-sm leading-relaxed text-body">{m.body}</p>
+            {m.phu}
           </div>
         ))}
       </div>
+      {cuoi}
     </section>
   );
 }

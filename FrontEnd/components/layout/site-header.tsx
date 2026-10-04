@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, Search, Sparkles, X } from "lucide-react";
+import { ChevronDown, Menu, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mainNav, site, type NavItem } from "@/lib/site";
 import { Button } from "@/components/ui/button";
@@ -228,11 +228,6 @@ export function SiteHeader({
         </nav>
 
         <div className="ml-auto flex shrink-0 items-center gap-1">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href={lp("/tim-kiem")} aria-label={dict.search}>
-              <Search />
-            </Link>
-          </Button>
           <NotificationBell nhan={thongBao} />
           <ThemeToggle />
           <LanguageSwitcher label={language.label} chooseLabel={language.choose} />

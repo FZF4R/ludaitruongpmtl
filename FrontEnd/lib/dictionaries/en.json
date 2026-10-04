@@ -294,7 +294,9 @@
     "searchEmpty": "No matching results. Try another keyword, an author name or a #tag.",
     "searchClear": "View all",
     "prev": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "translatedSutras": "Translated sutras",
+    "translatedEmpty": "No published sutras translated by you yet."
   },
   "comingSoon": {
     "title": "Coming soon",
@@ -492,7 +494,7 @@
       "beadsOf": "{n} beads",
       "progress": "Bead {i}/{t}",
       "rounds": "{n} rounds",
-      "tap": "Tap to move a bead",
+      "tap": "Tap or press + to move a bead",
       "lapBell": "Bell at end of round",
       "total": "{n} beads in total"
     },
@@ -621,7 +623,7 @@
         },
         {
           "title": "Try it here",
-          "body": "Tap the wooden fish or a bead, or press Space. Turn on auto rhythm to keep time while chanting."
+          "body": "Tap the wooden fish or a bead. On a computer: Space strikes the wooden fish and + moves a bead — you can do both at once. Turn on auto rhythm to keep time while chanting."
         }
       ],
       "prayers": [
@@ -653,7 +655,15 @@
       "confirmDelete": "Delete preset “{name}”?",
       "signIn": "Sign in to save presets",
       "empty": "No presets yet.",
-      "using": "Using: {name}"
+      "using": "Using: {name}",
+      "popupTitle": "Save meditation settings",
+      "summary": "Current settings",
+      "saveNew": "Save as a new preset",
+      "name": "Preset name",
+      "confirm": "Save",
+      "cancel": "Cancel",
+      "on": "On",
+      "off": "Off"
     },
     "medExtra": {
       "music": "Meditation music / ambience",
@@ -670,7 +680,30 @@
       "points": "+{n} merit",
       "practiceLine": "{type}: {amount} {unit}",
       "empty": "No activity on this day."
-    }
+    },
+    "prayerPrep": {
+      "prepTitle": "Calming music before you begin your prayer",
+      "prepTime": "Duration",
+      "start": "Start",
+      "stop": "Stop",
+      "remaining": "{t} left",
+      "done": "It is time to begin your prayer 🙏",
+      "doneHint": "Write your prayer below.",
+      "systemMusic": "Built-in ambience",
+      "myMusic": "My music",
+      "upload": "Upload your music",
+      "uploading": "Uploading…",
+      "uploadHint": "MP3, M4A, WAV, OGG ≤ 10 MB · up to 10 files",
+      "deleteMusic": "Delete this audio file?",
+      "presets": "Prayer presets",
+      "savePreset": "Save settings",
+      "presetName": "Preset name (e.g. Evening prayer)",
+      "noPresets": "No presets yet.",
+      "signIn": "Sign in to save settings and upload your own music",
+      "saved": "Settings saved"
+    },
+    "autoSaveHint": "Saved to your journal automatically after 3 seconds of pause",
+    "autoSaving": "Saving…"
   },
   "myContent": {
     "title": "My posts",

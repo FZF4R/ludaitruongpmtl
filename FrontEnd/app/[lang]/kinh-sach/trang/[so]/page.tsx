@@ -38,7 +38,7 @@ export default async function SutraListPagedPage(props: {
       page={page}
       searchPath="/kinh-sach/tim-kiem"
       basePath="/kinh-sach"
-      adminBar={<ListAdminBar nhanCuaToi={dict.myContent.title} themHref="/admin/library" themNhan="Thêm kinh sách" quyenThem="sutra.manage" />}
+      adminBar={<ListAdminBar kinhDaDich={dict.list.translatedSutras} themHref="/admin/library" themNhan="Thêm kinh sách" quyenThem="sutra.manage" />}
       title="Kinh sách"
       description={`Trang ${page}`}
       trail={[

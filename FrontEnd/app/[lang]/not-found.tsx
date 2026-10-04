@@ -20,7 +20,7 @@ export default function NotFound() {
           <Link href="/">Về trang chủ</Link>
         </Button>
         <Button variant="outline" asChild>
-          <Link href="/tim-kiem">Tìm kiếm</Link>
+          <Link href="/bai-viet/tim-kiem">Tìm kiếm</Link>
         </Button>
       </div>
     </Container>

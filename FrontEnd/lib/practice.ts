@@ -49,11 +49,15 @@ export function moPhien(type: LoaiNhatKy, locale: Locale) {
 /* Bộ cấu hình thiền người dùng tự lưu */
 export type BoCauHinh<T = Record<string, unknown>> = { id: string; name: string; config: T; lastUsedAt: number };
 
-export function layBoCauHinh(locale: Locale) {
-  return goiApi<BoCauHinh[]>("/v1/user/practice/presets", { locale });
+/** `kind`: thien = Đồng hồ thiền; cau-an = âm nền cầu nguyện. */
+export function layBoCauHinh(locale: Locale, kind: "thien" | "cau-an" = "thien") {
+  return goiApi<BoCauHinh[]>("/v1/user/practice/presets", { query: { kind }, locale });
 }
 
-export function luuBoCauHinh(than: { id?: string; name?: string; config?: Record<string, unknown>; used?: boolean }, locale: Locale) {
+export function luuBoCauHinh(
+  than: { id?: string; name?: string; config?: Record<string, unknown>; used?: boolean; kind?: "thien" | "cau-an" },
+  locale: Locale,
+) {
   return goiApi<BoCauHinh>("/v1/user/practice/presets/save", { method: "POST", body: than, locale });
 }
 
@@ -71,4 +75,28 @@ export type ThongKeTuTap = {
 
 export function layThongKeTuTap(locale: Locale) {
   return goiApi<ThongKeTuTap>("/v1/user/practice/stats", { locale });
+}
+
+/* Nhạc riêng của tài khoản (âm nền cầu nguyện...) */
+export type NhacRieng = { id: string; name: string; url: string; sizeBytes: number };
+
+export async function layNhacRieng(locale: Locale) {
+  const ds = await goiApi<NhacRieng[]>("/v1/user/practice/audio", { locale });
+  return ds.map((n) => ({ ...n, url: urlApi(n.url) }));
+}
+
+/** Tải một tệp audio (≤ 10 MB, tối đa 10 tệp / tài khoản) lên máy chủ. */
+export async function taiNhacRieng(tep: File, locale: Locale) {
+  const file = await new Promise<string>((ok, hong) => {
+    const r = new FileReader();
+    r.onload = () => ok(String(r.result));
+    r.onerror = () => hong(r.error);
+    r.readAsDataURL(tep);
+  });
+  const kq = await goiApi<NhacRieng>("/v1/user/practice/audio/upload", { method: "POST", body: { file, name: tep.name }, locale });
+  return { ...kq, url: urlApi(kq.url) };
+}
+
+export function xoaNhacRieng(id: string, locale: Locale) {
+  return goiApi<{ id: string }>("/v1/user/practice/audio/delete", { method: "POST", body: { id }, locale });
 }

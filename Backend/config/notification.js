@@ -562,6 +562,18 @@ module.exports.notification = {
                 messageVNI: "Bạn đã lưu quá nhiều bộ cấu hình (tối đa 30)"
             }
         },
+        practiceAudioInvalid: {
+            message: {
+                messageEN: "Invalid audio file (MP3, M4A, WAV, OGG under 10 MB)",
+                messageVNI: "Tệp âm thanh không hợp lệ (MP3, M4A, WAV, OGG dưới 10 MB)"
+            }
+        },
+        practiceAudioTooMany: {
+            message: {
+                messageEN: "You have uploaded the maximum of 10 audio files, delete some first",
+                messageVNI: "Bạn đã tải tối đa 10 tệp nhạc, hãy xoá bớt trước khi tải thêm"
+            }
+        },
         practiceLogInvalid: {
             message: {
                 messageEN: "Invalid practice record",

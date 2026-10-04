@@ -30,7 +30,7 @@ export default async function SutraListPage() {
       page={1}
       searchPath="/kinh-sach/tim-kiem"
       basePath="/kinh-sach"
-      adminBar={<ListAdminBar nhanCuaToi={dict.myContent.title} themHref="/admin/library" themNhan="Thêm kinh sách" quyenThem="sutra.manage" />}
+      adminBar={<ListAdminBar kinhDaDich={dict.list.translatedSutras} themHref="/admin/library" themNhan="Thêm kinh sách" quyenThem="sutra.manage" />}
       title={dict.nav.sutras}
       description={dict.list.sutrasDesc}
       trail={[

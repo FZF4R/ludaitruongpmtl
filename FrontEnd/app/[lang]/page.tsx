@@ -19,6 +19,11 @@ import { TodayLunarBadge } from "@/components/calendar/today-marker";
 import { getI18n } from "@/lib/dictionary";
 import { EditableText } from "@/components/layout/inline-edit";
 import { heroImages } from "@/lib/hero-images";
+import Image from "next/image";
+import { practiceNav } from "@/lib/site";
+import { anhMucTuTap } from "@/lib/practice-images";
+import { anhDanhMucThuVien } from "@/lib/library-images";
+import { libraryKinds, type LibraryKind } from "@/lib/schema";
 import { HeroCarousel, type AnhHero } from "@/components/home/hero-carousel";
 
 /**
@@ -95,6 +100,13 @@ export default async function HomePage() {
     ...heroImages.map((src) => ({ src, alt: "" })),
   ];
   const anhDau = uploaded.length ? 0 : Math.floor(Math.random() * anhNen.length);
+  // Thư viện: thứ tự danh mục admin sắp (Chế độ sửa), khoá thiếu nối vào cuối.
+  const thuTuThuVien: LibraryKind[] = [
+    ...new Set([
+      ...(settings?.libraryOrder ?? []).filter((k): k is LibraryKind => libraryKinds.includes(k as LibraryKind)),
+      ...libraryKinds,
+    ]),
+  ];
 
   return (
     <>
@@ -172,25 +184,31 @@ export default async function HomePage() {
       </section>
 
       <Container className="flex flex-col gap-16 py-16">
-        {/*
-          Lịch Phật giáo: trái là lịch tháng chuyển qua lại được (ngày Trai + sự
-          kiện), phải là danh sách sự kiện theo tab. Màn hình hẹp thì xếp dọc.
-        */}
-        <section className="flex flex-col gap-6">
-          <SectionHeading
-            eyebrow={sua("homeCalendar.eyebrow", dict.homeCalendar.eyebrow)}
-            title={sua("homeCalendar.title", dict.homeCalendar.title)}
-          />
-          <HomeCalendar
-            thang={lichThang}
-            suKienTheoThang={suKienTheoThang}
-            baThangToi={lichPhat.baThangToi}
-            namNay={lichPhat.namNay}
-            homNay={sangChuoiNgay(homNay)}
-            linkLich={linkLich}
-            nhan={{ ...dict.homeCalendar, eventKind: dict.calendar.eventKind }}
-          />
-        </section>
+        {/* Thứ tự các khối theo thanh menu: Kinh sách, Bài viết, Tu tập, Thư viện, Phật lịch, rồi Ước nguyện & Cầu an. */}
+        {sutrasPopular.length > 0 ? (
+          <section className="flex flex-col gap-6">
+            <SectionHeading
+              eyebrow={sua("home.sutrasEyebrow", dict.home.sutrasEyebrow)}
+              title={sua("nav.sutras", dict.nav.sutras)}
+              description={sua("home.sutrasDesc2", dict.home.sutrasDesc2)}
+              action={
+                <Button size="sm" asChild>
+                  <Link href="/kinh-sach">
+                    {sua("home.allSutras", "Tất cả kinh sách")} <ArrowRight />
+                  </Link>
+                </Button>
+              }
+            />
+            {/* Đảo cột so với Bài viết (ngay dưới) để hai khối liền nhau không lặp một nhịp. */}
+            <FeaturedSplit
+              noiBat={sutrasPopular}
+              moi={sutrasLatest}
+              nhanNoiBat={sua("home.popularSutras", "Kinh sách phổ biến")}
+              nhanMoi={sua("home.sutrasLatest", "Mới cập nhật")}
+              daoCot
+            />
+          </section>
+        ) : null}
 
         {mostRead.length > 0 ? (
           <section className="flex flex-col gap-6">
@@ -210,31 +228,6 @@ export default async function HomePage() {
                   </Link>
                 </Button>
               }
-            />
-          </section>
-        ) : null}
-
-        {sutrasPopular.length > 0 ? (
-          <section className="flex flex-col gap-6">
-            <SectionHeading
-              eyebrow={sua("home.sutrasEyebrow", dict.home.sutrasEyebrow)}
-              title={sua("nav.sutras", dict.nav.sutras)}
-              description={sua("home.sutrasDesc2", dict.home.sutrasDesc2)}
-              action={
-                <Button size="sm" asChild>
-                  <Link href="/kinh-sach">
-                    {sua("home.allSutras", "Tất cả kinh sách")} <ArrowRight />
-                  </Link>
-                </Button>
-              }
-            />
-            {/* Đảo cột so với Bài viết để hai khối liền nhau không lặp một nhịp. */}
-            <FeaturedSplit
-              noiBat={sutrasPopular}
-              moi={sutrasLatest}
-              nhanNoiBat={sua("home.popularSutras", "Kinh sách phổ biến")}
-              nhanMoi={sua("home.sutrasLatest", "Mới cập nhật")}
-              daoCot
             />
           </section>
         ) : null}
@@ -278,6 +271,118 @@ export default async function HomePage() {
             </div>
           </section>
         ) : null}
+
+        {/* Tu tập: bốn mục, ảnh riêng từng mục (đổi ở Chế độ sửa / Tổng quan). */}
+        <section className="flex flex-col gap-6">
+          <SectionHeading
+            eyebrow={sua("home.practiceEyebrow", "Thực hành mỗi ngày")}
+            title={sua("nav.practice", dict.nav.practice)}
+            description={sua("nav.practiceHint", dict.nav.practiceHint)}
+            action={
+              <Button size="sm" asChild>
+                <Link href="/tu-tap">
+                  {sua("home.allPractice", "Xem tất cả")} <ArrowRight />
+                </Link>
+              </Button>
+            }
+          />
+          <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {practiceNav.map((m) => {
+              const anh = anhMucTuTap(m.key, settings?.practiceImages);
+              return (
+                <li key={m.href}>
+                  <Link
+                    href={m.href}
+                    className="group flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface transition-all hover:-translate-y-0.5 hover:border-line-strong hover:shadow-card-lift"
+                  >
+                    <span className="relative block aspect-[4/3] overflow-hidden bg-surface-2">
+                      <Image
+                        src={anh}
+                        alt=""
+                        fill
+                        sizes="(min-width: 1024px) 25vw, 50vw"
+                        unoptimized={typeof anh === "string"}
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </span>
+                    <span className="flex flex-1 flex-col gap-1 p-3.5">
+                      <span className="font-serif text-base font-bold leading-snug text-ink group-hover:text-accent">
+                        {dict.nav[m.key]}
+                      </span>
+                      <span className="line-clamp-2 text-xs leading-relaxed text-muted">{dict.nav[`${m.key}Hint`]}</span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        {/* Thư viện: các danh mục theo thứ tự admin sắp, ảnh đại diện riêng từng danh mục. */}
+        <section className="flex flex-col gap-6">
+          <SectionHeading
+            eyebrow={sua("home.libraryEyebrow", "Cộng đồng đóng góp")}
+            title={sua("library.title", dict.library.title)}
+            description={sua("library.description", dict.library.description)}
+            action={
+              <Button size="sm" asChild>
+                <Link href="/thu-vien">
+                  {sua("home.allLibrary", "Vào thư viện")} <ArrowRight />
+                </Link>
+              </Button>
+            }
+          />
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {thuTuThuVien.map((k) => {
+              const anh = anhDanhMucThuVien(k, settings?.libraryImages);
+              return (
+                <li key={k}>
+                  <Link
+                    href={`/thu-vien?muc=${k}`}
+                    className="group flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface transition-all hover:-translate-y-0.5 hover:border-line-strong hover:shadow-card-lift"
+                  >
+                    <span className="relative block aspect-[4/3] overflow-hidden bg-surface-2">
+                      <Image
+                        src={anh}
+                        alt=""
+                        fill
+                        sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+                        unoptimized={typeof anh === "string"}
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </span>
+                    <span className="flex flex-1 flex-col gap-1 p-3">
+                      <span className="font-serif text-sm font-bold leading-snug text-ink group-hover:text-accent">
+                        {dict.library.kinds[k]}
+                      </span>
+                      <span className="line-clamp-2 text-xs leading-relaxed text-muted">{dict.library.kindHints[k]}</span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        {/*
+          Lịch Phật giáo: trái là lịch tháng chuyển qua lại được (ngày Trai + sự
+          kiện), phải là danh sách sự kiện theo tab. Màn hình hẹp thì xếp dọc.
+        */}
+        <section className="flex flex-col gap-6">
+          <SectionHeading
+            eyebrow={sua("homeCalendar.eyebrow", dict.homeCalendar.eyebrow)}
+            title={sua("homeCalendar.title", dict.homeCalendar.title)}
+          />
+          <HomeCalendar
+            thang={lichThang}
+            suKienTheoThang={suKienTheoThang}
+            baThangToi={lichPhat.baThangToi}
+            namNay={lichPhat.namNay}
+            homNay={sangChuoiNgay(homNay)}
+            linkLich={linkLich}
+            nhan={{ ...dict.homeCalendar, eventKind: dict.calendar.eventKind }}
+          />
+        </section>
 
         {/* Lời cầu nguyện là mục cuối cùng của trang chủ. */}
         <section className="flex flex-col gap-6">

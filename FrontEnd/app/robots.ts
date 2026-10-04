@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         // Trang kết quả tìm kiếm và khu vực cá nhân không có gì để index.
-        disallow: ["/tim-kiem", "/tai-khoan", "/api/"],
+        disallow: ["/bai-viet/tim-kiem", "/kinh-sach/tim-kiem", "/tai-khoan", "/api/"],
       },
     ],
     sitemap: new URL("/sitemap.xml", site.url).toString(),

@@ -83,6 +83,10 @@ module.exports.routes = {
     'GET  /v1/user/practice/presets': 'System.Users.PracticeController.listPresets',
     'POST /v1/user/practice/presets/save': 'System.Users.PracticeController.savePreset',
     'POST /v1/user/practice/presets/delete': 'System.Users.PracticeController.deletePreset',
+    // Nhac rieng cua tung tai khoan (am nen cau nguyen...).
+    'GET  /v1/user/practice/audio': 'System.Users.PracticeController.listMyAudio',
+    'POST /v1/user/practice/audio/upload': 'System.Users.PracticeController.uploadMyAudio',
+    'POST /v1/user/practice/audio/delete': 'System.Users.PracticeController.deleteMyAudio',
     // Bai viet cua toi: soan, gui duyet, tra loi de xuat sua.
     'GET  /v1/user/content/mine': 'System.Users.ContentController.listMine',
     'GET  /v1/user/content/detail': 'System.Users.ContentController.getMine',

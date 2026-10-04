@@ -294,7 +294,9 @@
     "searchEmpty": "没有找到相符的结果。请换个关键词、作者名或 #标签。",
     "searchClear": "查看全部",
     "prev": "上一页",
-    "next": "下一页"
+    "next": "下一页",
+    "translatedSutras": "已翻译的经典",
+    "translatedEmpty": "暂无您翻译并已发布的经典。"
   },
   "comingSoon": {
     "title": "建设中",
@@ -492,7 +494,7 @@
       "beadsOf": "{n} 颗",
       "progress": "第 {i}/{t} 颗",
       "rounds": "{n} 圈",
-      "tap": "点击拨一颗珠",
+      "tap": "点击或按 + 键拨一颗珠",
       "lapBell": "一圈结束时鸣钟",
       "total": "共 {n} 颗"
     },
@@ -621,7 +623,7 @@
         },
         {
           "title": "在此练习",
-          "body": "点击木鱼或念珠，或按空格键。开启“自动节拍”可在诵经时保持节奏。"
+          "body": "点击木鱼或念珠。电脑上：空格键敲木鱼，+ 键拨念珠——可同时进行。开启“自动节拍”可在诵经时保持节奏。"
         }
       ],
       "prayers": [
@@ -653,7 +655,15 @@
       "confirmDelete": "删除配置「{name}」？",
       "signIn": "登录后保存配置",
       "empty": "暂无配置。",
-      "using": "正在使用：{name}"
+      "using": "正在使用：{name}",
+      "popupTitle": "保存禅修配置",
+      "summary": "当前配置",
+      "saveNew": "另存为新配置",
+      "name": "配置名称",
+      "confirm": "保存",
+      "cancel": "取消",
+      "on": "开",
+      "off": "关"
     },
     "medExtra": {
       "music": "禅修音乐 / 背景音",
@@ -670,7 +680,30 @@
       "points": "+{n} 功德",
       "practiceLine": "{type}：{amount} {unit}",
       "empty": "这一天暂无活动。"
-    }
+    },
+    "prayerPrep": {
+      "prepTitle": "祈愿前聆听静心音乐",
+      "prepTime": "时长",
+      "start": "开始",
+      "stop": "停止",
+      "remaining": "剩余 {t}",
+      "done": "是时候发心祈愿了 🙏",
+      "doneHint": "请在下方写下您的心愿。",
+      "systemMusic": "内置背景音",
+      "myMusic": "我的音乐",
+      "upload": "上传您的音乐",
+      "uploading": "上传中…",
+      "uploadHint": "MP3、M4A、WAV、OGG ≤ 10 MB · 最多 10 个文件",
+      "deleteMusic": "删除这个音频文件？",
+      "presets": "祈愿配置",
+      "savePreset": "保存配置",
+      "presetName": "配置名称（如：晚间祈福）",
+      "noPresets": "暂无配置。",
+      "signIn": "登录后保存配置并上传自己的音乐",
+      "saved": "配置已保存"
+    },
+    "autoSaveHint": "停止敲击 / 拨珠 3 秒后自动保存到日志",
+    "autoSaving": "保存中…"
   },
   "myContent": {
     "title": "我的文章",

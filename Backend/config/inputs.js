@@ -263,11 +263,19 @@ module.exports.inputs = {
             "listPresets": {
                 "User": {
                     "type": "json"
+                },
+                "kind": {
+                    "type": "string",
+                    "defaultsTo": "thien"
                 }
             },
             "savePreset": {
                 "User": {
                     "type": "json"
+                },
+                "kind": {
+                    "type": "string",
+                    "defaultsTo": "thien"
                 },
                 "id": {
                     "type": "string"
@@ -281,6 +289,33 @@ module.exports.inputs = {
                 "used": {
                     "type": "boolean",
                     "defaultsTo": false
+                }
+            },
+            "listMyAudio": {
+                "User": {
+                    "type": "json"
+                }
+            },
+            "uploadMyAudio": {
+                "User": {
+                    "type": "json"
+                },
+                "file": {
+                    "type": "string",
+                    "required": true
+                },
+                "name": {
+                    "type": "string",
+                    "defaultsTo": ""
+                }
+            },
+            "deleteMyAudio": {
+                "User": {
+                    "type": "json"
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
                 }
             },
             "deletePreset": {
@@ -1682,6 +1717,11 @@ module.exports.inputs = {
                     "type": "string",
                     "defaultsTo": "",
                     "description": "Mot hoac nhieu loai, ngan cach bang dau phay: article,blog"
+                },
+                "translatorId": {
+                    "type": "string",
+                    "defaultsTo": "",
+                    "description": "Loc kinh sach do nguoi dung nay dich"
                 },
                 "libraryKind": {
                     "type": "string",

@@ -114,8 +114,10 @@ const dinhDangSuKien = row => {
 }
 
 /** Điều kiện lọc dùng chung cho danh sách và tìm kiếm. */
-const dungDieuKien = ({ type, category, q, libraryKind }) => {
+const dungDieuKien = ({ type, category, q, libraryKind, translatorId }) => {
     let dieuKien = { status: 'published' }
+    // Kinh sách do một người dùng dịch (dịch giả chọn từ tài khoản: translator.userId).
+    if (translatorId && /^[a-f0-9]{24}$/i.test(String(translatorId))) dieuKien['translator.userId'] = String(translatorId)
     if (libraryKind && LOAI_THU_VIEN.includes(libraryKind)) dieuKien.libraryKind = libraryKind
 
     if (type) {

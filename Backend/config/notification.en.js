@@ -288,6 +288,12 @@ module.exports.notificationEn = {
         practicePresetTooMany: {
             message: "You have saved too many presets (max 30)"
         },
+        practiceAudioInvalid: {
+            message: "Invalid audio file (MP3, M4A, WAV, OGG under 10 MB)"
+        },
+        practiceAudioTooMany: {
+            message: "You have uploaded the maximum of 10 audio files, delete some first"
+        },
         practiceLogInvalid: {
             message: "Invalid practice record"
         },

@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, List, PenLine, Plus } from "lucide-react";
+import { Languages, LayoutGrid, List, PenLine, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCheDoSua } from "@/components/layout/inline-edit";
 import { docToken } from "@/lib/auth";
@@ -28,9 +28,15 @@ export function ListAdminBar({
   quyenThem = "content.editAny",
   kieuHienThi,
   nhanCuaToi,
+  kinhDaDich,
 }: {
   /** Có thì hiện nút "Bài viết của tôi" (người đã đăng nhập, được viết bài) dẫn tới /tai-khoan/bai-viet. */
   nhanCuaToi?: string;
+  /**
+   * Trang Kinh sách: thay nút "Bài viết của tôi" bằng "Kinh sách đã dịch" (người đã
+   * đăng nhập) - dẫn tới các kinh mình là dịch giả.
+   */
+  kinhDaDich?: string;
   /** Đường dẫn khu quản trị, chưa có tiền tố ngôn ngữ, ví dụ "/admin/library". */
   themHref: string;
   themNhan: string;
@@ -48,8 +54,12 @@ export function ListAdminBar({
   const duocThem = quyen.includes(quyenThem);
   const duocDoiKieu = !!kieuHienThi && dangSua && quyen.includes("system.settings");
   const cuaToi =
-    !!nhanCuaToi && !!nguoiDungId && (quyen.includes("content.draft") || quyen.includes("library.write") || quyen.includes("library.manage"));
-  if (!duocThem && !duocDoiKieu && !cuaToi) return null;
+    !kinhDaDich &&
+    !!nhanCuaToi &&
+    !!nguoiDungId &&
+    (quyen.includes("content.draft") || quyen.includes("library.write") || quyen.includes("library.manage"));
+  const daDich = !!kinhDaDich && !!nguoiDungId;
+  if (!duocThem && !duocDoiKieu && !cuaToi && !daDich) return null;
 
   function doiKieu(kieu: "card" | "list") {
     if (kieu === kieuHienThi) return;
@@ -72,6 +82,13 @@ export function ListAdminBar({
         <Button size="sm" variant="outline" asChild>
           <Link href={localePath(locale, "/tai-khoan/bai-viet")}>
             <PenLine aria-hidden /> {nhanCuaToi}
+          </Link>
+        </Button>
+      ) : null}
+      {daDich ? (
+        <Button size="sm" variant="outline" asChild>
+          <Link href={`${localePath(locale, "/kinh-sach/da-dich")}?nguoi=${encodeURIComponent(nguoiDungId ?? "")}`}>
+            <Languages aria-hidden /> {kinhDaDich}
           </Link>
         </Button>
       ) : null}

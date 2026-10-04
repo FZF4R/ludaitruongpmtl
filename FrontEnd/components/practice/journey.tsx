@@ -102,7 +102,8 @@ export function Journey({ nhan }: { nhan: NhanTuTap }) {
         })}
       </div>
 
-      <Card className="flex flex-col gap-4 p-5">
+      {/* Màn hình rộng: cao ít nhất bằng khung lịch bên trái (--lich-cao do JourneyCalendar đo); cột biểu đồ giãn theo. */}
+      <Card className="flex flex-col gap-4 p-5 lg:min-h-[var(--lich-cao,0px)]">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="mr-auto font-serif text-lg font-bold text-ink">{j.chart}</h2>
           {LOAI.map(({ type }) => (
@@ -111,7 +112,7 @@ export function Journey({ nhan }: { nhan: NhanTuTap }) {
             </Button>
           ))}
         </div>
-        <div className="flex h-44 items-end gap-[3px]" role="img" aria-label={`${j.chart} — ${j.types[loaiChon]}`}>
+        <div className="flex min-h-44 flex-1 items-end gap-[3px]" role="img" aria-label={`${j.chart} — ${j.types[loaiChon]}`}>
           {tk.days.map((d, i) => {
             const v = giaTriNgay[i];
             return (

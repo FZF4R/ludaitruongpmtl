@@ -29,7 +29,7 @@ import { localePath } from "@/lib/i18n";
 import { layBoCauHinh, luuBoCauHinh, xoaBoCauHinh, type AmThanh, type BoCauHinh, type LoaiAmThanh } from "@/lib/practice";
 import { cn } from "@/lib/utils";
 
-const THOI_LUONG = [5, 10, 20, 30, 45];
+const THOI_LUONG = [5, 15, 30, 60];
 const NHAC_GIUA = [0, 5, 10, 15];
 const LOAI_CHUOI = [108, 54, 27, 21];
 const BPM_TOI_DA = 60000 / MO_TOI_THIEU_MS;
@@ -56,7 +56,7 @@ type CauHinhThien = {
 };
 
 const MAC_DINH: CauHinhThien = {
-  phut: 10,
+  phut: 15,
   nhacGiua: 0,
   chuongId: "auto",
   nenId: "auto",
@@ -252,7 +252,28 @@ export function MeditationTimer({ nhan }: { nhan: NhanTuTap }) {
       <AmNen src={nen.amThanh?.src ?? null} chay={chay} amLuong={cfg.amLuong} />
       <AmNen src={kinh.amThanh?.src ?? null} chay={chay} amLuong={cfg.amLuong} lap={false} />
 
-      <KhoiCauHinh nhan={nhan} cfg={cfg} onApDung={(c) => setCfgLuu(chuanHoa(c))} khoa={khoaChon} />
+      <KhoiCauHinh
+        nhan={nhan}
+        cfg={cfg}
+        onApDung={(c) => setCfgLuu(chuanHoa(c))}
+        khoa={khoaChon}
+        tomTat={[
+          [m.duration, dien(m.minutes, { n: cfg.phut })],
+          [m.bell, chuong.amThanh?.title ?? nhan.soundOff],
+          [m.interval, cfg.nhacGiua ? dien(m.intervalEvery, { n: cfg.nhacGiua }) : m.intervalNone],
+          [nhan.medExtra.music, nen.amThanh?.title ?? nhan.soundOff],
+          [nhan.medExtra.sutra, kinh.amThanh?.title ?? nhan.medExtra.none],
+          [m.volume, `${Math.round(cfg.amLuong * 100)}%`],
+          [
+            nhan.medExtra.mo,
+            cfg.moBat ? `${mo.amThanh?.title ?? "—"} · ${dien(nhan.woodenFish.bpm, { n: cfg.moBpm })}` : nhan.presets.off,
+          ],
+          [
+            nhan.medExtra.mala,
+            cfg.chuoiBat ? `${dien(nhan.mala.beadsOf, { n: cfg.soHat })} · ${tiengHat.amThanh?.title ?? nhan.soundOff}` : nhan.presets.off,
+          ],
+        ]}
+      />
 
       <Card className="grid gap-6 p-5 md:grid-cols-[minmax(0,1fr)_21rem]">
         <div className="flex flex-col items-center justify-center gap-5 py-4">
@@ -510,11 +531,14 @@ function KhoiCauHinh({
   cfg,
   onApDung,
   khoa,
+  tomTat,
 }: {
   nhan: NhanTuTap;
   cfg: CauHinhThien;
   onApDung: (c: Record<string, unknown>) => void;
   khoa: boolean;
+  /** Các dòng [nhãn, giá trị] tóm tắt cấu hình hiện tại - hiện trong popup lưu. */
+  tomTat: [string, string][];
 }) {
   const p = nhan.presets;
   const locale = useLocaleHienTai();
@@ -550,16 +574,19 @@ function KhoiCauHinh({
     luuBoCauHinh({ id: b.id, used: true }, locale).catch(() => {});
   }
 
-  async function luuMoi() {
-    const ten = window.prompt(p.namePrompt, "");
-    if (!ten?.trim()) return;
+  // Popup "Lưu cấu hình": lưu thành bộ mới (đặt tên) hoặc ghi đè bộ đang dùng.
+  const [moPopup, setMoPopup] = React.useState(false);
+
+  async function luuMoi(ten: string) {
     try {
       const moi = await luuBoCauHinh({ name: ten.trim(), config: cfg }, locale);
       setDs((cu) => [...cu, moi]);
       setDangDung(moi.id);
       setLoi("");
+      return true;
     } catch (err) {
       setLoi(err instanceof Error && "thongDiep" in err ? String((err as { thongDiep: string }).thongDiep) : nhan.saveError);
+      return false;
     }
   }
 
@@ -567,8 +594,11 @@ function KhoiCauHinh({
     try {
       const moi = await luuBoCauHinh({ id: b.id, name: b.name, config: cfg }, locale);
       setDs((cu) => cu.map((x) => (x.id === b.id ? moi : x)));
+      setLoi("");
+      return true;
     } catch {
       setLoi(nhan.saveError);
+      return false;
     }
   }
 
@@ -591,12 +621,7 @@ function KhoiCauHinh({
           <p className="text-xs text-muted">{p.hint}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {boHienTai ? (
-            <Button size="sm" variant="outline" disabled={khoa} onClick={() => capNhat(boHienTai)}>
-              <Save aria-hidden /> {dien(p.update, { name: boHienTai.name })}
-            </Button>
-          ) : null}
-          <Button size="sm" disabled={khoa} onClick={luuMoi}>
+          <Button size="sm" disabled={khoa} onClick={() => setMoPopup(true)}>
             <Save aria-hidden /> {p.save}
           </Button>
         </div>
@@ -633,11 +658,129 @@ function KhoiCauHinh({
         </ul>
       )}
       {boHienTai ? <p className="text-xs text-accent">{dien(p.using, { name: boHienTai.name })}</p> : null}
+      {moPopup ? (
+        <PopupLuuCauHinh
+          nhan={nhan}
+          tomTat={tomTat}
+          boHienTai={boHienTai ?? null}
+          onDong={() => setMoPopup(false)}
+          onLuuMoi={luuMoi}
+          onCapNhat={() => (boHienTai ? capNhat(boHienTai) : Promise.resolve(false))}
+        />
+      ) : null}
       {loi ? (
         <p role="alert" className="text-sm text-lacquer">
           {loi}
         </p>
       ) : null}
     </Card>
+  );
+}
+
+/**
+ * Popup lưu cấu hình thiền: tóm tắt cấu hình hiện tại; chọn "Lưu thành bộ
+ * mới" (đặt tên) hoặc "Cập nhật “bộ đang dùng”". Esc / bấm nền để đóng.
+ */
+function PopupLuuCauHinh({
+  nhan,
+  tomTat,
+  boHienTai,
+  onDong,
+  onLuuMoi,
+  onCapNhat,
+}: {
+  nhan: NhanTuTap;
+  tomTat: [string, string][];
+  boHienTai: BoCauHinh | null;
+  onDong: () => void;
+  onLuuMoi: (ten: string) => Promise<boolean>;
+  onCapNhat: () => Promise<boolean>;
+}) {
+  const p = nhan.presets;
+  const [cach, setCach] = React.useState<"moi" | "capNhat">(boHienTai ? "capNhat" : "moi");
+  const [ten, setTen] = React.useState("");
+  const [dang, setDang] = React.useState(false);
+  const oTen = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    const nghe = (e: KeyboardEvent) => e.key === "Escape" && onDong();
+    window.addEventListener("keydown", nghe);
+    return () => window.removeEventListener("keydown", nghe);
+  }, [onDong]);
+  React.useEffect(() => {
+    if (cach === "moi") oTen.current?.focus();
+  }, [cach]);
+
+  async function luu(e: React.FormEvent) {
+    e.preventDefault();
+    if (cach === "moi" && !ten.trim()) return oTen.current?.focus();
+    setDang(true);
+    const ok = cach === "moi" ? await onLuuMoi(ten) : await onCapNhat();
+    setDang(false);
+    if (ok) onDong();
+  }
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" onClick={onDong}>
+      <form
+        role="dialog"
+        aria-modal
+        aria-label={p.popupTitle}
+        onSubmit={luu}
+        onClick={(e) => e.stopPropagation()}
+        className="flex max-h-[90dvh] w-full max-w-md flex-col gap-4 overflow-y-auto rounded-card border border-line bg-surface p-5 shadow-card-lift"
+      >
+        <h3 className="flex items-center gap-2 font-serif text-lg font-bold text-ink">
+          <Save className="size-4 text-accent" aria-hidden /> {p.popupTitle}
+        </h3>
+
+        <div className="flex flex-col gap-1.5 rounded-md bg-surface-2 p-3">
+          <span className="text-xs font-semibold uppercase tracking-wide text-muted">{p.summary}</span>
+          <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 text-sm">
+            {tomTat.map(([k, v]) => (
+              <React.Fragment key={k}>
+                <dt className="text-muted">{k}</dt>
+                <dd className="truncate font-medium text-ink" title={v}>
+                  {v}
+                </dd>
+              </React.Fragment>
+            ))}
+          </dl>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          {boHienTai ? (
+            <label className="flex cursor-pointer items-center gap-2 text-sm">
+              <input type="radio" name="cach-luu" checked={cach === "capNhat"} onChange={() => setCach("capNhat")} className="accent-accent" />
+              {dien(p.update, { name: boHienTai.name })}
+            </label>
+          ) : null}
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
+            <input type="radio" name="cach-luu" checked={cach === "moi"} onChange={() => setCach("moi")} className="accent-accent" />
+            {p.saveNew}
+          </label>
+          {cach === "moi" ? (
+            <input
+              ref={oTen}
+              value={ten}
+              onChange={(e) => setTen(e.target.value)}
+              maxLength={60}
+              placeholder={p.namePrompt}
+              aria-label={p.name}
+              className="ml-6 h-9 rounded-md border border-line bg-surface px-2.5 text-sm text-ink focus:border-accent focus:outline-none"
+            />
+          ) : null}
+        </div>
+
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="ghost" size="sm" onClick={onDong}>
+            {p.cancel}
+          </Button>
+          <Button type="submit" size="sm" disabled={dang || (cach === "moi" && !ten.trim())}>
+            <Save aria-hidden /> {p.confirm}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }

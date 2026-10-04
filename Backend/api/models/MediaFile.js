@@ -36,6 +36,11 @@ module.exports = {
         name: {
             type: 'string',
             defaultsTo: '',
+        },
+        purpose: {
+            type: 'string',
+            defaultsTo: 'content',
+            description: 'content = ảnh / âm thanh trong bài; practice = nhạc riêng của người dùng cho công cụ tu tập (âm nền cầu nguyện)'
         }
     },
 

@@ -19,24 +19,159 @@ import {
   useNhipTuDong,
   usePhien,
   usePhimCach,
+  usePhimTat,
+  useLocaleHienTai,
   type NhanTuTap,
+  type Phien,
 } from "@/components/practice/common";
+import Link from "next/link";
+import { Check } from "lucide-react";
+import { useCheDoSua } from "@/components/layout/inline-edit";
+import { LoiApi } from "@/lib/auth";
+import { localePath } from "@/lib/i18n";
+import { ghiNhatKy, type LoaiNhatKy } from "@/lib/practice";
 
 /** Khoảng tối thiểu giữa hai lần: mõ 0,4 giây (tối đa 150 nhịp/phút), hạt 0,6 giây. Máy chủ kiểm lại theo phiên. */
 export const MO_TOI_THIEU_MS = 400;
 export const HAT_TOI_THIEU_MS = 600;
-const BPM_TOI_DA = 60000 / MO_TOI_THIEU_MS;
+/** Tự gõ theo nhịp: tối đa 120 nhịp/phút (gõ tay vẫn được tới 0,4 giây/tiếng). */
+const BPM_TOI_DA = 120;
 import { cn } from "@/lib/utils";
 
-/** Trang "Gõ mõ / Chuỗi hạt": mõ ảo bên trái, chuỗi hạt bên phải, dùng chung bộ âm thanh mục go-mo. */
+/** Số liệu một công cụ gửi lên khung cha để lưu chung (trang Gõ mõ / Chuỗi hạt). */
+type MucLuu = { type: LoaiNhatKy; amount: number; note?: string; phien: Phien; lamLai: () => void };
+
+/**
+ * Trang "Gõ mõ / Chuỗi hạt": mõ ảo bên trái, chuỗi hạt bên phải (hai khung cao
+ * bằng nhau, nút "Làm lại" sát đáy mỗi khung) và dải trạng thái TỰ LƯU bên dưới
+ * (ngừng gõ / lần hạt 3 giây là lưu vào nhật ký).
+ */
 export function WoodenFishMala({ nhan }: { nhan: NhanTuTap }) {
   const { ds } = useDsAmThanh("go-mo");
   const am = useAmThanhNgan();
+  const [mo, setMo] = React.useState<MucLuu | null>(null);
+  const [hat, setHat] = React.useState<MucLuu | null>(null);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <GoMo nhan={nhan} ds={ds} am={am} />
-      <ChuoiHat nhan={nhan} ds={ds} am={am} />
+    <div className="flex flex-col gap-4">
+      <div className="grid gap-6 lg:grid-cols-2">
+        <GoMo nhan={nhan} ds={ds} am={am} luuChung={setMo} />
+        <ChuoiHat nhan={nhan} ds={ds} am={am} luuChung={setHat} />
+      </div>
+      <TuDongLuu nhan={nhan} muc={[mo, hat].filter((x): x is MucLuu => !!x)} />
+    </div>
+  );
+}
+
+/** Ngừng gõ / lần hạt quá chừng này thì tự lưu phần mới vào nhật ký. */
+const TU_LUU_SAU_MS = 3000;
+
+/**
+ * Tự lưu vào nhật ký: mỗi khi một công cụ NGỪNG quá 3 giây (không gõ mõ / lần
+ * hạt thêm), lưu phần tăng thêm kể từ lần lưu trước - bộ đếm trên màn hình vẫn
+ * giữ nguyên để đếm tiếp. Mỗi lần lưu dùng phiên riêng do máy chủ mở (lần chạm
+ * kế tiếp mở phiên mới), nên máy chủ vẫn hạ được số liệu vượt thời gian thật.
+ * Ẩn tab / rời trang thì lưu ngay phần còn lại. Chưa đăng nhập: chỉ nhắc đăng nhập.
+ */
+function TuDongLuu({ nhan, muc }: { nhan: NhanTuTap; muc: MucLuu[] }) {
+  const locale = useLocaleHienTai();
+  const { nguoiDungId, daBiet } = useCheDoSua();
+  // Số đã lưu của từng công cụ (mốc để tính phần tăng thêm) và tổng đã lưu trong lần mở trang này.
+  const daLuu = React.useRef<Record<string, number>>({});
+  const [tongDaLuu, setTongDaLuu] = React.useState<Record<string, number>>({});
+  const [dangLuu, setDangLuu] = React.useState(false);
+  const [loi, setLoi] = React.useState("");
+  const mucRef = React.useRef(muc);
+  mucRef.current = muc;
+
+  const luu = React.useCallback(
+    async (m: MucLuu) => {
+      if (!nguoiDungId) return;
+      const moc = daLuu.current[m.type] ?? 0;
+      const them = m.amount - moc;
+      if (them <= 0) return;
+      daLuu.current[m.type] = m.amount; // giữ chỗ trước: tránh lưu trùng khi hai lượt chạy gần nhau
+      setDangLuu(true);
+      try {
+        const sessionId = await m.phien.lay();
+        m.phien.xong();
+        const kq = await ghiNhatKy({ type: m.type, amount: them, note: m.note, sessionId }, locale);
+        setTongDaLuu((cu) => ({ ...cu, [m.type]: (cu[m.type] ?? 0) + kq.amount }));
+        setLoi("");
+      } catch (err) {
+        daLuu.current[m.type] = moc; // lưu hỏng: lần sau thử lại phần này
+        m.phien.xong();
+        setLoi((err instanceof LoiApi && err.thongDiep) || nhan.saveError);
+      } finally {
+        setDangLuu(false);
+      }
+    },
+    [nguoiDungId, locale, nhan.saveError],
+  );
+
+  // Hẹn giờ 3 giây cho từng công cụ mỗi khi số đếm đổi; đếm tiếp thì hẹn lại.
+  const mo = muc.find((m) => m.type === "go-mo");
+  const hat = muc.find((m) => m.type === "chuoi-hat");
+  for (const m of [mo, hat]) {
+    // Làm lại (số đếm về thấp hơn mốc): mốc theo về số mới.
+    if (m && m.amount < (daLuu.current[m.type] ?? 0)) daLuu.current[m.type] = m.amount;
+  }
+  React.useEffect(() => {
+    if (!mo || !nguoiDungId) return;
+    const t = window.setTimeout(() => void luu(mo), TU_LUU_SAU_MS);
+    return () => window.clearTimeout(t);
+  }, [mo?.amount, nguoiDungId]); // eslint-disable-line react-hooks/exhaustive-deps
+  React.useEffect(() => {
+    if (!hat || !nguoiDungId) return;
+    const t = window.setTimeout(() => void luu(hat), TU_LUU_SAU_MS);
+    return () => window.clearTimeout(t);
+  }, [hat?.amount, nguoiDungId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Ẩn tab / chuyển trang: lưu ngay phần chưa lưu.
+  React.useEffect(() => {
+    const xa = () => {
+      if (document.visibilityState === "hidden") for (const m of mucRef.current) void luu(m);
+    };
+    document.addEventListener("visibilitychange", xa);
+    return () => {
+      document.removeEventListener("visibilitychange", xa);
+      for (const m of mucRef.current) void luu(m);
+    };
+  }, [luu]);
+
+  if (!daBiet) return null;
+
+  const dong = [
+    tongDaLuu["go-mo"] ? `${nhan.woodenFish.title}: ${dien(nhan.woodenFish.strikes, { n: tongDaLuu["go-mo"] })}` : "",
+    tongDaLuu["chuoi-hat"] ? `${nhan.mala.title}: ${dien(nhan.mala.total, { n: tongDaLuu["chuoi-hat"] })}` : "",
+  ].filter(Boolean);
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 rounded-card border border-line bg-surface px-4 py-3 text-sm">
+      {!nguoiDungId ? (
+        <Button variant="outline" size="sm" asChild>
+          <Link href={localePath(locale, "/dang-nhap")}>{nhan.signInToSave}</Link>
+        </Button>
+      ) : (
+        <>
+          <span className="text-muted">{dangLuu ? nhan.autoSaving : nhan.autoSaveHint}</span>
+          {dong.length ? (
+            <span className="flex items-center gap-1.5 text-accent">
+              <Check className="size-4" aria-hidden /> {nhan.saved}: {dong.join(" · ")}
+            </span>
+          ) : null}
+          {dong.length ? (
+            <Link href={localePath(locale, "/qua-trinh-tu-tap")} className="text-xs text-muted underline-offset-2 hover:text-accent hover:underline">
+              {nhan.viewJourney}
+            </Link>
+          ) : null}
+        </>
+      )}
+      {loi ? (
+        <span role="alert" className="w-full text-center text-xs text-lacquer">
+          {loi}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -54,7 +189,18 @@ function NhacCham({ hien, nhan }: { hien: boolean; nhan: NhanTuTap }) {
 }
 
 /** Mõ ảo - dùng ở trang Gõ mõ / Chuỗi hạt và trong bộ đếm của trang Tụng kinh. Âm thanh lấy ở mục go-mo. */
-export function GoMo({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) {
+export function GoMo({
+  nhan,
+  ds,
+  am,
+  luuChung,
+}: {
+  nhan: NhanTuTap;
+  ds: Ds;
+  am: Am;
+  /** Có thì không hiện nút lưu riêng - báo số liệu lên để khung cha lưu chung. */
+  luuChung?: (m: MucLuu) => void;
+}) {
   const mo = useAmThanhDaChon("go-mo", "mo", ds);
   const [dem, setDem] = React.useState(0);
   const [tuGo, setTuGo] = React.useState(false);
@@ -80,10 +226,13 @@ export function GoMo({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) {
   }, [mo.amThanh, am, nhip, phien]);
 
   usePhimCach(() => go());
+  React.useEffect(() => {
+    luuChung?.({ type: "go-mo", amount: dem, phien, lamLai: () => setDem(0) });
+  }, [dem, phien, luuChung]);
   useNhipTuDong(tuGo, bpm, () => go());
 
   return (
-    <Card className="flex flex-col gap-5 p-5">
+    <Card className="flex h-full flex-col gap-5 p-5">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="font-serif text-xl font-bold text-ink">{nhan.woodenFish.title}</h2>
         <span className="text-2xl font-bold tabular-nums text-accent">{dien(nhan.woodenFish.strikes, { n: dem })}</span>
@@ -92,8 +241,9 @@ export function GoMo({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) {
       <button
         type="button"
         onClick={(e) => go(e)}
+        data-phim-tat
         aria-label={nhan.woodenFish.tapHint}
-        className="relative mx-auto grid aspect-square w-full max-w-[17rem] touch-manipulation select-none place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        className="relative mx-auto grid aspect-square w-full max-w-[16rem] touch-manipulation select-none place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       >
         <VongLan lan={dem} />
         <svg
@@ -147,8 +297,9 @@ export function GoMo({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
-        <NutLuuNhatKy nhan={nhan} type="go-mo" amount={dem} phien={phien} onDaLuu={() => setDem(0)} />
+      {/* mt-auto: hàng nút luôn sát đáy khung (hai khung cao bằng nhau). */}
+      <div className="mt-auto flex flex-wrap items-center gap-3 border-t border-line pt-4">
+        {luuChung ? null : <NutLuuNhatKy nhan={nhan} type="go-mo" amount={dem} phien={phien} onDaLuu={() => setDem(0)} />}
         <Button
           variant="ghost"
           size="sm"
@@ -169,7 +320,18 @@ export function GoMo({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) {
 const LOAI_CHUOI = [108, 54, 27, 21] as const;
 
 /** Chuỗi hạt - dùng ở trang Gõ mõ / Chuỗi hạt và trong bộ đếm của trang Tụng kinh. */
-export function ChuoiHat({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) {
+export function ChuoiHat({
+  nhan,
+  ds,
+  am,
+  luuChung,
+}: {
+  nhan: NhanTuTap;
+  ds: Ds;
+  am: Am;
+  /** Có thì không hiện nút lưu riêng - báo số liệu lên để khung cha lưu chung. */
+  luuChung?: (m: MucLuu) => void;
+}) {
   const [soHat, setSoHat] = useLuaChonNho<number>("chuoi-hat_so", 108);
   const chuong = useAmThanhDaChon("go-mo", "chuong", ds, "chuong-vong");
   const tiengHat = useAmThanhDaChon("go-mo", "hat", ds);
@@ -205,6 +367,23 @@ export function ChuoiHat({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) 
     phien.xong();
   }
 
+  // Máy tính: phím "+" để lần hạt (phím Cách dành cho mõ) - gõ mõ và lần chuỗi cùng lúc được.
+  usePhimTat("Plus", () => lanHat());
+
+  const tongHat = vong * soHat + hat;
+  React.useEffect(() => {
+    luuChung?.({
+      type: "chuoi-hat",
+      amount: tongHat,
+      note: dien(nhan.mala.beadsOf, { n: soHat }),
+      phien,
+      lamLai: () => {
+        setHat(0);
+        setVong(0);
+      },
+    });
+  }, [tongHat, soHat, phien, luuChung, nhan.mala.beadsOf]);
+
   const tong = vong * soHat + hat;
 
   // Toạ độ hạt trên vòng tròn: hạt mẫu (hạt lớn) ở trên cùng, đếm theo chiều kim đồng hồ.
@@ -217,7 +396,7 @@ export function ChuoiHat({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) 
   };
 
   return (
-    <Card className="flex flex-col gap-5 p-5">
+    <Card className="flex h-full flex-col gap-5 p-5">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="font-serif text-xl font-bold text-ink">{nhan.mala.title}</h2>
         <span className="text-2xl font-bold tabular-nums text-accent">{dien(nhan.mala.rounds, { n: vong })}</span>
@@ -226,8 +405,9 @@ export function ChuoiHat({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) 
       <button
         type="button"
         onClick={(e) => lanHat(e)}
+        data-phim-tat
         aria-label={nhan.mala.tap}
-        className="relative mx-auto grid aspect-square w-full max-w-[19rem] touch-manipulation select-none place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        className="relative mx-auto grid aspect-square w-full max-w-[16rem] touch-manipulation select-none place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       >
         <svg viewBox="0 0 300 300" className="size-full" aria-hidden>
           <circle cx={C} cy={C} r={R} fill="none" stroke="currentColor" strokeOpacity="0.15" strokeWidth="1.5" className="text-muted" />
@@ -305,18 +485,20 @@ export function ChuoiHat({ nhan, ds, am }: { nhan: NhanTuTap; ds: Ds; am: Am }) 
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
-        <NutLuuNhatKy
-          nhan={nhan}
-          type="chuoi-hat"
-          amount={tong}
-          note={dien(nhan.mala.beadsOf, { n: soHat })}
-          phien={phien}
-          onDaLuu={() => {
-            setHat(0);
-            setVong(0);
-          }}
-        />
+      <div className="mt-auto flex flex-wrap items-center gap-3 border-t border-line pt-4">
+        {luuChung ? null : (
+          <NutLuuNhatKy
+            nhan={nhan}
+            type="chuoi-hat"
+            amount={tong}
+            note={dien(nhan.mala.beadsOf, { n: soHat })}
+            phien={phien}
+            onDaLuu={() => {
+              setHat(0);
+              setVong(0);
+            }}
+          />
+        )}
         <Button variant="ghost" size="sm" onClick={lamLai} disabled={tong === 0} className="ml-auto">
           <RotateCcw className="size-4" aria-hidden /> {nhan.reset}
         </Button>

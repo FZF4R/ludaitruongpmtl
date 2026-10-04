@@ -41,10 +41,15 @@ const nextConfig: NextConfig = {
       ["go-mo", "go-mo-chuoi-hat"],
       ["lan-chuoi-hat", "go-mo-chuoi-hat"],
     ];
-    return doiTen.flatMap(([cu, moi]) => [
+    return [
+      // Trang /tim-kiem đã bỏ: link cũ chuyển sang tìm trong Bài viết (giữ ?q=).
+      { source: "/tim-kiem", destination: "/bai-viet/tim-kiem", permanent: true },
+      { source: "/:lang(en|zh|ko)/tim-kiem", destination: "/:lang/bai-viet/tim-kiem", permanent: true },
+      ...doiTen.flatMap(([cu, moi]) => [
       { source: `/tu-tap/${cu}`, destination: `/tu-tap/${moi}`, permanent: true },
       { source: `/:lang(en|zh|ko)/tu-tap/${cu}`, destination: `/:lang/tu-tap/${moi}`, permanent: true },
-    ]);
+      ]),
+    ];
   },
   async headers() {
     return [

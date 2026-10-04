@@ -79,9 +79,25 @@ export function JourneyCalendar({
     return kq;
   }, [ngay, nhanCongDuc, nhanTuTap, j]);
 
+  // Đo chiều cao khung lịch, đặt vào biến CSS --lich-cao trên <html>: khung
+  // "30 ngày gần đây" (components/practice/journey.tsx) lấy làm chiều cao tối thiểu.
+  const khung = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const el = khung.current;
+    if (!el) return;
+    const goc = document.documentElement;
+    const quan = new ResizeObserver(() => goc.style.setProperty("--lich-cao", `${Math.round(el.getBoundingClientRect().height)}px`));
+    quan.observe(el);
+    return () => {
+      quan.disconnect();
+      goc.style.removeProperty("--lich-cao");
+    };
+  }, [lich]);
+
   if (!lich) return <div className="aspect-square w-full animate-pulse rounded-card bg-surface-2" />;
 
   return (
+    <div ref={khung}>
     <MonthCalendar
       thang={lich.thang}
       homNay={lich.homNay}
@@ -91,5 +107,6 @@ export function JourneyCalendar({
       ghiChu={ghiChu}
       quanTriTaiCho={false}
     />
+    </div>
   );
 }

@@ -25,6 +25,11 @@ const PHIEN_SONG_MS = 12 * 3600 * 1000
 const DUNG_SAI_LAN = 2
 const DUNG_SAI_GIAY = 10
 const CAU_HINH_TOI_DA = 30
+const LOAI_CAU_HINH = ['thien', 'cau-an']
+/** Nhạc riêng của mỗi tài khoản: tối đa 10 tệp, mỗi tệp 10 MB. */
+const NHAC_RIENG_TOI_DA = 10
+const NHAC_RIENG_BYTE = 10 * 1024 * 1024
+const dinhDangNhac = f => ({ id: String(f.id || f._id), name: f.name || '', url: `/v1/public/media/${f.id || f._id}/file`, sizeBytes: f.sizeBytes || 0 })
 const BYTE_CAU_HINH = 8 * 1024
 
 const bangPhien = () => PracticeSession.getDatastore().manager.collection(PracticeSession.tableName)
@@ -66,7 +71,8 @@ module.exports = {
         exits: sails.config.responseType,
         fn: async function (inputs, exits) {
             try {
-                let ds = await PracticePreset.find({ where: { userId: String(inputs.User.id), kind: 'thien' }, sort: 'createdAt ASC' })
+                let kind = LOAI_CAU_HINH.includes(inputs.kind) ? inputs.kind : 'thien'
+                let ds = await PracticePreset.find({ where: { userId: String(inputs.User.id), kind }, sort: 'createdAt ASC' })
                 exits.successRequest({ messageNode: 'GlobalNotifications', message: 'success', data: ds.map(dinhDangCauHinh) });
             } catch (err) {
                 sails.checkErrorOutput(err, exits);
@@ -95,10 +101,64 @@ module.exports = {
                     kq = await PracticePreset.updateOne({ id: String(inputs.id), userId }).set({ name: ten, config: cauHinh })
                     if (!kq) return baoLoi(exits, 'practiceLogInvalid')
                 } else {
-                    if (await PracticePreset.count({ userId, kind: 'thien' }) >= CAU_HINH_TOI_DA) return baoLoi(exits, 'practicePresetTooMany')
-                    kq = await PracticePreset.create({ userId, kind: 'thien', name: ten, config: cauHinh, lastUsedAt: Date.now() }).fetch()
+                    let kind = LOAI_CAU_HINH.includes(inputs.kind) ? inputs.kind : 'thien'
+                    if (await PracticePreset.count({ userId, kind }) >= CAU_HINH_TOI_DA) return baoLoi(exits, 'practicePresetTooMany')
+                    kq = await PracticePreset.create({ userId, kind, name: ten, config: cauHinh, lastUsedAt: Date.now() }).fetch()
                 }
                 exits.successRequest({ messageNode: 'GlobalNotifications', message: 'success', data: dinhDangCauHinh(kq) });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    /** Nhạc riêng (âm nền cầu nguyện...) của chính mình. */
+    listMyAudio: ({
+        inputs: sails.config.inputs.Users.Practice.listMyAudio,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let ds = await MediaFile.getDatastore().manager.collection(MediaFile.tableName)
+                    .find({ userId: String(inputs.User.id), purpose: 'practice' }, { projection: { data: 0 } })
+                    .sort({ createdAt: 1 }).toArray()
+                exits.successRequest({ messageNode: 'GlobalNotifications', message: 'success', data: ds.map(dinhDangNhac) });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    /** Tải một tệp nhạc riêng lên (data:audio/...;base64). Chỉ cần đăng nhập - không cần quyền viết bài. */
+    uploadMyAudio: ({
+        inputs: sails.config.inputs.Users.Practice.uploadMyAudio,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let khop = String(inputs.file || '').match(/^data:(audio\/(?:mpeg|mp3|wav|x-wav|wave|ogg|mp4|x-m4a|aac|webm));base64,([A-Za-z0-9+/=]+)$/i)
+                if (!khop) return baoLoi(exits, 'practiceAudioInvalid')
+                let size = Math.floor(khop[2].length * 3 / 4)
+                if (size > NHAC_RIENG_BYTE) return baoLoi(exits, 'practiceAudioInvalid')
+                let userId = String(inputs.User.id)
+                if (await MediaFile.count({ userId, purpose: 'practice' }) >= NHAC_RIENG_TOI_DA) return baoLoi(exits, 'practiceAudioTooMany')
+                let moi = await MediaFile.create({
+                    userId, kind: 'audio', mime: khop[1].toLowerCase(), data: khop[2], sizeBytes: size,
+                    name: String(inputs.name || '').replace(/\.[^.]+$/, '').trim().slice(0, 120) || 'Nhạc của tôi',
+                    purpose: 'practice'
+                }).fetch()
+                exits.successRequest({ messageNode: 'GlobalNotifications', message: 'success', data: dinhDangNhac(moi) });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    deleteMyAudio: ({
+        inputs: sails.config.inputs.Users.Practice.deleteMyAudio,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                await MediaFile.destroyOne({ id: String(inputs.id), userId: String(inputs.User.id), purpose: 'practice' })
+                exits.successRequest({ messageNode: 'GlobalNotifications', message: 'success', data: { id: String(inputs.id) } });
             } catch (err) {
                 sails.checkErrorOutput(err, exits);
             }
