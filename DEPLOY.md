@@ -13,7 +13,7 @@ FrontEnd và Backend là **hai domain khác nhau** (không chung path như mẫu
 nên Backend phải bật CORS cho đúng domain FrontEnd — xem `FRONTEND_URL` ở
 bước 2.
 
-Backend (Sails, cổng nội bộ 1337) và FrontEnd (Next.js, cổng nội bộ 3000)
+Backend (Sails, cổng nội bộ 1337) và FrontEnd (Next.js, cổng nội bộ 3009)
 chạy như hai tiến trình Node riêng, quản lý bằng PM2; Nginx đứng trước mỗi
 domain, route sang đúng cổng — xem `deploy/ludaitruongpmtl.com.conf`.
 
@@ -90,12 +90,12 @@ sudo dnf install -y nginx epel-release
 sudo dnf install -y certbot python3-certbot-nginx
 sudo systemctl enable --now nginx
 
-# Mở cổng 80/443 trên firewalld (KHÔNG mở 1337/3000 - để nội bộ, Nginx proxy)
+# Mở cổng 80/443 trên firewalld (KHÔNG mở 1337/3009 - để nội bộ, Nginx proxy)
 sudo firewall-cmd --permanent --add-service=http --add-service=https
 sudo firewall-cmd --reload
 
 # QUAN TRỌNG trên CentOS/RHEL: SELinux mặc định CHẶN Nginx kết nối ra cổng
-# Node nội bộ (1337/3000) dù firewalld đã mở - thiếu dòng này thì mọi request
+# Node nội bộ (1337/3009) dù firewalld đã mở - thiếu dòng này thì mọi request
 # qua Nginx đều trả 502 Bad Gateway.
 sudo setsebool -P httpd_can_network_connect 1
 
