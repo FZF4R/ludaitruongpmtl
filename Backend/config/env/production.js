@@ -139,9 +139,10 @@ module.exports = {
     /***************************************************************************
     *                                                                          *
     * Domain FrontEnd được phép gọi CORS sang API này. Nếu FrontEnd và         *
-    * Backend cùng một domain (đi qua Nginx reverse proxy, route /v1/* sang    *
-    * backend — xem deploy/nginx.conf.example) thì KHÔNG cần CORS, danh sách   *
-    * này để trống cũng không sao.                                             *
+    * Backend cùng một domain (đi qua Nginx reverse proxy route theo path)     *
+    * thì KHÔNG cần CORS, danh sách này để trống cũng không sao. Mẫu hiện có   *
+    * ở deploy/ludaitruongpmtl.com.conf lại tách FrontEnd/Backend thành 2      *
+    * domain riêng nên CORS là bắt buộc — xem FRONTEND_URL bên dưới.           *
     *                                                                          *
     * Set FRONTEND_URL trong .env nếu FrontEnd chạy ở domain/subdomain khác.   *
     * Nhiều domain thì phân tách bằng dấu phẩy.                                 *
@@ -310,10 +311,10 @@ module.exports = {
 
     /***************************************************************************
     *                                                                          *
-    * App chạy sau Nginx reverse proxy (xem deploy/nginx.conf.example) nên     *
-    * phải trustProxy = true, nếu không req.ip sẽ luôn là 127.0.0.1 — sai cho  *
-    * rate-limit, log kiểm duyệt, chặn IP (api/utils/rateLimiterRedis.js và    *
-    * các Controller đọc req.ip).                                              *
+    * App chạy sau Nginx reverse proxy (xem deploy/ludaitruongpmtl.com.conf)   *
+    * nên phải trustProxy = true, nếu không req.ip sẽ luôn là 127.0.0.1 — sai  *
+    * cho rate-limit, log kiểm duyệt, chặn IP (api/utils/rateLimiterRedis.js   *
+    * và các Controller đọc req.ip).                                           *
     *                                                                          *
     ***************************************************************************/
     trustProxy: true,

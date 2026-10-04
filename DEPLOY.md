@@ -15,7 +15,7 @@ bước 2.
 
 Backend (Sails, cổng nội bộ 1337) và FrontEnd (Next.js, cổng nội bộ 3000)
 chạy như hai tiến trình Node riêng, quản lý bằng PM2; Nginx đứng trước mỗi
-domain, route sang đúng cổng — xem `deploy/nginx.conf.example`.
+domain, route sang đúng cổng — xem `deploy/ludaitruongpmtl.com.conf`.
 
 ## 0. Kiểm tra trước (một lần)
 
@@ -100,7 +100,7 @@ sudo firewall-cmd --reload
 sudo setsebool -P httpd_can_network_connect 1
 
 # Copy cấu hình 2 domain (đã viết sẵn đúng domain thật, không cần sửa tên miền)
-sudo cp deploy/nginx.conf.example /etc/nginx/conf.d/ludaitruongpmtl.conf
+sudo cp deploy/ludaitruongpmtl.com.conf /etc/nginx/conf.d/ludaitruongpmtl.com.conf
 sudo nginx -t && sudo systemctl reload nginx
 
 # Cấp SSL cho cả 2 domain - certbot tự thêm "listen 443 ssl" vào từng server block
