@@ -5,7 +5,13 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/form";
 import { splitLocale } from "@/lib/i18n";
-import { LoiApi, dangKy, dangNhapMatKhau, soDienThoaiHopLe, type KetQuaDangNhap } from "@/lib/auth";
+import {
+  LoiApi,
+  dangKy,
+  dangNhapMatKhau,
+  soDienThoaiHopLe,
+  type KetQuaDangNhap,
+} from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 export type NhanMatKhau = {
@@ -100,7 +106,10 @@ export function PasswordLogin({
 
   return (
     <form onSubmit={gui} className="flex flex-col gap-4" noValidate>
-      <div role="tablist" className="grid grid-cols-2 rounded-lg border border-line p-1 text-sm">
+      <div
+        role="tablist"
+        className="grid grid-cols-2 rounded-lg border border-line p-1 text-sm"
+      >
         {(["dangNhap", "dangKy"] as const).map((k) => (
           <button
             key={k}
@@ -110,7 +119,9 @@ export function PasswordLogin({
             onClick={() => doiCheDo(k)}
             className={cn(
               "rounded-md px-3 py-1.5 font-medium transition-colors",
-              cheDo === k ? "bg-accent text-paper" : "text-muted hover:text-ink",
+              cheDo === k
+                ? "bg-accent text-paper"
+                : "text-muted hover:text-ink",
             )}
           >
             {k === "dangNhap" ? nhan.tabSignIn : nhan.tabRegister}
@@ -118,7 +129,12 @@ export function PasswordLogin({
         ))}
       </div>
 
-      <Field id="dn-username" label={nhan.username} hint={dangKyMoi ? nhan.usernameHint : undefined} required={dangKyMoi}>
+      <Field
+        id="dn-username"
+        label={nhan.username}
+        hint={dangKyMoi ? nhan.usernameHint : undefined}
+        required={dangKyMoi}
+      >
         {(p) => (
           <Input
             {...p}
@@ -132,21 +148,22 @@ export function PasswordLogin({
         )}
       </Field>
 
-      <Field id="dn-password" label={nhan.password} required={dangKyMoi}>
-        {(p) => (
-          <Input
-            {...p}
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete={dangKyMoi ? "new-password" : "current-password"}
-            maxLength={100}
-          />
-        )}
-      </Field>
+      {/* Tab Đăng ký: hai ô mật khẩu chung một hàng để form đủ thấp, nút gửi không trôi khỏi màn hình. */}
+      <div className={cn("grid gap-4", dangKyMoi && "sm:grid-cols-2")}>
+        <Field id="dn-password" label={nhan.password} required={dangKyMoi}>
+          {(p) => (
+            <Input
+              {...p}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete={dangKyMoi ? "new-password" : "current-password"}
+              maxLength={100}
+            />
+          )}
+        </Field>
 
-      {dangKyMoi ? (
-        <>
+        {dangKyMoi ? (
           <Field id="dn-password2" label={nhan.passwordConfirm} required>
             {(p) => (
               <Input
@@ -159,7 +176,17 @@ export function PasswordLogin({
               />
             )}
           </Field>
-          <Field id="dn-phone" label={nhan.phone} hint={nhan.phoneHint} required>
+        ) : null}
+      </div>
+
+      {dangKyMoi ? (
+        <>
+          <Field
+            id="dn-phone"
+            label={nhan.phone}
+            hint={nhan.phoneHint}
+            required
+          >
             {(p) => (
               <Input
                 {...p}
@@ -182,7 +209,11 @@ export function PasswordLogin({
       ) : null}
 
       <Button type="submit" size="lg" disabled={dangGui}>
-        {dangGui ? nhan.working : dangKyMoi ? nhan.submitRegister : nhan.submitSignIn}
+        {dangGui
+          ? nhan.working
+          : dangKyMoi
+            ? nhan.submitRegister
+            : nhan.submitSignIn}
       </Button>
     </form>
   );

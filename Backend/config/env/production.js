@@ -135,23 +135,8 @@ module.exports = {
   *                                                                          *
   ***************************************************************************/
   security: {
-
-    /***************************************************************************
-    *                                                                          *
-    * Domain FrontEnd được phép gọi CORS sang API này. Nếu FrontEnd và         *
-    * Backend cùng một domain (đi qua Nginx reverse proxy route theo path)     *
-    * thì KHÔNG cần CORS, danh sách này để trống cũng không sao. Mẫu hiện có   *
-    * ở deploy/ludaitruongpmtl.com.conf lại tách FrontEnd/Backend thành 2      *
-    * domain riêng nên CORS là bắt buộc — xem FRONTEND_URL bên dưới.           *
-    *                                                                          *
-    * Set FRONTEND_URL trong .env nếu FrontEnd chạy ở domain/subdomain khác.   *
-    * Nhiều domain thì phân tách bằng dấu phẩy.                                 *
-    *                                                                          *
-    ***************************************************************************/
-    cors: {
-      allowOrigins: (process.env.FRONTEND_URL || '').split(',').map(s => s.trim()).filter(Boolean),
-    },
-
+    // CORS cấu hình ở config/security.js (domain thật + FRONTEND_URL), dùng
+    // chung cho mọi môi trường - không ghi đè ở đây để khỏi có hai nguồn lệch nhau.
   },
 
 

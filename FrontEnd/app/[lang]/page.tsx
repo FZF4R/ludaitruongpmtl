@@ -120,7 +120,13 @@ export default async function HomePage() {
         định chữ trắng trên một lớp phủ tối, giống nhau ở cả chế độ sáng và tối
         — đây là chỗ hiếm hoi trong site không theo bảng màu, và là chủ ý.
       */}
-      <section className="relative isolate overflow-hidden border-b border-line">
+      {/*
+        Header (h-16 + viền 1px) và khối ảnh cộng lại vừa đúng một màn hình: dùng
+        svh (chiều cao nhỏ nhất của khung nhìn) để trên điện thoại thanh địa chỉ
+        hiện ra cũng không đẩy phần đáy ảnh xuống dưới mép. min-h chứ không h cố
+        định: màn hình quá thấp thì khối dài ra theo nội dung thay vì cắt chữ.
+      */}
+      <section className="relative isolate flex min-h-[calc(100svh-4rem-1px)] flex-col overflow-hidden border-b border-line">
         {/*
           Ảnh nền xoay vòng. Ảnh trang trí: alt rỗng + aria-hidden, mọi thông
           tin đã có trong chữ. Ảnh đầu được priority vì là LCP (xem HeroCarousel).
@@ -138,7 +144,7 @@ export default async function HomePage() {
           aria-hidden
         />
 
-        <Container className="flex flex-col gap-8 py-24 sm:py-32">
+        <Container className="flex flex-1 flex-col justify-center gap-8 py-12 sm:py-16">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/80">
             <CalendarDays className="size-3.5" aria-hidden />
             <TodayLunarBadge />
