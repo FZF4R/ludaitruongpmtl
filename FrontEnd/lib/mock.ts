@@ -353,7 +353,8 @@ export async function listSlugs(): Promise<SlugEntry[]> {
 export async function getSiteSettings(): Promise<SiteSettings> {
   return {
     title: "Sen Việt",
-    notify: "Trang đang chạy trên dữ liệu mẫu — đặt CONTENT_SOURCE=api để nối backend thật.",
+    // notify: "Trang đang chạy trên dữ liệu mẫu — đặt CONTENT_SOURCE=api để nối backend thật.",
+    notify: "Trang đang chạy trên dữ liệu mẫu.",
     supportfacebook: "",
     isMaintaning: false,
   };

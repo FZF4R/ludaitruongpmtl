@@ -14,6 +14,16 @@ import { localePath, splitLocale } from "@/lib/i18n";
  * Dùng `replace` chứ không `push`: bấm Quay lại sau khi đăng nhập xong mà rơi
  * về đúng màn hình đăng nhập thì rất khó hiểu.
  */
+/**
+ * `?next=` do RequireLogin gắn vào. Chỉ nhận đường dẫn nội bộ ("/..." nhưng
+ * không "//" hay "/\") để link đăng nhập không bị dùng chuyển người ta sang site lạ.
+ */
+function trangQuayLai(): string | null {
+  const tiep = new URLSearchParams(window.location.search).get("next");
+  if (!tiep || !tiep.startsWith("/") || tiep.startsWith("//") || tiep.startsWith("/\\")) return null;
+  return tiep;
+}
+
 export function LoginPanel({ nhan }: { nhan: NhanDangNhap }) {
   const router = useRouter();
   const { locale } = splitLocale(usePathname());
@@ -21,11 +31,19 @@ export function LoginPanel({ nhan }: { nhan: NhanDangNhap }) {
   return (
     <SocialLogin
       nhan={nhan}
-      onXong={(ketQua) =>
+      onXong={(ketQua) => {
+        const tiep = trangQuayLai();
+        if (tiep && !ketQua.isNewUser) {
+          // Tải lại cả trang chứ không router.replace: InlineEditProvider chỉ đọc
+          // hồ sơ một lần lúc tải trang, đi bằng router thì trang đích vẫn coi là
+          // chưa đăng nhập và RequireLogin đá ngược về đây.
+          window.location.replace(tiep);
+          return;
+        }
         router.replace(
           localePath(locale, ketQua.isNewUser ? "/hoan-thien-ho-so" : "/tai-khoan"),
-        )
-      }
+        );
+      }}
     />
   );
 }
