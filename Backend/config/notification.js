@@ -45,6 +45,18 @@ module.exports.notification = {
                 messageVNI: "Chọn danh mục thư viện"
             }
         },
+        contentImportEmpty: {
+            message: {
+                messageEN: "No posts to import",
+                messageVNI: "Không có bài nào để nhập"
+            }
+        },
+        contentImportTooMany: {
+            message: {
+                messageEN: "Too many posts in one request (max 50)",
+                messageVNI: "Mỗi lần gửi tối đa 50 bài"
+            }
+        },
         libraryKindAdminOnly: {
             message: {
                 messageEN: "Only administrators can post in this category",

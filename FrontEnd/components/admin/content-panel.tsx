@@ -34,6 +34,7 @@ import {
   type TrangThai,
 } from "@/lib/admin-api";
 import { contentTypeBase } from "@/lib/site";
+import { NhapXuatBai } from "@/components/admin/content-import";
 import { localePath } from "@/lib/i18n";
 
 /**
@@ -69,6 +70,7 @@ export function ContentPanel({
   tieuDe,
   moTa,
   coChuong = false,
+  coNhapXuat = false,
 }: {
   /** Danh sách type gửi cho API, phân tách bằng dấu phẩy. */
   loai: string;
@@ -78,6 +80,8 @@ export function ContentPanel({
   moTa: string;
   /** Kinh sách chia chương; bài viết thì không. */
   coChuong?: boolean;
+  /** Nút Xuất / Nhập Excel, JSON (components/admin/content-import) - chỉ trang Bài viết. */
+  coNhapXuat?: boolean;
 }) {
   const locale = useLocale();
   const quyen = useQuyen();
@@ -100,6 +104,7 @@ export function ContentPanel({
   const [dangTai, setDangTai] = React.useState(true);
   const [loi, setLoi] = React.useState("");
   const [ban, setBan] = React.useState(false);
+  const [thongBao, setThongBao] = React.useState("");
 
   /*
    * Bài đang soạn nằm trên URL (?sua=<id> hoặc ?sua=moi) chứ không trong state:
@@ -173,14 +178,34 @@ export function ContentPanel({
           <h1 className="font-serif text-2xl font-bold tracking-tight">{tieuDe}</h1>
           <p className="text-sm text-muted">{moTa}</p>
         </div>
-        {duocTao ? (
-          <Button onClick={() => setDangSoan("moi")}>
-            <Plus aria-hidden /> Thêm mới
-          </Button>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-2">
+          {coNhapXuat ? (
+            <NhapXuatBai
+              loai={loai}
+              locTrangThai={locTrangThai}
+              tuKhoa={daGui}
+              onLoi={setLoi}
+              onDaNhap={(n) => {
+                setThongBao(`Đã nhập ${n} bài. Bài nhập mặc định ở trạng thái Chưa duyệt - lọc "${nhanTrangThai.pending}" để duyệt.`);
+                nap();
+              }}
+            />
+          ) : null}
+          {duocTao ? (
+            <Button onClick={() => setDangSoan("moi")}>
+              <Plus aria-hidden /> Thêm mới
+            </Button>
+          ) : null}
+        </div>
       </div>
 
-      <HopLoi loi={loi} thuLai={nap} />
+      <HopLoi loi={loi} thuLai={loi.startsWith("Đã xuất") || loi.startsWith("Chỉ xuất") ? undefined : nap} />
+      {thongBao ? (
+        <Card className="flex items-center justify-between gap-3 border-accent/40 p-4">
+          <p role="status" className="text-sm text-accent">{thongBao}</p>
+          <Button variant="ghost" size="sm" onClick={() => setThongBao("")}>Đóng</Button>
+        </Card>
+      ) : null}
 
       {/* Tổng quan cả mục: số bài, tổng lượt xem, lượt xem và bình luận hôm nay. */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -1010,6 +1035,7 @@ const nhanTT = (tt: string) => nhanTrangThai[tt as TrangThai] ?? tt;
 /** Một dòng nhật ký -> câu đọc được. */
 function moTaThaoTac(nk: NhatKyBai): string {
   if (nk.action === "create") return "Tạo bài";
+  if (nk.action === "import") return `Nhập từ tệp (${nhanTT(nk.toStatus)})`;
   if (nk.action === "delete") return "Xoá bài";
   if (nk.action === "status") {
     if (nk.toStatus === "published") return "Duyệt đăng";

@@ -522,7 +522,7 @@ export type DauVetBai = {
 /** Một dòng nhật ký thao tác trên bài (ContentAuditLog). */
 export type NhatKyBai = {
   id: string;
-  action: "create" | "update" | "status" | "delete";
+  action: "create" | "update" | "status" | "delete" | "import";
   fromStatus: string;
   toStatus: string;
   changedFields: string[];
@@ -559,7 +559,7 @@ export type ThayDoiTruong = { field: string; before: unknown; after: unknown };
 export type BanSuaBai = {
   logId: string;
   contentId: string;
-  action: "create" | "update" | "delete";
+  action: "create" | "update" | "delete" | "import";
   changes: ThayDoiTruong[];
 };
 
@@ -672,6 +672,70 @@ export type ChuyenMuc = { id: string; slug: string; name: string; kind: string }
 
 export function layChuyenMuc(locale: Locale) {
   return goiApi<ChuyenMuc[]>("/v1/admin/content/categories", { locale });
+}
+
+/* ------------------------------------------------------------------ */
+/* Xuất / nhập bài viết (Excel, JSON) - components/admin/content-import  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Một bài ở dạng phẳng, dùng chung cho xuất và nhập: cột Excel / khoá JSON
+ * trùng tên các trường này, nên xuất ra sửa rồi nhập lại được.
+ */
+export type BaiPhang = {
+  type: "article" | "blog";
+  slug: string;
+  title: string;
+  summary: string;
+  bodyHtml: string;
+  coverUrl: string;
+  /** Slug danh mục; "" = chưa phân loại. */
+  category: string;
+  tags: string[];
+  author: string;
+  authorTitle: string;
+  sourceName: string;
+  sourceUrl: string;
+  /** Nhập chỉ nhận pending (mặc định) / draft / published. */
+  status: TrangThai;
+  publishedAt: string;
+};
+
+export type BaiXuat = BaiPhang & {
+  id: string;
+  categoryName: string;
+  viewCount: number;
+  createdAt: string;
+  createdByName: string;
+  importedByName: string;
+  importedAt: string;
+};
+
+export function xuatBai(loc: { type: string; status?: string; q?: string }, locale: Locale) {
+  return goiApi<{ exportedAt: string; exportedBy: string; limit: number; items: BaiXuat[] }>(
+    "/v1/admin/content/export",
+    { query: loc, locale },
+  );
+}
+
+export type GoiYDanhMuc = { category: string; score: number };
+
+export function phanLoaiBai(items: Pick<BaiPhang, "title" | "summary" | "tags" | "bodyHtml">[], locale: Locale) {
+  return goiApi<{ sampleSize: number; results: GoiYDanhMuc[] }>("/v1/admin/content/classify", {
+    method: "POST",
+    body: { items },
+    locale,
+  });
+}
+
+export type KetQuaNhap = { ok: true; id: string; slug: string } | { ok: false; error: string };
+
+export function nhapBai(items: BaiPhang[], batch: string, source: string, locale: Locale) {
+  return goiApi<{ batch: string; results: KetQuaNhap[] }>("/v1/admin/content/import", {
+    method: "POST",
+    body: { items, batch, source },
+    locale,
+  });
 }
 
 /* ------------------------------------------------------------------ */

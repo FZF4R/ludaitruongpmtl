@@ -196,6 +196,9 @@ module.exports.routes = {
     'POST /v1/admin/content/update': 'System.Admin.ContentController.updateContent',
     'POST /v1/admin/content/status': 'System.Admin.ContentController.setStatus',
     'POST /v1/admin/content/delete': 'System.Admin.ContentController.deleteContent',
+    'GET  /v1/admin/content/export': 'System.Admin.ContentController.exportContent',
+    'POST /v1/admin/content/classify': 'System.Admin.ContentController.classifyContent',
+    'POST /v1/admin/content/import': 'System.Admin.ContentController.importContent',
 
     'GET  /v1/admin/notify': 'System.Admin.SystemController.getListNotify',
     'POST /v1/admin/notify/add': 'System.Admin.SystemController.addNotify',

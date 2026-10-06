@@ -31,7 +31,7 @@ module.exports = {
         },
         action: {
             type: 'string',
-            isIn: ['create', 'update', 'delete'],
+            isIn: ['create', 'update', 'delete', 'import'],
             required: true,
         },
         changes: {

@@ -30,6 +30,12 @@ module.exports.notificationEn = {
         libraryKindRequired: {
             message: "Please choose a library category"
         },
+        contentImportEmpty: {
+            message: "No posts to import"
+        },
+        contentImportTooMany: {
+            message: "Too many posts in one request (max 50)"
+        },
         libraryKindAdminOnly: {
             message: "Only administrators can post in this category"
         },

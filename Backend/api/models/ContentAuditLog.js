@@ -28,7 +28,7 @@ module.exports = {
         },
         action: {
             type: 'string',
-            isIn: ['create', 'update', 'status', 'delete'],
+            isIn: ['create', 'update', 'status', 'delete', 'import'],
             required: true,
         },
         fromStatus: {

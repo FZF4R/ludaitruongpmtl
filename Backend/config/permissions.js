@@ -139,6 +139,11 @@ const actionPermissions = {
   'POST /v1/admin/content/update': CUA_NOI_DUNG,
   'POST /v1/admin/content/status': ['content.publish', 'content.review', 'sutra.manage', 'library.manage'],
   'POST /v1/admin/content/delete': 'content.delete',
+  // Xuất / nhập bài viết (Excel, JSON). Nhập = tạo bài hàng loạt nên cùng quyền
+  // với tạo bài viết; đăng thẳng (status published) kiểm thêm content.publish trong action.
+  'GET /v1/admin/content/export': CUA_NOI_DUNG,
+  'POST /v1/admin/content/classify': 'content.editAny',
+  'POST /v1/admin/content/import': 'content.editAny',
 
   //==== Thông báo =====
   'GET /v1/admin/notify': 'notify.manage',

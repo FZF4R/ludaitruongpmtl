@@ -137,6 +137,13 @@ module.exports = {
         approvedById: { type: 'string', defaultsTo: '', description: 'Người duyệt đăng gần nhất' },
         approvedByName: { type: 'string', defaultsTo: '' },
         approvedAt: { type: 'number', defaultsTo: 0, description: 'Thời điểm duyệt đăng gần nhất (ms)' },
+        // ---- Bài nhập từ tệp Excel / JSON (POST /v1/admin/content/import).
+        // Trống với bài soạn trên trang. Một lượt nhập (nhiều lần gửi) chung importBatch.
+        importedById: { type: 'string', defaultsTo: '', description: 'Admin nhập bài' },
+        importedByName: { type: 'string', defaultsTo: '' },
+        importedAt: { type: 'number', defaultsTo: 0, description: 'Thời điểm nhập (ms)' },
+        importBatch: { type: 'string', defaultsTo: '', description: 'Mã lượt nhập, để lọc / gỡ cả lượt nếu nhập nhầm' },
+        importSource: { type: 'string', defaultsTo: '', description: 'Tên tệp đã nhập' },
         status: {
             type: 'string',
             isIn: ['draft', 'pending', 'published', 'archived'],

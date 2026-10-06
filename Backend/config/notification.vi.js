@@ -30,6 +30,12 @@ module.exports.notificationVi = {
         libraryKindRequired: {
             message: "Chọn danh mục thư viện"
         },
+        contentImportEmpty: {
+            message: "Không có bài nào để nhập"
+        },
+        contentImportTooMany: {
+            message: "Mỗi lần gửi tối đa 50 bài"
+        },
         libraryKindAdminOnly: {
             message: "Danh mục này chỉ ban quản trị đăng được"
         },

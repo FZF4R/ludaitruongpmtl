@@ -15,6 +15,7 @@ export default function AdminBlogPage() {
       loaiChon={["article", "blog"]}
       tieuDe="Bài viết"
       moTa="Toàn bộ bài viết và tuỳ bút, kể cả bản nháp và bài đang chờ duyệt."
+      coNhapXuat
     />
   );
 }

@@ -33,6 +33,7 @@ const {
 const { guiThongBaoBai } = require('../../../utils/thongBao')
 const { baoDaDang } = require('../../../utils/dangBai')
 const { ngayVN } = require('../../../utils/loiNguyen')
+const { dungBoPhanLoai } = require('../../../utils/phanLoai')
 
 const MOT_NGAY = 24 * 3600 * 1000
 /** Thứ tự sắp xếp danh sách quản trị. */
@@ -246,6 +247,117 @@ const loi = (exits, message, messageNode = 'Content') => {
 
 /** Thư viện bắt buộc chọn danh mục. Trả mã lỗi hoặc ''. */
 const loiThuVien = (loai, kind) => (loai === 'library' && !LOAI_THU_VIEN.includes(kind) ? 'libraryKindRequired' : '')
+
+/* ---------------------------- Xuất / nhập bài ---------------------------- */
+
+/** Nhập / xuất / tự phân loại chỉ áp cho bài viết + tuỳ bút. */
+const LOAI_NHAP = ['article', 'blog']
+const TRANG_THAI_NHAP = ['pending', 'draft', 'published']
+const NHAP_TOI_DA = 50
+const XUAT_TOI_DA = 5000
+const DAI_THAN_BAI_TOI_DA = 500000
+
+/** Thẻ: mảng hoặc chuỗi phân tách bằng dấu phẩy / chấm phẩy. */
+const chuanHoaThe = the => (Array.isArray(the) ? the : String(the || '').split(/[,;]/))
+    .map(t => String(t).trim().slice(0, 40)).filter(Boolean).slice(0, 10)
+
+/** Chuỗi ngày bất kỳ -> ISO, sai thì ''. */
+const ngayISO = giaTri => {
+    if (!giaTri) return ''
+    let d = new Date(giaTri)
+
+    return isNaN(d.getTime()) ? '' : d.toISOString()
+}
+
+/** Slug không trùng trong CSDL lẫn trong cùng lượt nhập: thêm -2, -3... */
+const slugKhongTrung = async (goc, daDung) => {
+    let co = goc.slice(0, 90) || `bai-${Date.now().toString(36)}`
+    for (let i = 1; i < 200; i++) {
+        let thu = i === 1 ? co : `${co.slice(0, 85)}-${i}`
+        if (daDung.has(thu)) continue
+        if (!(await sails.dataProcess.findOne(Content, { condition: { slug: thu } }))) {
+            daDung.add(thu)
+            return thu
+        }
+    }
+
+    return `${co.slice(0, 80)}-${Date.now().toString(36)}`
+}
+
+/**
+ * Danh mục dùng được = bảng ContentCategory GỘP các danh mục đang gắn trên bài
+ * viết (bài seed / bài cũ có thể mang danh mục chưa có trong bảng). Dùng chung
+ * cho ô chọn danh mục, kiểm tra lúc nhập và bộ tự phân loại.
+ * -> [{ slug, name, kind, order }]
+ */
+const danhMucTongHop = async () => {
+    let bang = await ContentCategory.find({}).sort([{ order: 'ASC' }, { name: 'ASC' }])
+    let kq = bang.map(d => ({ id: String(d.id), slug: d.slug, name: d.name, kind: d.kind || 'all' }))
+    let co = new Set(kq.map(d => d.slug))
+    let tuBai = await bangNoiDung().aggregate([
+        { $match: { type: { $in: LOAI_NHAP }, 'categories.0': { $exists: true } } },
+        { $unwind: '$categories' },
+        { $group: { _id: '$categories.slug', name: { $first: '$categories.name' } } },
+        { $sort: { name: 1 } }
+    ]).toArray()
+    tuBai.forEach(d => {
+        if (d._id && !co.has(d._id)) kq.push({ id: '', slug: d._id, name: d.name || d._id, kind: 'article' })
+    })
+
+    return kq
+}
+
+/** Một bài của lượt nhập -> { ok, id, slug } hoặc { ok: false, error }. */
+const nhapMotBai = async (vao, { User, danhMuc, luot, tenTep, bayGio, slugDaDung, req }) => {
+    let loai = LOAI_NHAP.includes(vao.type) ? vao.type : 'article'
+    if (!duocSuaTrucTiep(User, loai)) return { ok: false, error: 'contentForbidden' }
+
+    let tieuDe = String(vao.title || '').trim().slice(0, 200)
+    if (!tieuDe) return { ok: false, error: 'contentTitleRequired' }
+
+    let trangThai = TRANG_THAI_NHAP.includes(vao.status) ? vao.status : 'pending'
+    if (trangThai === 'published' && !duocDoiTrangThai(User, loai, 'pending', 'published')) {
+        return { ok: false, error: 'importPublishForbidden' }
+    }
+
+    let thanBai = String(vao.bodyHtml || '')
+    if (thanBai.length > DAI_THAN_BAI_TOI_DA) return { ok: false, error: 'importBodyTooLong' }
+
+    let slugVao = String(vao.slug || '').trim().toLowerCase()
+    let slug = await slugKhongTrung(SLUG.test(slugVao) ? slugVao : dungSlug(tieuDe), slugDaDung)
+
+    let maDm = String(vao.category || '').trim()
+    let anhBia = String(vao.coverUrl || '').trim()
+    let ngayDang = ngayISO(vao.publishedAt)
+
+    let ban = {
+        type: loai,
+        slug,
+        title: tieuDe,
+        summary: String(vao.summary || '').trim().slice(0, 600),
+        bodyHtml: thanBai,
+        coverUrl: /^https?:\/\//i.test(anhBia) ? anhBia.slice(0, 500) : '',
+        categories: danhMuc.has(maDm) ? [{ slug: maDm, name: danhMuc.get(maDm) }] : [],
+        tags: chuanHoaThe(vao.tags),
+        author: await chuanHoaTacGia(vao.author ? { name: vao.author, title: vao.authorTitle } : null, User.id),
+        source: chuanHoaNguon({ name: vao.sourceName, url: vao.sourceUrl }),
+        publishedAt: ngayDang || (trangThai === 'published' ? new Date(bayGio).toISOString() : ''),
+        status: trangThai,
+        authorId: String(User.id),
+        importedById: String(User.id),
+        importedByName: User.fullName || User.username || '',
+        importedAt: bayGio,
+        importBatch: luot,
+        importSource: tenTep
+    }
+    Object.assign(ban, dauVet('created', User), dauVet('updated', User))
+    if (trangThai === 'published') Object.assign(ban, dauVet('approved', User), { approvedAt: bayGio })
+
+    let moi = await sails.dataProcess.createDocument(Content, ban)
+    await ghiNhatKy({ req, user: User, bai: moi, action: 'import', toStatus: trangThai, changes: chupNoiDung(moi, 'after') })
+
+    return { ok: true, id: String(moi.id), slug }
+}
 
 module.exports = {
 
@@ -801,23 +913,159 @@ module.exports = {
         }
     }),
 
+    /**
+     * Xuất bài (đủ thân bài) theo đúng bộ lọc đang xem, để FrontEnd ghi ra
+     * JSON / Excel. Các cột trùng tên với lúc nhập nên xuất ra sửa rồi nhập
+     * lại được. Tối đa XUAT_TOI_DA bài một lần.
+     */
+    exportContent: ({
+        inputs: sails.config.inputs.Admin.Content.exportContent,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let duocPhep = loaiQuanTri(inputs.User).filter(t => LOAI_NHAP.includes(t))
+                let hoi = String(inputs.type || '').split(',').map(t => t.trim()).filter(t => duocPhep.includes(t))
+                let loaiLoc = hoi.length ? hoi : duocPhep
+                if (!loaiLoc.length) return loi(exits, 'contentForbidden')
+
+                let dieuKien = Object.assign(dungDieuKien(inputs), { type: { $in: loaiLoc } })
+                let rows = await bangNoiDung().find(dieuKien, { projection: { searchText: 0, pendingEdit: 0 } })
+                    .sort(SAP_XEP.newest)
+                    .limit(XUAT_TOI_DA)
+                    .toArray()
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: {
+                        exportedAt: new Date().toISOString(),
+                        exportedBy: inputs.User.fullName || inputs.User.username || '',
+                        limit: XUAT_TOI_DA,
+                        items: rows.map(row => ({
+                            id: String(row._id),
+                            type: row.type,
+                            slug: row.slug,
+                            title: row.title,
+                            summary: row.summary || '',
+                            bodyHtml: row.bodyHtml || '',
+                            coverUrl: row.coverUrl || '',
+                            category: ((row.categories || [])[0] || {}).slug || '',
+                            categoryName: ((row.categories || [])[0] || {}).name || '',
+                            tags: row.tags || [],
+                            author: (row.author && row.author.name) || '',
+                            authorTitle: (row.author && row.author.title) || '',
+                            sourceName: (row.source && row.source.name) || '',
+                            sourceUrl: (row.source && row.source.url) || '',
+                            status: row.status || 'draft',
+                            publishedAt: row.publishedAt || '',
+                            viewCount: row.viewCount || 0,
+                            createdAt: sangISO(row.createdAt),
+                            createdByName: row.createdByName || '',
+                            importedByName: row.importedByName || '',
+                            importedAt: sangISO(row.importedAt)
+                        }))
+                    }
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    /**
+     * Gợi ý danh mục cho các bài sắp nhập, học từ bài đã có danh mục
+     * (api/utils/phanLoai.js). Chỉ đọc, không ghi gì.
+     */
+    classifyContent: ({
+        inputs: sails.config.inputs.Admin.Content.classifyContent,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let ds = Array.isArray(inputs.items) ? inputs.items.slice(0, NHAP_TOI_DA) : []
+                let [danhMuc, baiMau] = await Promise.all([
+                    danhMucTongHop().then(ds => ds.filter(d => ['article', 'all'].includes(d.kind))),
+                    bangNoiDung().find(
+                        { type: { $in: LOAI_NHAP }, 'categories.0': { $exists: true } },
+                        { projection: { title: 1, summary: 1, tags: 1, categories: 1, bodyHtml: 1 } }
+                    ).sort(SAP_XEP.newest).limit(3000).toArray()
+                ])
+                let phanLoai = dungBoPhanLoai(danhMuc.map(d => ({ slug: d.slug, name: d.name })), baiMau)
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: {
+                        sampleSize: baiMau.length,
+                        results: ds.map(bai => phanLoai({
+                            title: String((bai && bai.title) || ''),
+                            summary: String((bai && bai.summary) || ''),
+                            tags: Array.isArray(bai && bai.tags) ? bai.tags.map(String) : [],
+                            bodyHtml: String((bai && bai.bodyHtml) || '')
+                        }))
+                    }
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
+    /**
+     * Nhập nhiều bài một lượt (FrontEnd chia nhỏ, mỗi lần tối đa NHAP_TOI_DA).
+     *
+     * Từng bài kiểm riêng, bài lỗi không làm hỏng cả lượt: trả về kết quả theo
+     * đúng thứ tự gửi lên ({ ok, id, slug } hoặc { ok: false, error }).
+     * Mặc định trạng thái "pending" (chưa duyệt). "published" cần quyền đăng bài.
+     * Mỗi bài ghi người nhập + thời điểm + mã lượt + tên tệp, và một dòng nhật
+     * ký 'import'. Không gửi thông báo / cộng công đức: bài do ban quản trị nhập.
+     */
+    importContent: ({
+        inputs: sails.config.inputs.Admin.Content.importContent,
+        exits: sails.config.responseType,
+        fn: async function (inputs, exits) {
+            try {
+                let { User } = inputs
+                let ds = Array.isArray(inputs.items) ? inputs.items : []
+                if (!ds.length) return loi(exits, 'contentImportEmpty')
+                if (ds.length > NHAP_TOI_DA) return loi(exits, 'contentImportTooMany')
+
+                let danhMuc = new Map((await danhMucTongHop()).map(d => [d.slug, d.name]))
+                let luot = /^[a-z0-9-]{6,40}$/i.test(String(inputs.batch || '')) ? String(inputs.batch) : `nhap-${Date.now().toString(36)}`
+                let tenTep = String(inputs.source || '').trim().slice(0, 200)
+                let bayGio = Date.now()
+                let slugDaDung = new Set()
+                let ketQua = []
+
+                for (let vao of ds) {
+                    try {
+                        ketQua.push(await nhapMotBai(vao || {}, { User, danhMuc, luot, tenTep, bayGio, slugDaDung, req: this.req }))
+                    } catch (err) {
+                        sails.log.error('[importContent]', err && err.message)
+                        ketQua.push({ ok: false, error: 'errorWhileProcess' })
+                    }
+                }
+
+                exits.successRequest({
+                    messageNode: 'GlobalNotifications',
+                    message: 'success',
+                    data: { batch: luot, results: ketQua }
+                });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
+        }
+    }),
+
     /** Danh sách chuyên mục, để trình soạn dựng ô chọn. */
     listCategories: ({
         inputs: sails.config.inputs.Admin.Content.listCategories,
         exits: sails.config.responseType,
         fn: async function (inputs, exits) {
             try {
-                let danhMuc = await ContentCategory.find({}).sort([{ order: 'ASC' }, { name: 'ASC' }])
-
                 exits.successRequest({
                     messageNode: 'GlobalNotifications',
                     message: 'success',
-                    data: danhMuc.map(row => ({
-                        id: String(row.id),
-                        slug: row.slug,
-                        name: row.name,
-                        kind: row.kind || 'all'
-                    }))
+                    data: await danhMucTongHop()
                 });
             } catch (err) {
                 sails.checkErrorOutput(err, exits);

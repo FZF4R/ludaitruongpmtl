@@ -1585,6 +1585,23 @@ module.exports.inputs = {
                 "User": {
                     "type": "json"
                 }
+            },
+            "exportContent": {
+                "User": { "type": "json" },
+                "type": { "type": "string", "defaultsTo": "" },
+                "status": { "type": "string", "defaultsTo": "" },
+                "category": { "type": "string", "defaultsTo": "" },
+                "q": { "type": "string", "defaultsTo": "" }
+            },
+            "classifyContent": {
+                "User": { "type": "json" },
+                "items": { "type": "json", "required": true, "description": "[{ title, summary, tags, bodyHtml }]" }
+            },
+            "importContent": {
+                "User": { "type": "json" },
+                "items": { "type": "json", "required": true, "description": "Tối đa 50 bài mỗi lần gửi" },
+                "batch": { "type": "string", "defaultsTo": "", "description": "Mã lượt nhập, các lần gửi của cùng một lượt dùng chung" },
+                "source": { "type": "string", "defaultsTo": "", "description": "Tên tệp nguồn" }
             }
         }
     },
