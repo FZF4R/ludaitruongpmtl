@@ -29,12 +29,9 @@ module.exports.inputs = {
                 "type": "string",
                 "required": true
             },
-            "email": {
+            "phone": {
                 "type": "string",
                 "required": true
-            },
-            "facebook": {
-                "type": "string"
             },
             "recaptchaToken": {
                 "type": "string",

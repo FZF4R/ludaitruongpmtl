@@ -45,6 +45,12 @@ const nextConfig: NextConfig = {
       // Trang /tim-kiem đã bỏ: link cũ chuyển sang tìm trong Bài viết (giữ ?q=).
       { source: "/tim-kiem", destination: "/bai-viet/tim-kiem", permanent: true },
       { source: "/:lang(en|zh|ko)/tim-kiem", destination: "/:lang/bai-viet/tim-kiem", permanent: true },
+      // "Bài giảng" giờ là danh mục "Audio bài giảng" (audio-kinh) của Thư viện, do ban quản trị đăng.
+      // Chỉ chuyển trang danh sách; /bai-giang/<slug> của bài audio/video cũ vẫn mở được.
+      { source: "/bai-giang", destination: "/thu-vien?muc=audio-kinh", permanent: true },
+      { source: "/bai-giang/trang/:so", destination: "/thu-vien?muc=audio-kinh", permanent: true },
+      { source: "/:lang(en|zh|ko)/bai-giang", destination: "/:lang/thu-vien?muc=audio-kinh", permanent: true },
+      { source: "/:lang(en|zh|ko)/bai-giang/trang/:so", destination: "/:lang/thu-vien?muc=audio-kinh", permanent: true },
       ...doiTen.flatMap(([cu, moi]) => [
       { source: `/tu-tap/${cu}`, destination: `/tu-tap/${moi}`, permanent: true },
       { source: `/:lang(en|zh|ko)/tu-tap/${cu}`, destination: `/:lang/tu-tap/${moi}`, permanent: true },

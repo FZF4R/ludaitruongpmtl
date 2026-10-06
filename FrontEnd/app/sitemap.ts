@@ -40,7 +40,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...nhanNgonNgu("/", { lastModified: now, changeFrequency: "daily", priority: 1 }),
     ...nhanNgonNgu("/bai-viet", { lastModified: now, changeFrequency: "daily", priority: 0.8 }),
     ...nhanNgonNgu("/kinh-sach", { lastModified: now, changeFrequency: "weekly", priority: 0.8 }),
-    ...nhanNgonNgu("/bai-giang", { lastModified: now, changeFrequency: "daily", priority: 0.8 }),
     ...nhanNgonNgu("/phat-lich", { lastModified: now, changeFrequency: "monthly", priority: 0.6 }),
     ...nhanNgonNgu("/tu-tap", { lastModified: now, changeFrequency: "monthly", priority: 0.7 }),
     ...nhanNgonNgu("/thu-vien", { lastModified: now, changeFrequency: "daily", priority: 0.7 }),

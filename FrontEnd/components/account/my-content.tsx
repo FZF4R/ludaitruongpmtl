@@ -33,7 +33,8 @@ type Nhan = Dictionary["myContent"];
 type NhanThuVien = Dictionary["library"];
 
 const TRANG_THAI: TrangThaiBai[] = ["draft", "pending", "published", "archived"];
-const DANH_MUC_TV = ["anh", "review", "bo-tat", "nhac-thien", "audio-kinh"] as const;
+// "audio-kinh" (Audio bài giảng) chỉ ban quản trị đăng ở khu quản trị - backend chặn libraryKindAdminOnly.
+const DANH_MUC_TV = ["anh", "review", "bo-tat", "nhac-thien"] as const;
 /** Danh mục dùng album ảnh / tệp âm thanh. */
 const CO_ALBUM = ["anh", "bo-tat", "review"];
 const CO_AM_THANH = ["nhac-thien", "audio-kinh"];

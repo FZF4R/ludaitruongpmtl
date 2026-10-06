@@ -124,7 +124,7 @@
   "auth": {
     "eyebrow": "个人中心",
     "title": "登录",
-    "description": "使用 Google 或 Facebook 登录，即可收藏文章、记录修行历程，并在各设备间同步。",
+    "description": "使用 Google、Facebook 或本站账号登录，以收藏文章、记录修行并在多设备间同步。",
     "google": "使用 Google 继续",
     "facebook": "使用 Facebook 继续",
     "connecting": "正在连接…",
@@ -142,7 +142,25 @@
     "notFilled": "未填写",
     "changeAvatar": "更换头像",
     "avatarUploading": "上传中…",
-    "avatarError": "头像更换失败，请换一张图片再试。"
+    "avatarError": "头像更换失败，请换一张图片再试。",
+    "or": "或",
+    "password": {
+      "tabSignIn": "登录",
+      "tabRegister": "注册",
+      "username": "用户名",
+      "usernameHint": "6-25 个字符，仅限字母和数字",
+      "password": "密码",
+      "passwordConfirm": "确认密码",
+      "phone": "手机号码",
+      "phoneHint": "例如 0912345678，或国际格式 +86…",
+      "submitSignIn": "登录",
+      "submitRegister": "创建账号",
+      "working": "处理中…",
+      "errUsername": "用户名须为 6-25 个字符，仅限字母和数字。",
+      "errPassword": "密码长度须为 6 到 100 个字符。",
+      "errPasswordMatch": "两次输入的密码不一致。",
+      "errPhone": "手机号码无效。"
+    }
   },
   "onboarding": {
     "eyebrow": "最后一步",
@@ -822,14 +840,14 @@
   },
   "library": {
     "title": "图书馆",
-    "description": "社区分享的图片、寺庙点评、佛菩萨、禅修音乐与诵经音频。",
+    "description": "社区分享的图片、寺庙点评、佛菩萨、禅修音乐与讲经音频。",
     "all": "全部",
     "kinds": {
       "anh": "图片",
       "review": "寺庙点评",
       "bo-tat": "佛菩萨",
       "nhac-thien": "禅修音乐",
-      "audio-kinh": "诵经音频"
+      "audio-kinh": "讲经音频"
     },
     "empty": "此栏目暂无内容。",
     "contribute": "投稿",
@@ -841,7 +859,7 @@
       "review": "寺庙、殿堂、古迹的介绍与心得",
       "bo-tat": "诸佛菩萨的图像与介绍",
       "nhac-thien": "适合禅修与放松的轻柔音乐",
-      "audio-kinh": "诵经、念佛音频，可跟随聆听"
+      "audio-kinh": "本站发布的讲经说法音频"
     }
   }
 }

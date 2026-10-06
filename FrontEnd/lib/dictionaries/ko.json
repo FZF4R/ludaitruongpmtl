@@ -124,7 +124,7 @@
   "auth": {
     "eyebrow": "내 계정",
     "title": "로그인",
-    "description": "Google 또는 Facebook으로 로그인하면 글을 저장하고 수행 기록을 남기며 기기 간에 동기화할 수 있습니다.",
+    "description": "Google, Facebook 또는 사이트 계정으로 로그인하여 글을 저장하고 수행 기록을 남기며 여러 기기에서 동기화하세요.",
     "google": "Google로 계속하기",
     "facebook": "Facebook으로 계속하기",
     "connecting": "연결 중…",
@@ -142,7 +142,25 @@
     "notFilled": "미입력",
     "changeAvatar": "프로필 사진 변경",
     "avatarUploading": "업로드 중…",
-    "avatarError": "프로필 사진을 바꾸지 못했습니다. 다른 이미지로 다시 시도해 주세요."
+    "avatarError": "프로필 사진을 바꾸지 못했습니다. 다른 이미지로 다시 시도해 주세요.",
+    "or": "또는",
+    "password": {
+      "tabSignIn": "로그인",
+      "tabRegister": "회원가입",
+      "username": "아이디",
+      "usernameHint": "6-25자, 영문과 숫자만 가능",
+      "password": "비밀번호",
+      "passwordConfirm": "비밀번호 확인",
+      "phone": "전화번호",
+      "phoneHint": "예: 0912345678 또는 국제 형식 +82…",
+      "submitSignIn": "로그인",
+      "submitRegister": "계정 만들기",
+      "working": "처리 중…",
+      "errUsername": "아이디는 영문과 숫자로 6-25자여야 합니다.",
+      "errPassword": "비밀번호는 6-100자여야 합니다.",
+      "errPasswordMatch": "비밀번호가 일치하지 않습니다.",
+      "errPhone": "전화번호가 올바르지 않습니다."
+    }
   },
   "onboarding": {
     "eyebrow": "마지막 단계",
@@ -822,14 +840,14 @@
   },
   "library": {
     "title": "자료실",
-    "description": "공동체가 나눈 사진, 사찰 후기, 불보살, 명상 음악, 독경 오디오.",
+    "description": "공동체가 나눈 사진, 사찰 후기, 불보살, 명상 음악, 법문 오디오.",
     "all": "전체",
     "kinds": {
       "anh": "사진",
       "review": "사찰 후기",
       "bo-tat": "불보살",
       "nhac-thien": "명상 음악",
-      "audio-kinh": "독경 오디오"
+      "audio-kinh": "법문 오디오"
     },
     "empty": "이 분류에는 아직 콘텐츠가 없습니다.",
     "contribute": "기여하기",
@@ -841,7 +859,7 @@
       "review": "사찰·전각·유적 소개와 후기",
       "bo-tat": "불보살의 모습과 소개",
       "nhac-thien": "명상과 휴식을 위한 잔잔한 음악",
-      "audio-kinh": "따라 들을 수 있는 독경·염불 음원"
+      "audio-kinh": "운영진이 올린 법문 오디오"
     }
   }
 }

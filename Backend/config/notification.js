@@ -45,6 +45,12 @@ module.exports.notification = {
                 messageVNI: "Chọn danh mục thư viện"
             }
         },
+        libraryKindAdminOnly: {
+            message: {
+                messageEN: "Only administrators can post in this category",
+                messageVNI: "Danh mục này chỉ ban quản trị đăng được"
+            }
+        },
         contentNoChanges: {
             message: {
                 messageEN: "Nothing changed",
@@ -362,6 +368,30 @@ module.exports.notification = {
             message: {
                 messageEN: "Register Invalid Character",
                 messageVNI: "Tên tài khoản chỉ chứa chữ cái và số"
+            }
+        },
+        usernameLength: {
+            message: {
+                messageEN: "Username must be 6 to 25 characters",
+                messageVNI: "Tên đăng nhập dài từ 6 đến 25 ký tự"
+            }
+        },
+        passwordLength: {
+            message: {
+                messageEN: "Password must be 6 to 100 characters",
+                messageVNI: "Mật khẩu dài từ 6 đến 100 ký tự"
+            }
+        },
+        phoneInvalid: {
+            message: {
+                messageEN: "Invalid phone number",
+                messageVNI: "Số điện thoại không hợp lệ"
+            }
+        },
+        phoneTaken: {
+            message: {
+                messageEN: "This phone number is already used by another account",
+                messageVNI: "Số điện thoại này đã có tài khoản khác dùng"
             }
         },
         captchaRequired: {

@@ -78,7 +78,7 @@ export const footerNav: {
     items: [
       { href: "/kinh-sach", key: "sutras" },
       { href: "/bai-viet", key: "articles" },
-      { href: "/bai-giang", key: "talks" },
+      { href: "/thu-vien?muc=audio-kinh", key: "talks" },
       { href: "/thu-vien", key: "library" },
     ],
   },

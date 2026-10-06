@@ -96,6 +96,16 @@ module.exports = {
         profileCompleted: {
             type: "boolean",
             defaultsTo: false
+        },
+        /**
+         * Tài khoản tự đăng ký bằng tên đăng nhập + mật khẩu + số điện thoại
+         * (POST /v1/user/register): chưa có gì xác minh người này là ai - số
+         * điện thoại chỉ được kiểm đúng định dạng, chưa gửi OTP. Google /
+         * Facebook thì nhà cung cấp đã xác minh nên luôn false.
+         */
+        isNotVerified: {
+            type: "boolean",
+            defaultsTo: false
         }
     },
     beforeCreate: async function(userAccount, proceed) {

@@ -6,7 +6,8 @@ import { useCheDoSua } from "@/components/layout/inline-edit";
 import { localePath, splitLocale } from "@/lib/i18n";
 
 /**
- * Bắt đăng nhập trước khi dùng các công cụ trong mục "Tu tập".
+ * Bắt đăng nhập trước khi dùng các công cụ trong mục "Tu tập" và trang
+ * "Quá trình tu tập" (mỗi nơi gắn qua layout.tsx của route đó).
  *
  * Token nằm ở localStorage (xem lib/auth.ts) nên máy chủ không biết ai đang
  * xem - chỉ chặn được ở trình duyệt. Trang tổng quan /tu-tap vẫn mở cho mọi

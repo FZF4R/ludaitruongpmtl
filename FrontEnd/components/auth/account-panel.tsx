@@ -2,10 +2,12 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge, Card } from "@/components/ui/primitives";
 import { SocialLogin, type NhanDangNhap } from "@/components/auth/social-login";
+import { PasswordLogin } from "@/components/auth/password-login";
+import { HoacNgang } from "@/components/auth/login-panel";
 import { AvatarPicker } from "@/components/auth/avatar-picker";
 import { localePath, splitLocale } from "@/lib/i18n";
 import type { Dictionary } from "@/lib/dictionary";
@@ -44,7 +46,6 @@ export function AccountPanel({
   nhanHoSo: Dictionary["onboarding"];
   nhanTaiKhoan: Dictionary["account"];
 }) {
-  const router = useRouter();
   const { locale } = splitLocale(usePathname());
   const lp = (href: string) => localePath(locale, href);
 
@@ -76,6 +77,10 @@ export function AccountPanel({
   }
 
   if (trangThai === "chuaDangNhap") {
+    // Tải lại cả trang để header/quyền (InlineEditProvider) nhận người dùng ngay.
+    const xong = (ketQua: { isNewUser: boolean }) =>
+      ketQua.isNewUser ? window.location.replace(lp("/hoan-thien-ho-so")) : window.location.reload();
+
     const nhanNut: NhanDangNhap = {
       google: nhanAuth.google,
       facebook: nhanAuth.facebook,
@@ -90,11 +95,11 @@ export function AccountPanel({
     return (
       <Card className="flex max-w-lg flex-col gap-4 p-6">
         <p className="text-sm text-muted">{nhanAuth.signInPrompt}</p>
-        <SocialLogin
-          nhan={nhanNut}
-          onXong={(ketQua) =>
-            ketQua.isNewUser ? router.replace(lp("/hoan-thien-ho-so")) : nap()
-          }
+        <SocialLogin nhan={nhanNut} onXong={xong} />
+        <HoacNgang chu={nhanAuth.or} />
+        <PasswordLogin
+          nhan={{ ...nhanAuth.password, failed: nhanAuth.failed, needTwoFactor: nhanAuth.needTwoFactor }}
+          onXong={xong}
         />
       </Card>
     );
@@ -163,8 +168,8 @@ export function AccountPanel({
             size="sm"
             onClick={() => {
               dangXuat();
-              setHoSo(null);
-              setTrangThai("chuaDangNhap");
+              // Như lúc đăng nhập: tải lại để header và quyền quên người dùng ngay.
+              window.location.reload();
             }}
           >
             {nhanAuth.signOut}

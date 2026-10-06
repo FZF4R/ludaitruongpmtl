@@ -910,7 +910,7 @@ function TrinhSoan({
                 </Select>
               )}
             </Field>
-            <Field id="c-audio" label="Tệp âm thanh" hint="Nhạc thiền / audio kinh: đường dẫn MP3">
+            <Field id="c-audio" label="Tệp âm thanh" hint="Nhạc thiền / audio bài giảng: đường dẫn MP3">
               {(p) => <Input {...p} value={amThanh} onChange={(e) => setAmThanh(e.target.value)} placeholder="https://…" />}
             </Field>
             <Field

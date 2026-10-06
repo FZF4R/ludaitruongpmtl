@@ -40,6 +40,8 @@ export type HoSo = {
   avatarUrl: string;
   isNewUser: boolean;
   profileCompleted: boolean;
+  /** Tài khoản tự đăng ký bằng mật khẩu + số điện thoại, chưa được xác minh. */
+  isNotVerified?: boolean;
   username: string;
   email: string;
   role: string;
@@ -224,6 +226,56 @@ export async function dangNhapMangXaHoi(
   luuToken(data.accessToken);
 
   return { trangThai: "xong", isNewUser: !!data.isNewUser };
+}
+
+type PhanHoiDangNhap = { accessToken?: string; isNewUser?: boolean; is2FAEnabled?: boolean };
+
+/** Lưu token từ phản hồi login / register; dùng chung cho hai luồng mật khẩu. */
+function nhanPhien(data: PhanHoiDangNhap): KetQuaDangNhap {
+  if (!data.accessToken) {
+    if (data.is2FAEnabled) return { trangThai: "can2FA" };
+    throw new LoiApi("", 200);
+  }
+  luuToken(data.accessToken);
+  return { trangThai: "xong", isNewUser: !!data.isNewUser };
+}
+
+/** Đăng nhập bằng tên đăng nhập + mật khẩu. */
+export async function dangNhapMatKhau(username: string, password: string, locale: Locale): Promise<KetQuaDangNhap> {
+  const data = await goiApi<PhanHoiDangNhap>("/v1/user/login", {
+    method: "POST",
+    body: { username: username.trim(), password },
+    locale,
+  });
+  return nhanPhien(data);
+}
+
+/**
+ * Đăng ký tài khoản (tên đăng nhập + mật khẩu + số điện thoại). Backend đánh
+ * dấu `isNotVerified` và đăng nhập luôn, trả `isNewUser` để chuyển sang form hồ sơ.
+ */
+export async function dangKy(
+  { username, password, phone }: { username: string; password: string; phone: string },
+  locale: Locale,
+): Promise<KetQuaDangNhap> {
+  const data = await goiApi<PhanHoiDangNhap>("/v1/user/register", {
+    method: "POST",
+    body: { username: username.trim(), password, phone: phone.trim() },
+    locale,
+  });
+  return nhanPhien(data);
+}
+
+/**
+ * Kiểm số điện thoại ngay trên form, cùng luật với Backend/api/utils/soDienThoai.js:
+ * di động Việt Nam (0/84/+84 + đầu 3/5/7/8/9) hoặc số quốc tế +mã nước, 8-15 chữ số.
+ * Backend vẫn kiểm lại - đây chỉ để báo lỗi sớm.
+ */
+export function soDienThoaiHopLe(vao: string): boolean {
+  let so = vao.trim().replace(/[\s.\-()]/g, "");
+  if (so.startsWith("+84")) so = `0${so.slice(3)}`;
+  else if (/^84[35789]\d{8}$/.test(so)) so = `0${so.slice(2)}`;
+  return /^0[35789]\d{8}$/.test(so) || /^\+[1-9]\d{7,14}$/.test(so);
 }
 
 /* ------------------------------------------------------------------ */

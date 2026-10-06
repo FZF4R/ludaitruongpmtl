@@ -389,6 +389,8 @@ export type NguoiDungChiTiet = {
   status: number;
   is2FAEnabled: boolean;
   profileCompleted: boolean;
+  /** Tự đăng ký bằng mật khẩu + số điện thoại, chưa xác minh. */
+  isNotVerified?: boolean;
   googleId: string;
   facebookId: string;
   createdAt: number;
@@ -445,7 +447,7 @@ export const nhanDanhMucThuVien: Record<string, string> = {
   review: "Review chùa, đền",
   "bo-tat": "Phật - Bồ Tát",
   "nhac-thien": "Nhạc thiền",
-  "audio-kinh": "Audio kinh phật",
+  "audio-kinh": "Audio bài giảng",
 };
 
 export const trangThai = ["draft", "pending", "published", "archived"] as const;

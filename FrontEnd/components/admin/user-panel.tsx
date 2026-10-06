@@ -303,6 +303,7 @@ function ChiTiet({
           Tạo {ngay(nd.createdAt)} · {nd.status === 1 ? "đang hoạt động" : "đã khoá"}
           {nd.googleId ? " · Google" : ""}
           {nd.facebookId ? " · Facebook" : ""}
+          {nd.isNotVerified ? " · Chưa xác minh (tự đăng ký)" : ""}
         </p>
         <a
           href={`${localePath(locale, "/admin/user/hoat-dong")}?id=${encodeURIComponent(nd.id)}`}

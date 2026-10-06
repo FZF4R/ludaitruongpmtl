@@ -20,7 +20,7 @@
 const { boDau } = require('../../../utils/vietnamese')
 const { tacGiaTheoHoSo } = require('../../../utils/tacGia')
 const { ghiNhatKy, dauVet, truongDaDoi, chupNoiDung } = require('../../../utils/nhatKyBai')
-const { LOAI_THU_VIEN, co, duongDanBai } = require('../../../utils/quyenNoiDung')
+const { LOAI_THU_VIEN, THU_VIEN_CHI_QUAN_TRI, co, duongDanBai } = require('../../../utils/quyenNoiDung')
 const { guiThongBaoBai } = require('../../../utils/thongBao')
 const { baoDaDang } = require('../../../utils/dangBai')
 const { ngayVN } = require('../../../utils/loiNguyen')
@@ -119,6 +119,8 @@ const gomTruong = async (inputs, loai) => {
     if (loai === 'library') {
         if (inputs.libraryKind !== undefined) {
             if (!LOAI_THU_VIEN.includes(inputs.libraryKind)) return { loi: 'libraryKindRequired' }
+            // Audio bài giảng chỉ ban quản trị đăng (khu quản trị), người dùng không gửi vào được.
+            if (THU_VIEN_CHI_QUAN_TRI.includes(inputs.libraryKind)) return { loi: 'libraryKindAdminOnly' }
             ban.libraryKind = inputs.libraryKind
         }
         if (inputs.gallery !== undefined) ban.gallery = chuanHoaAnhKem(inputs.gallery)

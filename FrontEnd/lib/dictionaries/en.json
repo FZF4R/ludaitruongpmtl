@@ -124,7 +124,7 @@
   "auth": {
     "eyebrow": "Your account",
     "title": "Sign in",
-    "description": "Sign in with Google or Facebook to save readings, keep a record of your practice and sync across devices.",
+    "description": "Sign in with Google, Facebook or a site account to save posts, track your practice and sync across devices.",
     "google": "Continue with Google",
     "facebook": "Continue with Facebook",
     "connecting": "Connecting…",
@@ -142,7 +142,25 @@
     "notFilled": "Not given",
     "changeAvatar": "Change avatar",
     "avatarUploading": "Uploading…",
-    "avatarError": "Could not change your avatar, please try another image."
+    "avatarError": "Could not change your avatar, please try another image.",
+    "or": "or",
+    "password": {
+      "tabSignIn": "Sign in",
+      "tabRegister": "Register",
+      "username": "Username",
+      "usernameHint": "6-25 characters, letters and digits only",
+      "password": "Password",
+      "passwordConfirm": "Confirm password",
+      "phone": "Phone number",
+      "phoneHint": "e.g. 0912345678, or international format +82…",
+      "submitSignIn": "Sign in",
+      "submitRegister": "Create account",
+      "working": "Working…",
+      "errUsername": "Username must be 6-25 characters, letters and digits only.",
+      "errPassword": "Password must be 6 to 100 characters.",
+      "errPasswordMatch": "Passwords do not match.",
+      "errPhone": "Invalid phone number."
+    }
   },
   "onboarding": {
     "eyebrow": "One more step",
@@ -822,14 +840,14 @@
   },
   "library": {
     "title": "Library",
-    "description": "Photos, temple reviews, Buddhas & Bodhisattvas, meditation music and sutra audio shared by the community.",
+    "description": "Photos, temple reviews, Buddhas & Bodhisattvas, meditation music and Dharma talk audio.",
     "all": "All",
     "kinds": {
       "anh": "Photos",
       "review": "Temple reviews",
       "bo-tat": "Buddhas & Bodhisattvas",
       "nhac-thien": "Meditation music",
-      "audio-kinh": "Sutra audio"
+      "audio-kinh": "Dharma talk audio"
     },
     "empty": "Nothing in this section yet.",
     "contribute": "Contribute",
@@ -841,7 +859,7 @@
       "review": "Reviews and introductions of temples and shrines",
       "bo-tat": "Images and introductions of Buddhas and Bodhisattvas",
       "nhac-thien": "Gentle music for meditation and relaxation",
-      "audio-kinh": "Sutra chanting and recitation to listen along"
+      "audio-kinh": "Audio Dharma talks posted by the site team"
     }
   }
 }

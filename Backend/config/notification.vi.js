@@ -30,6 +30,9 @@ module.exports.notificationVi = {
         libraryKindRequired: {
             message: "Chọn danh mục thư viện"
         },
+        libraryKindAdminOnly: {
+            message: "Danh mục này chỉ ban quản trị đăng được"
+        },
         contentNoChanges: {
             message: "Không có gì thay đổi"
         },
@@ -188,6 +191,18 @@ module.exports.notificationVi = {
         },
         registerInvalidCharacter: {
             message: "Tên tài khoản chỉ chứa chữ cái và số"
+        },
+        usernameLength: {
+            message: "Tên đăng nhập dài từ 6 đến 25 ký tự"
+        },
+        passwordLength: {
+            message: "Mật khẩu dài từ 6 đến 100 ký tự"
+        },
+        phoneInvalid: {
+            message: "Số điện thoại không hợp lệ"
+        },
+        phoneTaken: {
+            message: "Số điện thoại này đã có tài khoản khác dùng"
         },
         captchaRequired: {
             message: "Vui lòng xác nhận bạn không phải là robot"

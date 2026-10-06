@@ -51,7 +51,7 @@ export default async function HomePage() {
       listContent({ type: ["article", "blog"], limit: 6 }),
       listContent({ type: "sutra", sort: "popular", limit: 2 }),
       listContent({ type: "sutra", limit: 6 }),
-      listContent({ type: ["audio", "video"], limit: 4 }),
+      listContent({ type: "library", libraryKind: "audio-kinh", limit: 4 }),
       listCategories(),
       getSiteSettings(),
       getHeroImages(),
@@ -164,7 +164,7 @@ export default async function HomePage() {
               className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
               asChild
             >
-              <Link href="/bai-giang">{sua("home.heroCtaTalks", "Nghe bài giảng")}</Link>
+              <Link href="/thu-vien?muc=audio-kinh">{sua("home.heroCtaTalks", "Nghe bài giảng")}</Link>
             </Button>
           </div>
         </Container>
@@ -240,7 +240,7 @@ export default async function HomePage() {
               description={sua("home.talksDesc2", dict.home.talksDesc2)}
               action={
                 <Button variant="link" asChild>
-                  <Link href="/bai-giang">
+                  <Link href="/thu-vien?muc=audio-kinh">
                     {sua("home.viewAll", dict.home.viewAll)} <ArrowRight />
                   </Link>
                 </Button>

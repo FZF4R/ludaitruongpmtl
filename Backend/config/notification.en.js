@@ -30,6 +30,9 @@ module.exports.notificationEn = {
         libraryKindRequired: {
             message: "Please choose a library category"
         },
+        libraryKindAdminOnly: {
+            message: "Only administrators can post in this category"
+        },
         contentNoChanges: {
             message: "Nothing changed"
         },
@@ -188,6 +191,18 @@ module.exports.notificationEn = {
         },
         registerInvalidCharacter: {
             message: "Register Invalid Character"
+        },
+        usernameLength: {
+            message: "Username must be 6 to 25 characters"
+        },
+        passwordLength: {
+            message: "Password must be 6 to 100 characters"
+        },
+        phoneInvalid: {
+            message: "Invalid phone number"
+        },
+        phoneTaken: {
+            message: "This phone number is already used by another account"
         },
         captchaRequired: {
             message: "Captcha Required"

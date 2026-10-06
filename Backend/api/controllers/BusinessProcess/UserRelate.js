@@ -3,7 +3,13 @@ module.exports = class UserRelate {
         return new Promise((resolve, reject) => {
             let userDetail;
             let { username, password } = inputUser
+            // Tài khoản đăng ký bằng mật khẩu lưu tên chữ thường; gõ hoa vẫn vào được.
+            // Tìm đúng chữ trước để tài khoản cũ có chữ hoa không bị ảnh hưởng.
+            username = String(username || '').trim()
             sails.dataProcess.findOne(Users, { condition: { username } }).then((objectUser) => {
+                if (objectUser || username === username.toLowerCase()) return objectUser
+                return sails.dataProcess.findOne(Users, { condition: { username: username.toLowerCase() } })
+            }).then((objectUser) => {
                 if (!objectUser) {
                     return Promise.reject({
                         message: 'loginInvalid',

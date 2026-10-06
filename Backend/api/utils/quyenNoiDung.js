@@ -12,8 +12,10 @@
 
 const NHOM_BAI = ['article', 'blog', 'audio', 'video']
 const LOAI_HOP_LE = ['article', 'blog', 'sutra', 'audio', 'video', 'library']
-/** Danh mục thư viện: ảnh, review chùa / đền, Phật - Bồ Tát, nhạc thiền, audio kinh. */
+/** Danh mục thư viện: ảnh, review chùa / đền, Phật - Bồ Tát, nhạc thiền, audio bài giảng. */
 const LOAI_THU_VIEN = ['anh', 'review', 'bo-tat', 'nhac-thien', 'audio-kinh']
+/** Danh mục chỉ khu quản trị (`library.manage`) đăng được: Audio bài giảng (audio-kinh) của ban quản trị. */
+const THU_VIEN_CHI_QUAN_TRI = ['audio-kinh']
 
 const co = (user, quyen) => !!user && sails.config.roles.can(user.role, quyen)
 
@@ -82,6 +84,7 @@ module.exports = {
     NHOM_BAI,
     LOAI_HOP_LE,
     LOAI_THU_VIEN,
+    THU_VIEN_CHI_QUAN_TRI,
     co,
     loaiQuanTri,
     duocXem,

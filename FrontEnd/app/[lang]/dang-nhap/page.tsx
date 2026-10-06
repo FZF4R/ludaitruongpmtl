@@ -5,14 +5,11 @@ import { LoginPanel } from "@/components/auth/login-panel";
 import { getDictionary } from "@/lib/dictionary";
 
 /**
- * Đăng nhập bằng Google hoặc Facebook.
+ * Đăng nhập bằng Google / Facebook, hoặc tên đăng nhập + mật khẩu (kèm đăng ký
+ * tài khoản mới có số điện thoại - tài khoản đó được đánh dấu isNotVerified).
  *
  * noindex và không cache — không có gì ở đây cho bộ máy tìm kiếm, và cả trang
- * chỉ là một khung bọc quanh hai cái nút chạy phía trình duyệt.
- *
- * Chưa có đăng nhập bằng mật khẩu trên giao diện này. Backend vẫn còn
- * `POST /v1/user/login`, nhưng site không có màn hình đăng ký, nên mở ô mật
- * khẩu ra chỉ tổ dẫn người dùng vào ngõ cụt.
+ * chỉ là một khung bọc quanh các form chạy phía trình duyệt.
  */
 export const dynamic = "force-dynamic";
 
@@ -51,6 +48,8 @@ export default async function LoginPage() {
             needTwoFactor: dict.auth.needTwoFactor,
             privacy: dict.auth.privacy,
           }}
+          nhanMatKhau={{ ...dict.auth.password, failed: dict.auth.failed, needTwoFactor: dict.auth.needTwoFactor }}
+          hoac={dict.auth.or}
         />
       </Card>
     </Container>

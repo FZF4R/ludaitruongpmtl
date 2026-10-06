@@ -124,7 +124,7 @@
   "auth": {
     "eyebrow": "Khu vực cá nhân",
     "title": "Đăng nhập",
-    "description": "Đăng nhập bằng Google hoặc Facebook để lưu bài, ghi lại quá trình tu tập và đồng bộ giữa các thiết bị.",
+    "description": "Đăng nhập bằng Google, Facebook hoặc tài khoản riêng để lưu bài, ghi lại quá trình tu tập và đồng bộ giữa các thiết bị.",
     "google": "Tiếp tục với Google",
     "facebook": "Tiếp tục với Facebook",
     "connecting": "Đang kết nối…",
@@ -142,7 +142,25 @@
     "notFilled": "Chưa khai",
     "changeAvatar": "Đổi ảnh đại diện",
     "avatarUploading": "Đang tải ảnh…",
-    "avatarError": "Không đổi được ảnh đại diện, vui lòng thử ảnh khác."
+    "avatarError": "Không đổi được ảnh đại diện, vui lòng thử ảnh khác.",
+    "or": "hoặc",
+    "password": {
+      "tabSignIn": "Đăng nhập",
+      "tabRegister": "Đăng ký",
+      "username": "Tên đăng nhập",
+      "usernameHint": "6-25 ký tự, chỉ chữ cái không dấu và số",
+      "password": "Mật khẩu",
+      "passwordConfirm": "Nhập lại mật khẩu",
+      "phone": "Số điện thoại",
+      "phoneHint": "Ví dụ 0912345678, hoặc số nước ngoài dạng +82…",
+      "submitSignIn": "Đăng nhập",
+      "submitRegister": "Tạo tài khoản",
+      "working": "Đang xử lý…",
+      "errUsername": "Tên đăng nhập dài 6-25 ký tự, chỉ gồm chữ cái không dấu và số.",
+      "errPassword": "Mật khẩu dài từ 6 đến 100 ký tự.",
+      "errPasswordMatch": "Hai lần nhập mật khẩu không khớp.",
+      "errPhone": "Số điện thoại không hợp lệ."
+    }
   },
   "onboarding": {
     "eyebrow": "Bước cuối",
@@ -822,14 +840,14 @@
   },
   "library": {
     "title": "Thư viện",
-    "description": "Ảnh, review chùa đền, Phật - Bồ Tát, nhạc thiền và audio kinh do cộng đồng đóng góp.",
+    "description": "Ảnh, review chùa đền, Phật - Bồ Tát, nhạc thiền và audio bài giảng.",
     "all": "Tất cả",
     "kinds": {
       "anh": "Ảnh",
       "review": "Review chùa, đền",
       "bo-tat": "Phật - Bồ Tát",
       "nhac-thien": "Nhạc thiền",
-      "audio-kinh": "Audio kinh phật"
+      "audio-kinh": "Audio bài giảng"
     },
     "empty": "Chưa có nội dung nào trong mục này.",
     "contribute": "Đóng góp nội dung",
@@ -841,7 +859,7 @@
       "review": "Cảm nhận, giới thiệu chùa, đền, di tích",
       "bo-tat": "Hình ảnh và giới thiệu chư Phật, Bồ Tát",
       "nhac-thien": "Nhạc nhẹ nhàng cho thiền định, thư giãn",
-      "audio-kinh": "Bản tụng kinh, niệm Phật để nghe theo"
+      "audio-kinh": "Pháp thoại, bài giảng audio do ban quản trị đăng"
     }
   }
 }

@@ -8,6 +8,7 @@ const fs = require('fs')
 const path = require('path');
 const { dongBoBaiCuaTacGia } = require('../../../utils/tacGia');
 const { docAnhBase64, layAvatarUrl } = require('../../../utils/avatar');
+const { chuanHoaSoDienThoai } = require('../../../utils/soDienThoai');
 
 /** Avatar đã được trình duyệt thu nhỏ (256px); quá mức này là ảnh gốc gửi thẳng lên. */
 const AVATAR_TOI_DA_BYTE = 1024 * 1024;
@@ -42,6 +43,7 @@ function dinhDangHoSo(user, profile, avatarUrl) {
         id: String(user.id || ''),
         isNewUser: !user.profileCompleted,
         profileCompleted: !!user.profileCompleted,
+        isNotVerified: !!user.isNotVerified,
         username: user.username || '',
         email: user.email || '',
         role: user.role || 'User',
@@ -276,47 +278,52 @@ module.exports = {
                 return;
             }
 
-            let { username } = inputs;
-            if (!username) {
-                exits.successRequest({
-                    messageNode: 'Users',
-                    message: 'registerInvalid'
-                });
-                return;
-            }
-            let regex = /^[a-zA-Z0-9]+$/i;
-            if (!regex.test(username)) {
-                exits.successRequest({
-                    messageNode: 'Users',
-                    message: 'registerInvalidCharacter'
-                });
-                return;
-            }
-            // Email thuộc một tài khoản đã bị khoá: không cho đăng ký lại để lách lệnh khoá.
-            if (inputs.email) {
-                let daKhoa = await sails.dataProcess.findOne(Users, {
-                    condition: { email: String(inputs.email).trim().toLowerCase(), status: { '!=': 1 } }
-                });
-                if (daKhoa) {
-                    sails.checkErrorOutput({ messageNode: 'Users', message: 'userBanned', reponseType: 'accountBanned' }, exits);
-                    return;
+            const baoLoi = message => sails.checkErrorOutput({ messageNode: 'Users', message }, exits);
+
+            // Tên đăng nhập: chữ + số, 6-25 ký tự (khớp minLength/maxLength của model).
+            // Không nhận email ở luồng này: email chưa xác minh mà lưu vào thì
+            // AuthWithProvider sẽ gộp lượt đăng nhập Google của chủ email thật
+            // vào tài khoản của người đăng ký - người đó biết mật khẩu.
+            let username = String(inputs.username || '').trim();
+            if (!/^[a-zA-Z0-9]+$/.test(username)) return baoLoi('registerInvalidCharacter');
+            if (username.length < 6 || username.length > 25) return baoLoi('usernameLength');
+            username = username.toLowerCase();
+
+            let password = String(inputs.password || '');
+            if (password.length < 6 || password.length > 100) return baoLoi('passwordLength');
+
+            let phone = chuanHoaSoDienThoai(inputs.phone);
+            if (!phone) return baoLoi('phoneInvalid');
+
+            try {
+                // Số thuộc một tài khoản đã bị khoá: không cho đăng ký lại để lách lệnh khoá.
+                let trungSo = await sails.dataProcess.findOne(Users, { condition: { phone } });
+                if (trungSo && trungSo.status !== 1) {
+                    return sails.checkErrorOutput({ messageNode: 'Users', message: 'userBanned', reponseType: 'accountBanned' }, exits);
                 }
-            }
+                if (trungSo) return baoLoi('phoneTaken');
 
-            var newUser = {
-              email: inputs.email,
-              username: inputs.username,
-              password: inputs.password
-            }
+                // beforeCreate của model kiểm trùng tên (usernameAlreadyInUse) và băm mật khẩu.
+                let moi = await sails.dataProcess.createDocument(Users, {
+                    username,
+                    password,
+                    phone,
+                    isNotVerified: true
+                });
 
-            sails.dataProcess.createDocument(Users, newUser).then((result) => {
+                // Đăng ký xong là đăng nhập luôn, cùng dạng trả về với login để
+                // FrontEnd đưa thẳng sang form hoàn thiện hồ sơ (isNewUser).
+                let token = await sails.jwtProcess.signAndEncryptJwt(moi);
+                let userDetail = Object.assign({}, moi);
+                delete userDetail.password;
                 exits.successRequest({
                     messageNode: 'Users',
-                    message: 'registerSucess'
+                    message: 'registerSucess',
+                    data: Object.assign(token, { userDetail, isNewUser: true })
                 });
-            }).catch((err) => {
-                sails.checkErrorOutput(err, exits)
-            });
+            } catch (err) {
+                sails.checkErrorOutput(err, exits);
+            }
         }
     }),
 

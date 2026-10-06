@@ -140,6 +140,7 @@ module.exports = {
                         status: taiKhoan.status,
                         is2FAEnabled: !!taiKhoan.is2FAEnabled,
                         profileCompleted: !!taiKhoan.profileCompleted,
+                        isNotVerified: !!taiKhoan.isNotVerified,
                         googleId: taiKhoan.googleId || '',
                         facebookId: taiKhoan.facebookId || '',
                         createdAt: taiKhoan.createdAt || 0,
