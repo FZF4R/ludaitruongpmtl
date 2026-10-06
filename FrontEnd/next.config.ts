@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
 
   /**
    * Bốn mục tu tập cũ đã gộp thành hai trang (Tụng kinh / Niệm Phật, Gõ mõ /
-   * Chuỗi hạt). 308 ở đây thay vì redirect trong trang: trang đã stream thì
+   * Tràng hạt). 308 ở đây thay vì redirect trong trang: trang đã stream thì
    * Next chỉ chuyển hướng phía trình duyệt, Google không thấy mã chuyển hướng.
    */
   async redirects() {

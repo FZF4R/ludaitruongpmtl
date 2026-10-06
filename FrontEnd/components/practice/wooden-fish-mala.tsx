@@ -38,11 +38,11 @@ export const HAT_TOI_THIEU_MS = 600;
 const BPM_TOI_DA = 120;
 import { cn } from "@/lib/utils";
 
-/** Số liệu một công cụ gửi lên khung cha để lưu chung (trang Gõ mõ / Chuỗi hạt). */
+/** Số liệu một công cụ gửi lên khung cha để lưu chung (trang Gõ mõ / Tràng hạt). */
 type MucLuu = { type: LoaiNhatKy; amount: number; note?: string; phien: Phien; lamLai: () => void };
 
 /**
- * Trang "Gõ mõ / Chuỗi hạt": mõ ảo bên trái, chuỗi hạt bên phải (hai khung cao
+ * Trang "Gõ mõ / Tràng hạt": mõ ảo bên trái, tràng hạt bên phải (hai khung cao
  * bằng nhau, nút "Làm lại" sát đáy mỗi khung) và dải trạng thái TỰ LƯU bên dưới
  * (ngừng gõ / lần hạt 3 giây là lưu vào nhật ký).
  */
@@ -188,7 +188,7 @@ function NhacCham({ hien, nhan }: { hien: boolean; nhan: NhanTuTap }) {
   );
 }
 
-/** Mõ ảo - dùng ở trang Gõ mõ / Chuỗi hạt và trong bộ đếm của trang Tụng kinh. Âm thanh lấy ở mục go-mo. */
+/** Mõ ảo - dùng ở trang Gõ mõ / Tràng hạt và trong bộ đếm của trang Tụng kinh. Âm thanh lấy ở mục go-mo. */
 export function GoMo({
   nhan,
   ds,
@@ -319,7 +319,7 @@ export function GoMo({
 
 const LOAI_CHUOI = [108, 54, 27, 21] as const;
 
-/** Chuỗi hạt - dùng ở trang Gõ mõ / Chuỗi hạt và trong bộ đếm của trang Tụng kinh. */
+/** Tràng hạt - dùng ở trang Gõ mõ / Tràng hạt và trong bộ đếm của trang Tụng kinh. */
 export function ChuoiHat({
   nhan,
   ds,

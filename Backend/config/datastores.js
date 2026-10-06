@@ -11,7 +11,7 @@ module.exports.datastores = {
 
   default: {
     adapter: 'sails-mongo',
-    url: process.env.MONGO_URL || 'mongodb://localhost:27017/buddhist_dev',
+    url: process.env.MONGO_URL || 'mongodb://localhost:27017/ludaitruong',
   },
 
 };

@@ -32,13 +32,13 @@
     "chanting": "Tụng kinh",
     "recitation": "Niệm Phật",
     "woodenFish": "Gõ mõ",
-    "mala": "Lần chuỗi hạt",
+    "mala": "Lần tràng hạt",
     "prayers": "Cầu an / Cầu siêu",
     "chantingRecitation": "Tụng kinh / Niệm Phật",
-    "woodenFishMala": "Gõ mõ / Chuỗi hạt",
+    "woodenFishMala": "Gõ mõ / Tràng hạt",
     "meditationHint": "Đồng hồ thiền, chuông, âm nền",
     "chantingRecitationHint": "Bộ đếm niệm Phật và chế độ đọc kinh",
-    "woodenFishMalaHint": "Mõ ảo và chuỗi hạt 108 hạt",
+    "woodenFishMalaHint": "Mõ ảo và tràng hạt 108 hạt",
     "prayersHint": "Viết lời nguyện, hướng dẫn cầu an, cầu siêu"
   },
   "footer": {
@@ -489,7 +489,7 @@
       "moSound": "Tiếng mõ"
     },
     "mala": {
-      "title": "Lần chuỗi hạt",
+      "title": "Lần tràng hạt",
       "beads": "Loại chuỗi",
       "beadsOf": "{n} hạt",
       "progress": "Hạt {i}/{t}",
@@ -553,7 +553,7 @@
         "niem-phat": "Niệm Phật",
         "thien": "Thiền định",
         "go-mo": "Gõ mõ",
-        "chuoi-hat": "Lần chuỗi hạt"
+        "chuoi-hat": "Lần tràng hạt"
       },
       "units": {
         "tung-kinh": "lần",
@@ -606,7 +606,7 @@
           "body": "Mõ giữ nhịp cho buổi tụng: mỗi tiếng mõ một chữ hay một câu, giúp đại chúng tụng đều và tâm không tán loạn."
         },
         {
-          "title": "Chuỗi hạt",
+          "title": "Tràng hạt",
           "body": "Chuỗi 108 hạt tượng trưng 108 phiền não. Mỗi câu niệm lần một hạt; hết vòng thì chuyển ngược chiều, không vượt qua hạt mẫu."
         },
         {
@@ -635,7 +635,7 @@
     "beadSound": "Tiếng hạt",
     "presets": {
       "title": "Bộ cấu hình của tôi",
-      "hint": "Lưu thời gian, nhạc thiền, mõ, chuỗi hạt, bài kinh thành một bộ để mỗi ngày chọn lại bằng một lần bấm.",
+      "hint": "Lưu thời gian, nhạc thiền, mõ, tràng hạt, bài kinh thành một bộ để mỗi ngày chọn lại bằng một lần bấm.",
       "save": "Lưu cấu hình",
       "update": "Cập nhật “{name}”",
       "namePrompt": "Tên bộ cấu hình (vd. Thiền sáng)",

@@ -132,7 +132,7 @@ export function MeditationTimer({ nhan }: { nhan: NhanTuTap }) {
   const phienThien = usePhien("thien");
   const phienHat = usePhien("chuoi-hat");
 
-  // Chuỗi hạt trong lúc thiền
+  // Tràng hạt trong lúc thiền
   const [hat, setHat] = React.useState(0);
   const [vong, setVong] = React.useState(0);
   const [lan, setLan] = React.useState(0);
@@ -522,7 +522,7 @@ export function MeditationTimer({ nhan }: { nhan: NhanTuTap }) {
 
 /**
  * Bộ cấu hình của người dùng (lưu ở máy chủ): bấm một bộ là áp toàn bộ thời
- * gian, âm thanh, mõ, chuỗi hạt. Bộ dùng gần nhất được nhớ để chọn sẵn.
+ * gian, âm thanh, mõ, tràng hạt. Bộ dùng gần nhất được nhớ để chọn sẵn.
  */
 function KhoiCauHinh({
   nhan,

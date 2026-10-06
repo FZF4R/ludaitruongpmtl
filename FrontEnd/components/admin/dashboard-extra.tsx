@@ -248,7 +248,7 @@ export function KhoiSuKienLich() {
 const MUC_TU_TAP: { key: PracticeKey; ten: string }[] = [
   { key: "chantingRecitation", ten: "Tụng kinh / Niệm Phật" },
   { key: "meditation", ten: "Thiền định" },
-  { key: "woodenFishMala", ten: "Gõ mõ / Chuỗi hạt" },
+  { key: "woodenFishMala", ten: "Gõ mõ / Tràng hạt" },
   { key: "prayers", ten: "Cầu an / Cầu siêu" },
 ];
 

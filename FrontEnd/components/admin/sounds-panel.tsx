@@ -44,7 +44,7 @@ const MUC: { key: Muc; ten: string; trang: string; loai: { key: Loai; dung: stri
   },
   {
     key: "go-mo",
-    ten: "Gõ mõ / Chuỗi hạt",
+    ten: "Gõ mõ / Tràng hạt",
     trang: "/tu-tap/go-mo-chuoi-hat",
     loai: [
       { key: "mo", dung: "tiếng mõ ảo (cả mõ gõ theo nhịp khi thiền)" },

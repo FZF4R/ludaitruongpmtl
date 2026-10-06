@@ -38,7 +38,7 @@ export function Chanting({
   const { ds } = useDsAmThanh("tung-kinh");
   const { ds: dsMo } = useDsAmThanh("go-mo");
   const am = useAmThanhNgan();
-  // Ba tab dùng chung phím Cách để gõ/lần hạt: "niem-phat" dựng cả Mõ + Chuỗi hạt (một lần
+  // Ba tab dùng chung phím Cách để gõ/lần hạt: "niem-phat" dựng cả Mõ + Tràng hạt (một lần
   // bấm tính cả hai, như trang /tu-tap/go-mo-chuoi-hat), hai tab còn lại dựng một mình nó -
   // không bao giờ dựng cả ba cùng lúc, nếu không một lần bấm sẽ đếm nhảy vào cả ba nơi.
   const [boDem, setBoDem] = useLuaChonNho<"niem-phat" | "go-mo" | "chuoi-hat">("tung-kinh_bo-dem", "niem-phat");
@@ -71,7 +71,7 @@ export function Chanting({
 }
 
 /**
- * "Niệm Phật": mõ bên trái, tụng kinh ở giữa, chuỗi hạt bên phải - gõ mõ và
+ * "Niệm Phật": mõ bên trái, tụng kinh ở giữa, tràng hạt bên phải - gõ mõ và
  * lần hạt cùng lúc (xem GoMo/ChuoiHat - cả hai cùng nghe phím Cách), kèm
  * nhạc niệm Phật phát nền.
  */

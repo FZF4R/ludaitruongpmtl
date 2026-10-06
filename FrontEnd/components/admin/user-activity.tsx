@@ -26,7 +26,7 @@ const TEN_TU_TAP: Record<string, { ten: string; donVi: string }> = {
   "niem-phat": { ten: "Niệm Phật", donVi: "câu" },
   thien: { ten: "Thiền định", donVi: "phút" },
   "go-mo": { ten: "Gõ mõ", donVi: "tiếng" },
-  "chuoi-hat": { ten: "Lần chuỗi hạt", donVi: "hạt" },
+  "chuoi-hat": { ten: "Lần tràng hạt", donVi: "hạt" },
 };
 const TEN_CONG_DUC: Record<string, string> = {
   checkin: "Điểm danh",
