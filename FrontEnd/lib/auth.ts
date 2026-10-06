@@ -21,7 +21,8 @@ import type { KhaoSat, QueQuan } from "@/lib/survey";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:1337";
 
-const KHOA_TOKEN = "sv_access_token";
+/** Xuất ra để InlineEditProvider nghe sự kiện "storage" (đăng nhập / xuất ở tab khác). */
+export const KHOA_TOKEN = "sv_access_token";
 
 /**
  * Đường dẫn tương đối backend trả về (avatar, ảnh...) -> URL tuyệt đối trên
@@ -154,6 +155,9 @@ export async function goiApi<T>(
     res = await fetch(url, {
       method,
       headers,
+      // Dữ liệu riêng của từng người: trình duyệt cache theo URL chứ không theo
+      // header Authorization, nên hồ sơ cũ có thể bị dùng lại sau khi đổi tài khoản.
+      cache: "no-store",
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } catch {

@@ -206,10 +206,14 @@ function DocKinh({
   useGiuManHinh(tuCuon || moNhip);
 
   if (kinh.length === 0) {
+    // Lưới ba cột đặt items-start; riêng thẻ rỗng tự kéo bằng chiều cao hàng
+    // (= khung Mõ / Tràng hạt bên cạnh) để bố cục không bị hụt một cột.
     return (
-      <Card className="p-5">
+      <Card className="flex flex-col gap-3 p-5 lg:self-stretch">
         <h2 className="font-serif text-xl font-bold text-ink">{r.title}</h2>
-        <p className="mt-2 text-sm text-muted">{r.noSutra}</p>
+        <div className="flex min-h-40 flex-1 items-center justify-center rounded-md border border-dashed border-line px-4 text-center">
+          <p className="text-sm text-muted">{r.noSutra}</p>
+        </div>
       </Card>
     );
   }

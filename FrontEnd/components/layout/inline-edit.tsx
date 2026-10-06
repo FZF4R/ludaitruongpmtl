@@ -3,7 +3,7 @@
 import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Check, Pencil, RotateCcw, X } from "lucide-react";
-import { docToken, layHoSo } from "@/lib/auth";
+import { KHOA_TOKEN, docToken, layHoSo } from "@/lib/auth";
 import { splitLocale } from "@/lib/i18n";
 import { luuChuGiaoDien } from "@/lib/site-text-action";
 import { diemDanh } from "@/lib/my-content";
@@ -127,6 +127,33 @@ export function InlineEditProvider({ children }: { children: React.ReactNode }) 
     };
     // Chỉ đọc quyền một lần mỗi lần tải trang; đổi ngôn ngữ không đổi quyền.
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /*
+   * Trạng thái đăng nhập chỉ đọc một lần lúc tải trang (ở trên). Ba trường hợp
+   * token đổi mà trang không tải lại - trước đây phải Ctrl+F5 mới thấy:
+   *   - bấm Quay lại sau khi đăng nhập: trình duyệt khôi phục trang cũ từ
+   *     bfcache (pageshow.persisted), vẫn là trạng thái chưa đăng nhập;
+   *   - đăng nhập / đăng xuất ở tab khác (sự kiện storage);
+   *   - quay lại tab đang mở sau khi tab khác đổi token (visibilitychange).
+   * Token khác lúc tải trang thì tải lại cả trang.
+   */
+  React.useEffect(() => {
+    const tokenLucNap = docToken();
+    const kiem = () => {
+      if (docToken() !== tokenLucNap) window.location.reload();
+    };
+    const khiHien = (e: PageTransitionEvent) => e.persisted && kiem();
+    const khiDoiKho = (e: StorageEvent) => (e.key === KHOA_TOKEN || e.key === null) && kiem();
+    const khiQuayLai = () => document.visibilityState === "visible" && kiem();
+    window.addEventListener("pageshow", khiHien);
+    window.addEventListener("storage", khiDoiKho);
+    document.addEventListener("visibilitychange", khiQuayLai);
+    return () => {
+      window.removeEventListener("pageshow", khiHien);
+      window.removeEventListener("storage", khiDoiKho);
+      document.removeEventListener("visibilitychange", khiQuayLai);
+    };
   }, []);
 
   const doiCheDo = React.useCallback(() => {
