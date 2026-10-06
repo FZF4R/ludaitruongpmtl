@@ -9,7 +9,9 @@ import { AdminShell } from "@/components/admin/admin-shell";
  * không phải nhớ khai lại ở từng trang — quên một lần là một màn hình quản trị
  * lọt vào kết quả tìm kiếm.
  *
- * Khung rộng hơn phần công khai vì ở đây có bảng nhiều cột.
+ * Trải toàn chiều rộng màn hình (bỏ giới hạn max-w của Container): bảng nhiều
+ * cột, popup nhập bài, thống kê đều cần chỗ. Header cũng giãn theo khi ở đây
+ * (components/layout/site-header.tsx).
  */
 export const dynamic = "force-dynamic";
 
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Container className="max-w-7xl">
+    <Container className="max-w-none sm:px-6 lg:px-8">
       <AdminShell>{children}</AdminShell>
     </Container>
   );

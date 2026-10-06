@@ -683,7 +683,7 @@ export function layChuyenMuc(locale: Locale) {
  * trùng tên các trường này, nên xuất ra sửa rồi nhập lại được.
  */
 export type BaiPhang = {
-  type: "article" | "blog";
+  type: "article" | "blog" | "sutra";
   slug: string;
   title: string;
   summary: string;
@@ -699,6 +699,10 @@ export type BaiPhang = {
   /** Nhập chỉ nhận pending (mặc định) / draft / published. */
   status: TrangThai;
   publishedAt: string;
+  /** Kinh sách: dịch giả (tên gõ tay). */
+  translator?: string;
+  /** Kinh sách: các chương theo thứ tự. */
+  chapters?: { title: string; bodyHtml: string }[];
 };
 
 export type BaiXuat = BaiPhang & {
@@ -720,10 +724,14 @@ export function xuatBai(loc: { type: string; status?: string; q?: string }, loca
 
 export type GoiYDanhMuc = { category: string; score: number };
 
-export function phanLoaiBai(items: Pick<BaiPhang, "title" | "summary" | "tags" | "bodyHtml">[], locale: Locale) {
+export function phanLoaiBai(
+  items: Pick<BaiPhang, "title" | "summary" | "tags" | "bodyHtml">[],
+  type: "article" | "sutra",
+  locale: Locale,
+) {
   return goiApi<{ sampleSize: number; results: GoiYDanhMuc[] }>("/v1/admin/content/classify", {
     method: "POST",
-    body: { items },
+    body: { items, type },
     locale,
   });
 }

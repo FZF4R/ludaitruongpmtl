@@ -9,7 +9,10 @@ module.exports = class JwtProcess {
         this.jwtSetting = {
             accessToken: {
                 secret: encryptSetting.key,
-                expiresIn: '180d',
+                // Mỗi lần đăng nhập dùng được 30 ngày. Token không lưu ở máy chủ
+                // (ký bằng JWT_ENCRYPT_KEY cố định trong .env) nên khởi động lại
+                // Backend không làm mất phiên; chỉ hết hạn hoặc đăng xuất mới mất.
+                expiresIn: '30d',
             }
         }
     }

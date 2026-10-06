@@ -179,10 +179,13 @@ export function SiteHeader({
   // So khớp trên đường dẫn ĐÃ bỏ tiền tố, nếu không thì ở /en/... không mục
   // nào được đánh dấu đang xem.
   const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+  // Khu quản trị trải toàn chiều rộng (app/[lang]/admin/layout.tsx): header giãn
+  // theo để mép logo / nút tài khoản thẳng với nội dung bên dưới.
+  const toanMan = path === "/admin" || path.startsWith("/admin/");
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-paper/85 backdrop-blur-sm">
-      <Container className="flex h-16 items-center gap-3">
+      <Container className={cn("flex h-16 items-center gap-3", toanMan && "max-w-none sm:px-6 lg:px-8")}>
         <Link
           href={lp("/")}
           className="flex shrink-0 items-center gap-2.5 text-ink"

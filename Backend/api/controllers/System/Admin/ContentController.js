@@ -250,8 +250,15 @@ const loiThuVien = (loai, kind) => (loai === 'library' && !LOAI_THU_VIEN.include
 
 /* ---------------------------- Xuất / nhập bài ---------------------------- */
 
-/** Nhập / xuất / tự phân loại chỉ áp cho bài viết + tuỳ bút. */
-const LOAI_NHAP = ['article', 'blog']
+/**
+ * Nhập / xuất / tự phân loại: bài viết + tuỳ bút (tab Bài viết) và kinh sách
+ * (tab Kinh sách). Hai nhóm tách nhau: tự phân loại kinh chỉ học từ kinh.
+ */
+const NHOM_BAI_VIET = ['article', 'blog']
+const LOAI_NHAP = [...NHOM_BAI_VIET, 'sutra']
+const nhomCua = loai => (loai === 'sutra' ? ['sutra'] : NHOM_BAI_VIET)
+/** Kinh sách: tối đa chừng này chương một bộ. */
+const CHUONG_TOI_DA = 500
 const TRANG_THAI_NHAP = ['pending', 'draft', 'published']
 const NHAP_TOI_DA = 50
 const XUAT_TOI_DA = 5000
@@ -290,19 +297,40 @@ const slugKhongTrung = async (goc, daDung) => {
  * cho ô chọn danh mục, kiểm tra lúc nhập và bộ tự phân loại.
  * -> [{ slug, name, kind, order }]
  */
-const danhMucTongHop = async () => {
+const danhMucTongHop = async (loai = LOAI_NHAP) => {
     let bang = await ContentCategory.find({}).sort([{ order: 'ASC' }, { name: 'ASC' }])
     let kq = bang.map(d => ({ id: String(d.id), slug: d.slug, name: d.name, kind: d.kind || 'all' }))
     let co = new Set(kq.map(d => d.slug))
     let tuBai = await bangNoiDung().aggregate([
-        { $match: { type: { $in: LOAI_NHAP }, 'categories.0': { $exists: true } } },
+        { $match: { type: { $in: loai }, 'categories.0': { $exists: true } } },
         { $unwind: '$categories' },
-        { $group: { _id: '$categories.slug', name: { $first: '$categories.name' } } },
+        { $group: { _id: '$categories.slug', name: { $first: '$categories.name' }, types: { $addToSet: '$type' } } },
         { $sort: { name: 1 } }
     ]).toArray()
     tuBai.forEach(d => {
-        if (d._id && !co.has(d._id)) kq.push({ id: '', slug: d._id, name: d.name || d._id, kind: 'article' })
+        if (d._id && !co.has(d._id)) kq.push({ id: '', slug: d._id, name: d.name || d._id, kind: (d.types || []).every(t => t === 'sutra') ? 'sutra' : 'article' })
     })
+
+    return kq
+}
+
+/**
+ * Chương kinh từ tệp: [{ title, bodyHtml }] -> [{ order, title, slug, bodyHtml }].
+ * Slug chương tự sinh từ tên, không trùng trong cùng bộ. Trả null nếu quá dài.
+ */
+const chuanHoaChuong = ds => {
+    let daDung = new Set()
+    let kq = []
+    for (let [i, c] of (Array.isArray(ds) ? ds : []).slice(0, CHUONG_TOI_DA).entries()) {
+        let ten = String((c && c.title) || '').trim().slice(0, 200) || `Chương ${i + 1}`
+        let than = String((c && c.bodyHtml) || '')
+        if (than.length > DAI_THAN_BAI_TOI_DA) return null
+        let goc = dungSlug(ten).slice(0, 80) || `chuong-${i + 1}`
+        let slug = goc
+        for (let n = 2; daDung.has(slug); n++) slug = `${goc}-${n}`
+        daDung.add(slug)
+        kq.push({ order: i + 1, title: ten, slug, bodyHtml: than })
+    }
 
     return kq
 }
@@ -323,6 +351,16 @@ const nhapMotBai = async (vao, { User, danhMuc, luot, tenTep, bayGio, slugDaDung
     let thanBai = String(vao.bodyHtml || '')
     if (thanBai.length > DAI_THAN_BAI_TOI_DA) return { ok: false, error: 'importBodyTooLong' }
 
+    // Kinh sách: bắt buộc nguồn (cùng luật với trình soạn - loiKinhSach), có chương, dịch giả.
+    let nguon = chuanHoaNguon({ name: vao.sourceName, url: vao.sourceUrl })
+    let chuong = []
+    if (loai === 'sutra') {
+        let loiKinh = loiKinhSach(User, '', 'sutra', nguon)
+        if (loiKinh) return { ok: false, error: loiKinh }
+        chuong = chuanHoaChuong(vao.chapters)
+        if (!chuong) return { ok: false, error: 'importBodyTooLong' }
+    }
+
     let slugVao = String(vao.slug || '').trim().toLowerCase()
     let slug = await slugKhongTrung(SLUG.test(slugVao) ? slugVao : dungSlug(tieuDe), slugDaDung)
 
@@ -340,7 +378,7 @@ const nhapMotBai = async (vao, { User, danhMuc, luot, tenTep, bayGio, slugDaDung
         categories: danhMuc.has(maDm) ? [{ slug: maDm, name: danhMuc.get(maDm) }] : [],
         tags: chuanHoaThe(vao.tags),
         author: await chuanHoaTacGia(vao.author ? { name: vao.author, title: vao.authorTitle } : null, User.id),
-        source: chuanHoaNguon({ name: vao.sourceName, url: vao.sourceUrl }),
+        source: nguon,
         publishedAt: ngayDang || (trangThai === 'published' ? new Date(bayGio).toISOString() : ''),
         status: trangThai,
         authorId: String(User.id),
@@ -349,6 +387,10 @@ const nhapMotBai = async (vao, { User, danhMuc, luot, tenTep, bayGio, slugDaDung
         importedAt: bayGio,
         importBatch: luot,
         importSource: tenTep
+    }
+    if (loai === 'sutra') {
+        ban.chapters = chuong
+        ban.translator = await chuanHoaDichGia(vao.translator ? { name: vao.translator } : null)
     }
     Object.assign(ban, dauVet('created', User), dauVet('updated', User))
     if (trangThai === 'published') Object.assign(ban, dauVet('approved', User), { approvedAt: bayGio })
@@ -962,7 +1004,9 @@ module.exports = {
                             createdAt: sangISO(row.createdAt),
                             createdByName: row.createdByName || '',
                             importedByName: row.importedByName || '',
-                            importedAt: sangISO(row.importedAt)
+                            importedAt: sangISO(row.importedAt),
+                            translator: (row.translator && row.translator.name) || '',
+                            chapters: (row.chapters || []).map(c => ({ title: c.title || '', bodyHtml: c.bodyHtml || '' }))
                         }))
                     }
                 });
@@ -982,13 +1026,17 @@ module.exports = {
         fn: async function (inputs, exits) {
             try {
                 let ds = Array.isArray(inputs.items) ? inputs.items.slice(0, NHAP_TOI_DA) : []
+                let nhom = nhomCua(inputs.type)
+                let kieuDm = inputs.type === 'sutra' ? ['sutra', 'all'] : ['article', 'all']
                 let [danhMuc, baiMau] = await Promise.all([
-                    danhMucTongHop().then(ds => ds.filter(d => ['article', 'all'].includes(d.kind))),
+                    danhMucTongHop(nhom).then(ds => ds.filter(d => kieuDm.includes(d.kind))),
                     bangNoiDung().find(
-                        { type: { $in: LOAI_NHAP }, 'categories.0': { $exists: true } },
-                        { projection: { title: 1, summary: 1, tags: 1, categories: 1, bodyHtml: 1 } }
+                        { type: { $in: nhom }, 'categories.0': { $exists: true } },
+                        { projection: { title: 1, summary: 1, tags: 1, categories: 1, bodyHtml: 1, 'chapters.title': 1 } }
                     ).sort(SAP_XEP.newest).limit(3000).toArray()
                 ])
+                // Kinh thường để nội dung trong chương: tên chương cũng là căn cứ phân loại.
+                baiMau.forEach(b => { b.bodyHtml = `${b.bodyHtml || ''} ${(b.chapters || []).map(c => c.title).join(' ')}` })
                 let phanLoai = dungBoPhanLoai(danhMuc.map(d => ({ slug: d.slug, name: d.name })), baiMau)
 
                 exits.successRequest({

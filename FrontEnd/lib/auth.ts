@@ -184,6 +184,11 @@ export async function goiApi<T>(
    * message (ví dụ profileNameRequired). Cả hai đều KHÔNG có `data`, nên đó
    * mới là dấu hiệu thành công đáng tin, chứ không phải mã trạng thái.
    */
+  // 401 chỉ do policy userPolices trả khi token thiếu / sai / hết hạn (thiếu
+  // quyền là 403), nên token này đã chết: xoá để mọi nơi thấy "chưa đăng nhập"
+  // ngay, thay vì giữ một token hỏng tới khi người dùng tự đăng xuất.
+  if (res.status === 401 && token) dangXuat();
+
   if (!res.ok || !noiDung || noiDung.data === undefined) {
     throw new LoiApi(noiDung?.message?.text ?? "", res.status);
   }
@@ -295,8 +300,27 @@ export function taiAvatar(dataUrl: string, locale: Locale) {
   });
 }
 
-export function layHoSo(locale: Locale): Promise<HoSo> {
-  return goiApi<HoSo>("/v1/user/profile", { locale });
+/** Chờ giữa các lần thử lại khi không gọi được máy chủ (giây) - tổng khoảng 30 giây. */
+const THU_LAI_HO_SO = [1, 2, 3, 5, 8, 10];
+
+/**
+ * Hồ sơ người đang đăng nhập.
+ *
+ * Lỗi mạng (máy chủ đang khởi động lại, mất mạng thoáng qua) hoặc 5xx thì THỬ
+ * LẠI chứ không coi là chưa đăng nhập: token vẫn còn hạn, chỉ là chưa hỏi
+ * được. Trước đây mỗi lần Backend reload là header, trang Tu tập... đều tưởng
+ * người dùng đã đăng xuất. 401 (token chết) thì dừng ngay - goiApi đã xoá token.
+ */
+export async function layHoSo(locale: Locale): Promise<HoSo> {
+  for (let lan = 0; ; lan++) {
+    try {
+      return await goiApi<HoSo>("/v1/user/profile", { locale });
+    } catch (err) {
+      const tamThoi = err instanceof LoiApi && (err.status === 0 || err.status >= 500);
+      if (!tamThoi || lan >= THU_LAI_HO_SO.length || !docToken()) throw err;
+      await new Promise((xong) => setTimeout(xong, THU_LAI_HO_SO[lan] * 1000));
+    }
+  }
 }
 
 export function luuHoSo(hoSo: HoSoGui, locale: Locale): Promise<HoSo> {

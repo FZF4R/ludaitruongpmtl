@@ -1595,6 +1595,7 @@ module.exports.inputs = {
             },
             "classifyContent": {
                 "User": { "type": "json" },
+                "type": { "type": "string", "defaultsTo": "article", "description": "article | sutra - nhóm bài để học danh mục" },
                 "items": { "type": "json", "required": true, "description": "[{ title, summary, tags, bodyHtml }]" }
             },
             "importContent": {

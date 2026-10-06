@@ -17,6 +17,7 @@ export default function AdminLibraryPage() {
       tieuDe="Kinh sách"
       moTa="Kinh, luật, luận trong thư viện. Mỗi bộ có thể chia thành nhiều chương."
       coChuong
+      coNhapXuat
     />
   );
 }

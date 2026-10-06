@@ -80,7 +80,7 @@ export function ContentPanel({
   moTa: string;
   /** Kinh sách chia chương; bài viết thì không. */
   coChuong?: boolean;
-  /** Nút Xuất / Nhập Excel, JSON (components/admin/content-import) - chỉ trang Bài viết. */
+  /** Nút Xuất / Nhập Excel, JSON (components/admin/content-import) - trang Bài viết và Kinh sách. */
   coNhapXuat?: boolean;
 }) {
   const locale = useLocale();
@@ -186,7 +186,7 @@ export function ContentPanel({
               tuKhoa={daGui}
               onLoi={setLoi}
               onDaNhap={(n) => {
-                setThongBao(`Đã nhập ${n} bài. Bài nhập mặc định ở trạng thái Chưa duyệt - lọc "${nhanTrangThai.pending}" để duyệt.`);
+                setThongBao(`Đã nhập ${n} ${loai === "sutra" ? "bộ kinh" : "bài"}. Mặc định ở trạng thái Chưa duyệt - lọc "${nhanTrangThai.pending}" để duyệt.`);
                 nap();
               }}
             />
